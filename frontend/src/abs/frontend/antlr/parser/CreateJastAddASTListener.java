@@ -136,7 +136,9 @@ public class CreateJastAddASTListener extends ABSBaseListener {
 new List<ModuleDecl>(),
                               new List<DeltaDecl>(),new List<UpdateDecl>(),
                               new Opt<ProductLine>(),new List<ProductDecl>(),
-                              new List<FeatureDecl>(),new List<FExt>()));
+                              new List<FeatureDecl>(),new List<FExt>(),
+                              new List<IfmlFeatureDeclAll>(), new List<IfmlGroupDecl>(),
+                              new List<IfmlConstraintDecl>()));
     }
 
     @Override public void exitCompilation_unit(ABSParser.Compilation_unitContext ctx) {
@@ -146,6 +148,9 @@ new List<ModuleDecl>(),
         result.setProductDeclList(l(ctx.product_decl()));
         result.setFeatureDeclList(l(ctx.feature_decl()));
         result.setFExtList(l(ctx.fextension()));
+        result.setIfmlFeatureDeclAllList(l(ctx.ifml_feature_decl_all()));
+        result.setIfmlGroupDeclList(l(ctx.ifml_group_decl()));
+        result.setIfmlConstraintDeclList(l(ctx.ifml_constraint_decl()));
     }
 
     
@@ -974,7 +979,7 @@ new List<ModuleDecl>(),
     }
 
     //  mTVL
-	@Override public void exitFextension(ABSParser.FextensionContext ctx) {
+        @Override public void exitFextension(ABSParser.FextensionContext ctx) {
         setV(ctx, new FExt(ctx.TYPE_IDENTIFIER().getText(),
                            o(ctx.feature_decl_group()),
                            new AttrConstraints(l(ctx.feature_decl_attribute()),
@@ -1004,20 +1009,20 @@ new List<ModuleDecl>(),
     }
 
 
-	@Override public void exitFeatureDeclConstraintIfIn(ABSParser.FeatureDeclConstraintIfInContext ctx) {
+        @Override public void exitFeatureDeclConstraintIfIn(ABSParser.FeatureDeclConstraintIfInContext ctx) {
         setV(ctx, new IfIn((MExp)v(ctx.mexp())));
     }
-	@Override public void exitFeatureDeclConstraintIfOut(ABSParser.FeatureDeclConstraintIfOutContext ctx) {
+        @Override public void exitFeatureDeclConstraintIfOut(ABSParser.FeatureDeclConstraintIfOutContext ctx) {
         setV(ctx, new IfOut((MExp)v(ctx.mexp())));
     }
-	@Override public void exitFeatureDeclConstraintExclude(ABSParser.FeatureDeclConstraintExcludeContext ctx) {
+        @Override public void exitFeatureDeclConstraintExclude(ABSParser.FeatureDeclConstraintExcludeContext ctx) {
         setV(ctx, new Exclude(new FeatVar(ctx.TYPE_IDENTIFIER().getText())));
     }
-	@Override public void exitFeatureDeclConstraintRequire(ABSParser.FeatureDeclConstraintRequireContext ctx) {
+        @Override public void exitFeatureDeclConstraintRequire(ABSParser.FeatureDeclConstraintRequireContext ctx) {
         setV(ctx, new Require(new FeatVar(ctx.TYPE_IDENTIFIER().getText())));
     }
 
-	@Override public void exitMexp(ABSParser.MexpContext ctx) {
+        @Override public void exitMexp(ABSParser.MexpContext ctx) {
         if (ctx.op != null) {
             switch (ctx.op.getType()) {
             case ABSParser.OROR :
@@ -1114,15 +1119,176 @@ new List<ModuleDecl>(),
         }
     }
 
-	@Override public void exitBoundary_int(ABSParser.Boundary_intContext ctx) {
+        @Override public void exitBoundary_int(ABSParser.Boundary_intContext ctx) {
         if (ctx.star != null) setV(ctx, new Limit());
         else setV(ctx, v(ctx.boundary_val()));
     }
-	@Override public void exitBoundary_val(ABSParser.Boundary_valContext ctx) {
+        @Override public void exitBoundary_val(ABSParser.Boundary_valContext ctx) {
         setV(ctx, new BoundaryVal((ctx.m == null
                                    ? +1 : -1)
                                   * Integer.parseInt(ctx.INTLITERAL().getText())));
     }
 
-}
+        // IFML
 
+        @Override public void exitIfml_feature_decl_all(ABSParser.Ifml_feature_decl_allContext ctx) {
+            setV(ctx, new IfmlFeatureDeclAll(l(ctx.ifml_feature_decl())));
+        }
+        @Override public void exitIfml_feature_decl(ABSParser.Ifml_feature_declContext ctx) {
+            setV(ctx, new IfmlFeatureDecl(ctx.TYPE_IDENTIFIER().getText(),  o(ctx.ifml_attributes())));
+        }
+        @Override public void exitIfml_attributes(ABSParser.Ifml_attributesContext ctx) {
+            setV(ctx, new IfmlAttributes(l(ctx.ifml_attribute())));
+        }
+
+        @Override public void exitIfml_attribute(ABSParser.Ifml_attributeContext ctx) {
+            String t = ctx.TYPE_IDENTIFIER().getText();
+            if (ctx.l != null) {
+                setV(ctx, new IfmlAttribute(ctx.IDENTIFIER().getText(),
+                                        new IfmlIntMType(t, (IfmlBoundaryInt)v(ctx.l),
+                                                     (IfmlBoundaryInt)v(ctx.u))));
+            } else if (ctx.is != null && !ctx.is.isEmpty()) {
+                setV(ctx, new IfmlAttribute(ctx.IDENTIFIER().getText(),
+                                        new IfmlIntListMType(t, l(ctx.is))));
+            } else if (t.equals("Int")) {
+                setV(ctx, new IfmlAttribute(ctx.IDENTIFIER().getText(),
+                                        new IfmlIntMType(t, new IfmlLimit(), new IfmlLimit())));
+            } else if (t.equals("String")) {
+                setV(ctx, new IfmlAttribute(ctx.IDENTIFIER().getText(),
+                                        new IfmlStringMType(t)));
+            } else if (t.equals("Bool")) {
+                setV(ctx, new IfmlAttribute(ctx.IDENTIFIER().getText(),
+                                        new IfmlBoolMType(t)));
+            } else {
+                setV(ctx, new IfmlAttribute(ctx.IDENTIFIER().getText(),
+                                        new IfmlUnresolvedMType(t)));
+            }
+        }
+        @Override public void exitIfml_group_decl(ABSParser.Ifml_group_declContext ctx) {
+            setV(ctx, new IfmlGroupDecl(ctx.TYPE_IDENTIFIER().getText(), l(ctx.ifml_group_decl_feature())));
+        }
+        @Override public void exitIfml_group_decl_feature(ABSParser.Ifml_group_decl_featureContext ctx) {
+            setV(ctx, new IfmlGroupDeclFeature(new IfmlFeatVar(ctx.TYPE_IDENTIFIER().getText())));
+        }
+        @Override public void exitIfml_constraint_decl(ABSParser.Ifml_constraint_declContext ctx) {
+            setV(ctx, new IfmlConstraintDecl(ctx.TYPE_IDENTIFIER().getText(), l(ctx.ifml_constraint_decl_group_feature())));
+        }
+        @Override public void exitIfml_constraint_decl_group_feature(ABSParser.Ifml_constraint_decl_group_featureContext ctx) {
+            setV(ctx, new IfmlConstraintDeclGroupFeature(ctx.TYPE_IDENTIFIER().getText(), o(ctx.ifml_cardinality()), l(ctx.ifml_constraint())));
+        }
+        @Override public void exitIfml_cardinality(ABSParser.Ifml_cardinalityContext ctx) { 
+            IfmlCardinality c = null;
+            if (ctx.o != null) c = new IfmlCRange(1,1); // oneof
+            else if (ctx.a != null) c = new IfmlAllOf(); // allof
+            else if (ctx.s != null) c = new IfmlMinim(Integer.parseInt(ctx.l.getText()));
+            else c = new IfmlCRange(Integer.parseInt(ctx.l.getText()),
+                              Integer.parseInt(ctx.u.getText()));      
+            setV(ctx, c);
+        }
+        @Override public void exitIfmlIfIn(ABSParser.IfmlIfInContext ctx) {
+            setV(ctx, new IfmlIfIn((IfmlMExp)v(ctx.ifml_mexp())));
+        }
+        @Override public void exitIfmlIfOut(ABSParser.IfmlIfOutContext ctx) {
+            setV(ctx, new IfmlIfOut((IfmlMExp)v(ctx.ifml_mexp())));
+        }
+        @Override public void exitIfmlExcludes(ABSParser.IfmlExcludesContext ctx) {
+            List<IfmlFeatVar> list = new List<>();
+            for(int i=0;i<ctx.TYPE_IDENTIFIER().size();i++){
+                list.add(new IfmlFeatVar(ctx.TYPE_IDENTIFIER(i).getText()));
+            }
+            setV(ctx, new IfmlExcludes(list));
+        }
+        @Override public void exitIfmlRequires(ABSParser.IfmlRequiresContext ctx) {
+            List<IfmlFeatVar> list = new List<>();
+            for(int i=0;i<ctx.TYPE_IDENTIFIER().size();i++){
+                list.add(new IfmlFeatVar(ctx.TYPE_IDENTIFIER(i).getText()));
+            }
+            setV(ctx, new IfmlRequires(list));
+        }
+        @Override public void exitIfmlOpt(ABSParser.IfmlOptContext ctx) {
+            setV(ctx, new IfmlOpt());
+        }
+        @Override public void exitIfml_mexp(ABSParser.Ifml_mexpContext ctx) {
+            if (ctx.op != null) {
+                switch (ctx.op.getType()) {
+                case ABSParser.OROR :
+                    setV(ctx, new IfmlMOrBoolExp((IfmlMExp)v(ctx.l), (IfmlMExp)v(ctx.r)));
+                    return;
+                case ABSParser.ANDAND :
+                    setV(ctx, new IfmlMAndBoolExp((IfmlMExp)v(ctx.l), (IfmlMExp)v(ctx.r)));
+                    return;
+                case ABSParser.IMPLIES :
+                    setV(ctx, new IfmlMImpliesExp((IfmlMExp)v(ctx.l), (IfmlMExp)v(ctx.r)));
+                    return;
+                case ABSParser.EQUIV :
+                    setV(ctx, new IfmlMEquivExp((IfmlMExp)v(ctx.l), (IfmlMExp)v(ctx.r)));
+                    return;
+                case ABSParser.EQEQ :
+                    setV(ctx, new IfmlMEqExp((IfmlMExp)v(ctx.l), (IfmlMExp)v(ctx.r)));
+                    return;
+                case ABSParser.NOTEQ :
+                    setV(ctx, new IfmlMNotEqExp((IfmlMExp)v(ctx.l), (IfmlMExp)v(ctx.r)));
+                    return;
+                case ABSParser.LT :
+                    setV(ctx, new IfmlMLTExp((IfmlMExp)v(ctx.l), (IfmlMExp)v(ctx.r)));
+                    return;
+                case ABSParser.GT :
+                    setV(ctx, new IfmlMGTExp((IfmlMExp)v(ctx.l), (IfmlMExp)v(ctx.r)));
+                    return;
+                case ABSParser.LTEQ :
+                    setV(ctx, new IfmlMLTEQExp((IfmlMExp)v(ctx.l), (IfmlMExp)v(ctx.r)));
+                    return;
+                case ABSParser.GTEQ :
+                    setV(ctx, new IfmlMGTEQExp((IfmlMExp)v(ctx.l), (IfmlMExp)v(ctx.r)));
+                    return;
+                case ABSParser.PLUS :
+                    setV(ctx, new IfmlMAddAddExp((IfmlMExp)v(ctx.l), (IfmlMExp)v(ctx.r)));
+                    return;
+                case ABSParser.MINUS :
+                    if (ctx.l != null) setV(ctx, new IfmlMSubAddExp((IfmlMExp)v(ctx.l), (IfmlMExp)v(ctx.r)));
+                    else setV(ctx, new IfmlMMinusExp((IfmlMExp)v(ctx.a)));
+                    return;
+                case ABSParser.MULT :
+                    setV(ctx, new IfmlMMultMultExp((IfmlMExp)v(ctx.l), (IfmlMExp)v(ctx.r)));
+                    return;
+                case ABSParser.DIV :
+                    setV(ctx, new IfmlMDivMultExp((IfmlMExp)v(ctx.l), (IfmlMExp)v(ctx.r)));
+                    return;
+                case ABSParser.MOD :
+                    setV(ctx, new IfmlMModMultExp((IfmlMExp)v(ctx.l), (IfmlMExp)v(ctx.r)));
+                    return;
+                case ABSParser.NEGATION :
+                    setV(ctx, new IfmlMNegExp((IfmlMExp)v(ctx.a)));
+                    return;
+                }
+            } else if (ctx.a != null)
+                setV(ctx, v(ctx.a));
+            else if (ctx.INTLITERAL() != null)
+                setV(ctx, new IfmlMValue(new IntVal(Integer.parseInt(ctx.INTLITERAL().getText()))));
+            else if (ctx.IDENTIFIER() != null) {
+                if (ctx.TYPE_IDENTIFIER() != null)
+                    setV(ctx, new IfmlFAVar(ctx.TYPE_IDENTIFIER().getText(),
+                                        ctx.IDENTIFIER().getText()));
+                else
+                    setV(ctx, new IfmlAttVar(ctx.IDENTIFIER().getText()));
+            } else {
+                // TYPE_IDENTIFIER is not null
+                String id = ctx.TYPE_IDENTIFIER().getText();
+                if (id.equals("True")) setV(ctx, new IfmlMValue(new BoolVal(true)));
+                else if (id.equals("False")) setV(ctx, new IfmlMValue(new BoolVal(false)));
+                else setV(ctx, new IfmlFeatVar(id));
+            }
+        }
+        
+        @Override public void exitIfml_boundary_int(ABSParser.Ifml_boundary_intContext ctx) {
+            if (ctx.star != null) {
+                setV(ctx, new IfmlLimit());
+            } else {
+                setV(ctx, v(ctx.ifml_boundary_val()));
+            }
+        }
+        @Override public void exitIfml_boundary_val(ABSParser.Ifml_boundary_valContext ctx) {
+            setV(ctx, new IfmlBoundaryVal((ctx.m == null ? +1 : -1) * Integer.parseInt(ctx.INTLITERAL().getText())));
+        }       
+        
+}

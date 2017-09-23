@@ -134,7 +134,19 @@ public enum ErrorMessage {
     INVALID_PRODUCT("Product %s does not satisfy the feature model. Constraints failed: %s."),
     MATCHING_NOT_ALLOWED_IN_CATCH("Non-free pattern variable %s (not allowed in catch branches)."),
     DUPLICATE_INTERFACE_IMPLEMENTATION("Class %s already implements interface %s."),
-    MISSING_INTERFACE_IMPLEMENTATION("Class %s does not implement interface %s.")
+    MISSING_INTERFACE_IMPLEMENTATION("Class %s does not implement interface %s."),
+    //IFML Error messages
+    DUPLICATE_GROUP("Group %s is already defined."),
+    DUPLICATE_CONSTRAINT("Constraint %s is already defined."),
+    UNDECLARED_FEATURE("Undeclared feature %s found inside group %s."),
+    DUPLICATE_GROUP_FEATURE("Group %s is already defined as a feature. Please select a different name."),
+    DUPLICATE_CONSTRAINT_FEATURE("Constraint %s is already defined as a feature. Please select a different name."),
+    DUPLICATE_CONSTRAINT_GROUP("Constraint %s is already defined as a group. Please select a different name."),
+    UNDECLARED_GROUP_FEATURE_CONSTRAINT("Undeclared group/feature %s found inside constraint %s."),
+    CONSTRAINT_FEATURE_CARDINALITY("Feature %s inside %s can not have cardinality constraint."
+            + " Cardinality constraints are only applicable on groups."),
+    UNDECLARED_FEATURE_EXCLUDES("Undeclared feature %s found inside 'excludes' constraint of %s in %s."),
+    UNDECLARED_FEATURE_REQUIRES("Undeclared feature %s found inside 'requires' constraint of %s in %s.")
     ;
 
     private String pattern;

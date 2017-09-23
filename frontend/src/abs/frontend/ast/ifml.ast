@@ -1,0 +1,93 @@
+/////////////////////////////////
+/// ifml - Independent Feature Modelling Language///
+/////////////////////////////////
+
+// ifeatures declaration part
+IfmlFeatureDeclAll ::= IfmlFeatureDecl*;
+IfmlFeatureDecl ::= <Name> [IfmlAttributes];
+IfmlAttributes ::= IfmlAttribute*;
+IfmlAttribute ::= <Name> IfmlAType:IfmlMType;
+
+abstract  IfmlMType ::= <Typename>;
+IfmlUnresolvedMType: IfmlMType;
+IfmlBoolMType: IfmlMType;
+IfmlStringMType: IfmlMType;
+IfmlIntMType:  IfmlMType ::= Min:IfmlBoundaryInt Max:IfmlBoundaryInt;
+IfmlIntListMType:  IfmlMType ::= IfmlBoundaryVal*;
+
+abstract IfmlBoundaryInt;
+IfmlLimit: IfmlBoundaryInt;
+IfmlBoundaryVal: IfmlBoundaryInt ::= <Value:int>;
+
+// igroup declaration part
+IfmlGroupDecl ::= <Name> IfmlGroupDeclFeature*;
+IfmlGroupDeclFeature ::= IfmlFeatVar;
+
+// iconstraint declaration part
+IfmlConstraintDecl ::= <Name> IfmlConstraintDeclGroupFeature*;
+IfmlConstraintDeclGroupFeature ::= <Name> [IfmlCard:IfmlCardinality] IfmlConstraint*;
+ 
+abstract IfmlCardinality;
+IfmlAllOf:   IfmlCardinality;
+IfmlMinim:   IfmlCardinality ::= <IfmlCFrom:int>;
+IfmlCRange:  IfmlCardinality ::= <IfmlCFrom:int> <IfmlCTo:int>;
+
+abstract IfmlConstraint;
+IfmlIfIn:IfmlConstraint 	::= IfmlExpr: IfmlMExp;
+IfmlIfOut:IfmlConstraint 	::= IfmlExpr: IfmlMExp;
+IfmlExcludes:IfmlConstraint ::= IfmlFeatVar*;
+IfmlRequires:IfmlConstraint ::= IfmlFeatVar*;
+IfmlOpt:IfmlConstraint; // This is valid only for feature constraints and not group constraints.
+
+abstract IfmlMExp:IfmlConstraint;
+abstract IfmlSimpleExp:IfmlMExp;
+abstract IfmlMUnary:IfmlMExp ::= IfmlOperand: IfmlMExp;
+abstract IfmlMBinary:IfmlMExp ::= IfmlLeft:IfmlMExp  IfmlRight:IfmlMExp;
+
+////// some intersection with frontend PureExp
+//Booleans
+IfmlMNegExp: IfmlMUnary ;
+
+abstract     IfmlMBoolExp: IfmlMBinary ;
+IfmlMAndBoolExp: IfmlMBoolExp ;
+IfmlMOrBoolExp:  IfmlMBoolExp ;
+IfmlMImpliesExp: IfmlMBoolExp ;  // not in PureExp
+IfmlMEquivExp:   IfmlMBoolExp ;  // not in PureExp
+
+abstract IfmlMRelationalExpr: IfmlMBinary;
+IfmlMLTExp:   IfmlMRelationalExpr ;
+IfmlMGTExp:   IfmlMRelationalExpr ;
+IfmlMLTEQExp: IfmlMRelationalExpr ;
+IfmlMGTEQExp: IfmlMRelationalExpr ;
+
+abstract   IfmlMEqualityExpr: IfmlMRelationalExpr;
+IfmlMEqExp:    IfmlMEqualityExpr ;
+IfmlMNotEqExp: IfmlMEqualityExpr ;
+
+//Integers
+IfmlMMinusExp : IfmlMUnary ;
+
+abstract IfmlMArithmeticExpr : IfmlMBinary ;
+
+abstract      IfmlMMultExp: IfmlMArithmeticExpr ;
+IfmlMMultMultExp: IfmlMMultExp ;
+IfmlMDivMultExp:  IfmlMMultExp ;
+IfmlMModMultExp:  IfmlMMultExp ;
+
+abstract    IfmlMAddExp: IfmlMArithmeticExpr ;
+IfmlMAddAddExp: IfmlMAddExp ;
+IfmlMSubAddExp: IfmlMAddExp ;
+
+//// end of intersection with PureExp
+
+
+// Variables and values
+abstract IfmlVariable: IfmlSimpleExp;
+IfmlMValue : IfmlSimpleExp ::= Value;
+// Concrete values (IntVal, BoolVal, StringVal) are in abs.ast
+
+// Ifml variables
+IfmlAttVar:IfmlVariable ::= <IfmlAName>;
+IfmlFeatVar:IfmlVariable ::= <IfmlFName>;
+IfmlFAVar:IfmlVariable ::= <IfmlFName> <IfmlAName>;
+

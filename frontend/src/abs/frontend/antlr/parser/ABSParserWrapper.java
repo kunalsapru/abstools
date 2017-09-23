@@ -59,7 +59,7 @@ public class ABSParserWrapper {
             return u;
         } else {
             @SuppressWarnings("rawtypes")
-                CompilationUnit u = new CompilationUnit(path,new List(),new List(),new List(),new Opt(),new List(),new List(),new List());
+                CompilationUnit u = new CompilationUnit(path,new List(),new List(),new List(),new Opt(),new List(),new List(),new List(),new List(),new List(),new List());
             u.setParserErrors(errorlistener.parserErrors);
             return u;
         }

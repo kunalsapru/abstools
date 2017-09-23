@@ -1,0 +1,225 @@
+import java.util.Collection;
+import java.util.ArrayList;
+import abs.frontend.analyser.*;
+import abs.frontend.ifml.IfmlTypes;
+
+/**
+ * Checks whether features, groups and constraints are repeated.
+ * Checks for type errors and repition errors in attribute declaration.
+ * Check for valid variable declaration.
+ **/
+
+aspect IfmlErrorCheck {
+
+    public void ASTNode.checkIfmlType(IfmlTypes type, SemanticConditionList c) {
+        //    System.out.println("spreading check in constraint from...");
+        for(int i = 0; i < getNumChild(); i++)
+            getChild(i).checkIfmlType(type,c);
+    }
+
+	// Check if ifeature name is repeated
+    public void IfmlFeatureDecl.collectErrors(SemanticConditionList c) {  
+        super.collectErrors(c);
+        // check if repeated feature
+        if (isRepeated)
+            c.add(new SemanticError(this,ErrorMessage.DUPLICATE_FEATURE,getName()));
+		// check for attributes in feature and apply type check         
+      	if(hasIfmlAttributes()) {
+      		IfmlAttributes ifmlAttributes = getIfmlAttributes(); 
+      		for(int i=0; i<ifmlAttributes.getNumIfmlAttribute(); i++) {
+      			ifmlAttributes.getIfmlAttribute(i).checkIfmlType(IfmlTypes.BOOL,c);
+      		}
+      	}
+    }
+
+	// Check if igroup name is repeated
+    public void IfmlGroupDecl.collectErrors(SemanticConditionList c) {  
+        super.collectErrors(c);
+        if (isRepeated)
+            c.add(new SemanticError(this,ErrorMessage.DUPLICATE_GROUP,getName()));
+        // Check for same group and feature name. If a group name is already used as a feature, show an error
+		if(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(getName())) {
+				c.add(new SemanticError(this,ErrorMessage.DUPLICATE_GROUP_FEATURE,getName()));
+			}
+        // Check if feature is declared or not, before adding to group
+   		for(int i=0;i<getNumIfmlGroupDeclFeature();i++) {
+   			String featureInGroup = getIfmlGroupDeclFeature(i).getIfmlFeatVar().getIfmlFName();
+			if(!(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(featureInGroup))) {
+				c.add(new SemanticError(this,ErrorMessage.UNDECLARED_FEATURE,featureInGroup,getName()));
+			}
+   		}
+    }
+
+	// Check if iconstraint name is repeated
+    public void IfmlConstraintDecl.collectErrors(SemanticConditionList c) {  
+        super.collectErrors(c);
+        if (isRepeated)
+            c.add(new SemanticError(this,ErrorMessage.DUPLICATE_CONSTRAINT,getName()));
+        // Check for same constraint and feature name. If a constraint name is already used as a feature, show an error.
+		if(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(getName())) {
+				c.add(new SemanticError(this,ErrorMessage.DUPLICATE_CONSTRAINT_FEATURE,getName()));
+			}
+        // Check for same constraint and group name. If a constraint name is already used as a group, show an error.
+		if(((Model)calcContextNode(Model.class)).ifmlgroups().contains(getName())) {
+				c.add(new SemanticError(this,ErrorMessage.DUPLICATE_CONSTRAINT_GROUP,getName()));
+			}
+        // Check if group/feature is declared or not, before adding to constraints
+   		for(int i=0;i<getNumIfmlConstraintDeclGroupFeature();i++) {
+	   		IfmlConstraintDeclGroupFeature ifmlConstraintDeclGroupFeature = getIfmlConstraintDeclGroupFeature(i);
+   			String groupFeatureInConstraint = ifmlConstraintDeclGroupFeature.getName();
+   			
+			if(!(((Model)calcContextNode(Model.class)).ifmlgroups().contains(groupFeatureInConstraint))) {
+				//Not in group
+				if(!(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(groupFeatureInConstraint))) {
+				//Not in feature
+					c.add(new SemanticError(this,ErrorMessage.UNDECLARED_GROUP_FEATURE_CONSTRAINT,groupFeatureInConstraint,getName()));
+				} else if(ifmlConstraintDeclGroupFeature.hasIfmlCard()) {//Features can not have cardinality constraints.
+					c.add(new SemanticError(this,ErrorMessage.CONSTRAINT_FEATURE_CARDINALITY,groupFeatureInConstraint,getName()));
+				}
+			}
+			//Check for valid features and expressions in ifml constraints.
+			for(int j=0; j<ifmlConstraintDeclGroupFeature.getNumIfmlConstraint();j++) {
+				IfmlConstraint ifmlConstraint = ifmlConstraintDeclGroupFeature.getIfmlConstraint(j);
+				if(ifmlConstraint instanceof IfmlIfIn){}
+				if(ifmlConstraint instanceof IfmlIfOut){}
+				if(ifmlConstraint instanceof IfmlExcludes){
+					IfmlExcludes ifmlExcludes = (IfmlExcludes)(ifmlConstraintDeclGroupFeature.getIfmlConstraint(j));
+//					//Check if feature is valid or not
+					for(int k=0;k<ifmlExcludes.getNumIfmlFeatVar();k++) {
+			   			String featureInExcludes = ifmlExcludes.getIfmlFeatVar(k).getIfmlFName();
+						if(!(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(featureInExcludes))) {
+							c.add(new SemanticError(this,ErrorMessage.UNDECLARED_FEATURE_EXCLUDES,featureInExcludes,ifmlConstraintDeclGroupFeature.getName(),getName()));
+						}
+			   		}
+				}
+				if(ifmlConstraint instanceof IfmlRequires){
+					IfmlRequires ifmlRequires = (IfmlRequires)(ifmlConstraintDeclGroupFeature.getIfmlConstraint(j));
+//					//Check if feature is valid or not
+					for(int x=0;x<ifmlRequires.getNumIfmlFeatVar();x++) {
+			   			String featureInRequires = ifmlRequires.getIfmlFeatVar(x).getIfmlFName();
+						if(!(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(featureInRequires))) {
+							c.add(new SemanticError(this,ErrorMessage.UNDECLARED_FEATURE_REQUIRES,featureInRequires,ifmlConstraintDeclGroupFeature.getName(),getName()));
+						}
+			   		}
+				}
+				
+			}
+   		}
+    }
+
+
+    // check if variable is already defined, and its type is well-formed.
+    public void IfmlAttribute.collectErrors(SemanticConditionList c) {
+        super.collectErrors(c);
+        if (isRepeated) {
+            c.add(new SemanticError(this, ErrorMessage.DUPLICATE_VARIABLE, featureName()+"."+getName()));
+        }
+        this.getIfmlAType().collectErrors(c);
+    }
+
+    public void IfmlUnresolvedMType.collectErrors(SemanticConditionList c) {
+        c.add(new SemanticError(this, ErrorMessage.UNKNOWN_ATTRIBUTE_TYPE,
+                this.getTypename()));
+    }
+    public void IfmlBoolMType.collectErrors(SemanticConditionList c) {
+        if (!(this.getTypename().equals("Bool"))) {
+            c.add(new SemanticError(this, ErrorMessage.UNEXPECTED_ATTRIBUTE_TYPE,
+                    this.getTypename(), "Bool"));
+        }
+    }
+    public void IfmlStringMType.collectErrors(SemanticConditionList c) {
+        if (!(this.getTypename().equals("String"))) {
+            c.add(new SemanticError(this, ErrorMessage.UNEXPECTED_ATTRIBUTE_TYPE,
+                    this.getTypename(), "String"));
+        }
+    }
+    public void IfmlIntMType.collectErrors(SemanticConditionList c) {
+        if (!(this.getTypename().equals("Int"))) {
+            c.add(new SemanticError(this, ErrorMessage.UNEXPECTED_ATTRIBUTE_TYPE,
+                    this.getTypename(), "Int"));
+        }
+    }
+    public void IfmlIntListMType.collectErrors(SemanticConditionList c) {
+        if (!(this.getTypename().equals("Int"))) {
+            c.add(new SemanticError(this, ErrorMessage.UNEXPECTED_ATTRIBUTE_TYPE,
+                    this.getTypename(), "Int"));
+        }
+    }
+
+
+    // type of negation
+    public void IfmlMNegExp.checkIfmlType(IfmlTypes type,SemanticConditionList c) {
+        super.checkIfmlType(IfmlTypes.BOOL,c);
+        //getOperand().checkType(Types.BOOL,c);
+        if (type != IfmlTypes.BOOL)
+            c.add(new SemanticError(this,ErrorMessage.EXPECTED_BOOL,"NEGATION"));
+    }
+    // type of negative sign
+    public void IfmlMMinusExp.checkIfmlType(IfmlTypes type,SemanticConditionList c) {
+        super.checkIfmlType(IfmlTypes.INT,c);
+        if (type != IfmlTypes.INT)
+            c.add(new SemanticError(this,ErrorMessage.EXPECTED_INT,"NEGATIVE"));
+    }
+    // check type of values
+    public void IntVal.checkIfmlType(IfmlTypes type,SemanticConditionList c) {
+        if (type != IfmlTypes.INT)
+            c.add(new SemanticError(this,ErrorMessage.EXPECTED_INT,""+getValue()));
+    }
+    public void BoolVal.checkIfmlType(IfmlTypes type,SemanticConditionList c) {
+        if (type != IfmlTypes.BOOL)
+            c.add(new SemanticError(this,ErrorMessage.EXPECTED_BOOL,""+getValue()));
+    }
+    // check type of boolean operators
+    public void IfmlMBoolExp.checkIfmlType(IfmlTypes type, SemanticConditionList c) {
+        super.checkIfmlType(IfmlTypes.BOOL,c);
+        if (type != IfmlTypes.BOOL)
+            c.add(new SemanticError(this,ErrorMessage.EXPECTED_BOOL,toString()));
+    }
+    // check type of int relations
+    public void IfmlMRelationalExpr.checkIfmlType(IfmlTypes type, SemanticConditionList c) {
+        super.checkIfmlType(IfmlTypes.INT,c);
+        if (type != IfmlTypes.BOOL)
+            c.add(new SemanticError(this,ErrorMessage.EXPECTED_BOOL,toString()));
+    }
+    // check type of equality operators (assuming boolean or int)
+    public boolean IfmlMEqualityExpr.isInt  = false;
+    public boolean IfmlMEqualityExpr.isBool = false;
+    public void IfmlMEqualityExpr.checkIfmlType(IfmlTypes type, SemanticConditionList c) {
+        SemanticConditionList lint  = new SemanticConditionList();
+        SemanticConditionList lbool = new SemanticConditionList();
+        // TODO: use getLeft().isIntType() instead if possible
+        getIfmlLeft().checkIfmlType(IfmlTypes.INT,lint);
+        if (!lint.containsErrors()) {
+            isInt = true;
+            getIfmlRight().checkIfmlType(IfmlTypes.INT,c);
+        }
+        else {
+            isBool = true;
+            getIfmlLeft().checkIfmlType(IfmlTypes.BOOL,c);
+            getIfmlRight().checkIfmlType(IfmlTypes.BOOL,c);
+        }
+    }
+    //check type of arithmetic expressions
+    public void IfmlMArithmeticExpr.checkIfmlType(IfmlTypes type, SemanticConditionList c) {
+        super.checkIfmlType(IfmlTypes.INT,c);
+        if (type != IfmlTypes.INT)
+            c.add(new SemanticError(this,ErrorMessage.EXPECTED_INT,toString()));
+    }
+
+    // type of variables
+    public void IfmlVariable.checkIfmlType(IfmlTypes type, SemanticConditionList c) {
+        if (!isBool() && !isInt()) {
+            c.add(new SemanticError(this,ErrorMessage.UNDECLARED_VARIABLE,getFullName()));
+        }
+        else if(isBool() && type!=IfmlTypes.BOOL) 
+            c.add(new SemanticError(this,ErrorMessage.EXPECTED_BOOL,getFullName()));
+        else if(isInt() && type!=IfmlTypes.INT) 
+            c.add(new SemanticError(this,ErrorMessage.EXPECTED_INT,getFullName()));
+    }
+
+
+
+}
+// Local Variables:
+// mode: java
+// End:

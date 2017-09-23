@@ -469,13 +469,68 @@ boundary_int : star='*' | boundary_val ;
 
 boundary_val : m='-'? i=INTLITERAL ;
 
+// start of ifml feature model
+
+//Declaring ifeatures grammar with attribute declaration.
+ifml_feature_decl_all : ifml_feature_decl (',' ifml_feature_decl)*;
+ifml_feature_decl : TYPE_IDENTIFIER ('{' ifml_attributes '}')? ;
+ifml_attributes : ifml_attribute*;
+ifml_attribute :
+        TYPE_IDENTIFIER IDENTIFIER 'in' '{' is+=ifml_boundary_val (',' is+=ifml_boundary_val)* '}' ';'
+    | TYPE_IDENTIFIER IDENTIFIER 'in' '[' l=ifml_boundary_int '..' u=ifml_boundary_int ']' ';'
+    | TYPE_IDENTIFIER '[' l=ifml_boundary_int '..' u=ifml_boundary_int ']' IDENTIFIER ';'
+    | TYPE_IDENTIFIER IDENTIFIER ';' ;
+
+//Declaring igroup grammar
+ifml_group_decl : TYPE_IDENTIFIER '{' ifml_group_decl_feature (',' ifml_group_decl_feature)* '}' ;
+ifml_group_decl_feature : TYPE_IDENTIFIER ;
+//Declaring iconstraint grammar
+ifml_constraint_decl : TYPE_IDENTIFIER '{'
+	(ifml_constraint_decl_group_feature ';') (ifml_constraint_decl_group_feature ';')*
+	'}' ;
+
+ifml_constraint_decl_group_feature : TYPE_IDENTIFIER (ifml_cardinality | ifml_constraint) (',' ifml_constraint)* ;
+
+ifml_cardinality : o='oneof' | a='allof' | '[' l=INTLITERAL '..' (u=INTLITERAL | s='*') ']' ;
+//opt constraint is only valid for features and optional feature must belong to some group
+ifml_constraint :
+		'ifin' ifml_mexp	# IfmlIfIn
+	  | 'ifout' ifml_mexp	# IfmlIfOut
+	  | 'excludes' (TYPE_IDENTIFIER | ('(' TYPE_IDENTIFIER (',' TYPE_IDENTIFIER)* ')'))	# IfmlExcludes
+	  | 'requires' (TYPE_IDENTIFIER | ('(' TYPE_IDENTIFIER (',' TYPE_IDENTIFIER)* ')'))	# IfmlRequires
+	  | 'opt'	# IfmlOpt
+	  ;
+
+ifml_mexp : TYPE_IDENTIFIER '.' IDENTIFIER
+    | TYPE_IDENTIFIER
+    | INTLITERAL
+    | IDENTIFIER
+    | op=(NEGATION | MINUS) a=ifml_mexp
+    | l=ifml_mexp op=(MULT | DIV | MOD) r=ifml_mexp
+    | l=ifml_mexp op=(PLUS | MINUS) r=ifml_mexp
+    | l=ifml_mexp op=(LT | GT | LTEQ | GTEQ) r=ifml_mexp
+    | l=ifml_mexp op=(EQEQ | NOTEQ) r=ifml_mexp
+    | l=ifml_mexp op=(IMPLIES | EQUIV) r=ifml_mexp
+    | l=ifml_mexp op=ANDAND r=ifml_mexp
+    | l=ifml_mexp op=OROR r=ifml_mexp
+    | '(' a=ifml_mexp ')'
+    ;
+
+ifml_boundary_int : star='*' | ifml_boundary_val ;
+
+ifml_boundary_val : m='-'? i=INTLITERAL ;
+
+// End of ifml feature model
+
 main_block : annotations '{' stmt* '}' ;
 
 compilation_unit : module_decl* delta_decl*
         update_decl*
         productline_decl? product_decl*
         ('root' feature_decl | 'extension' fextension)*
+        ('ifeatures' ifml_feature_decl_all ';')*
+        ('igroup' ifml_group_decl ';')*
+        ('iconstraint' ifml_constraint_decl ';')*
     ;
 
 goal : compilation_unit ;
-

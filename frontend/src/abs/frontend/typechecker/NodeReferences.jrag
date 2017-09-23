@@ -111,6 +111,9 @@ aspect Deltas {
     eq CompilationUnit.getProductDecl().amInCoreAbs() = false;
     eq CompilationUnit.getFeatureDecl().amInCoreAbs() = false;
     eq CompilationUnit.getFExt().amInCoreAbs() = false;
+    eq CompilationUnit.getIfmlFeatureDeclAll().amInCoreAbs() = false;
+    eq CompilationUnit.getIfmlGroupDecl().amInCoreAbs() = false;
+    eq CompilationUnit.getIfmlConstraintDecl().amInCoreAbs() = false;
 
     inh boolean Block.amInCoreAbs();
     inh boolean AwaitAsyncCall.amInCoreAbs();

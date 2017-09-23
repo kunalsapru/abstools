@@ -1,0 +1,127 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+
+aspect IfmlVariables {
+
+    public interface IfmlEntry<K,V> { 
+        K getKey(); 
+        V getValue(); 
+        IfmlAttribute getIfmlAttribute(); 
+    }  
+    
+    public class IfmlRepeatMap<K,V> extends HashMap<K,V> {
+        // Weird explicit package name necessary for OpenJDK8 compiler! [stolz]
+        public void add(abs.frontend.ast.IfmlEntry<K,V> e) {
+            if (e != null)
+                e.getIfmlAttribute().isRepeated |= put(e.getKey(),e.getValue()) != null;
+        }
+    }
+    public interface IfmlRLEntry { 
+        String getItem(); 
+        void setRepeated(boolean rep);
+    }
+    public class IfmlRepeatList extends ArrayList<String> {
+        public void ifmlAddNonNull(IfmlRLEntry e) {
+            assert e != null;
+            e.setRepeated(contains(e.getItem()));
+            add(e.getItem());
+        }
+    }
+
+    coll IfmlRepeatMap<String,IfmlBoundaryInt[]> Model.ifmlints() [new IfmlRepeatMap<String,IfmlBoundaryInt[]>()] with add root Model;
+    coll IfmlRepeatList Model.ifmlbools() [new IfmlRepeatList()] with ifmlAddNonNull root Model;
+    coll IfmlRepeatList Model.ifmlstrings() [new IfmlRepeatList()] with ifmlAddNonNull root Model;
+    coll IfmlRepeatList Model.ifmlfeatures() [new IfmlRepeatList()] with ifmlAddNonNull root Model;
+    coll IfmlRepeatList Model.ifmlgroups() [new IfmlRepeatList()] with ifmlAddNonNull root Model;
+    coll IfmlRepeatList Model.ifmlconstraints() [new IfmlRepeatList()] with ifmlAddNonNull root Model;
+
+    // get Feature names in attributes (scope of attributes).
+	
+//    inh String IfmlAttribute.featureName();
+    inh String IfmlAttribute.featureName();
+    inh String IfmlAttributes.featureName();
+    eq 	IfmlFeatureDecl.getIfmlAttributes().featureName() = this.getName();
+    // get the full name of a variable
+    syn String IfmlVariable.getFullName();
+    eq   IfmlFAVar.getFullName() = getIfmlFName() + "." + getIfmlAName();
+    eq  IfmlAttVar.getFullName() = getIfmlAName(); // can not figure out parent feature name yet, may be we won't need full name
+    eq IfmlFeatVar.getFullName() = getIfmlFName();
+
+    // Checks type of variables and features.
+
+    syn boolean IfmlVariable.isBool();
+    eq   IfmlFAVar.isBool() = calcContextNode(Model.class).ifmlbools().contains(getFullName());
+    eq  IfmlAttVar.isBool() = calcContextNode(Model.class).ifmlbools().contains(getFullName());
+    eq IfmlFeatVar.isBool() = calcContextNode(Model.class).ifmlfeatures().contains(getIfmlFName());
+
+    syn boolean IfmlVariable.isInt();
+    eq   IfmlFAVar.isInt() = calcContextNode(Model.class).ints().containsKey(getFullName());
+    eq  IfmlAttVar.isInt() = calcContextNode(Model.class).ints().containsKey(getFullName());
+    eq IfmlFeatVar.isInt() = false;
+
+    // get variables in an attribute declaration, and checks if it is repeated.
+    public boolean IfmlAttribute.isRepeated = false;
+    IfmlAttribute contributes getIntFVarsHelp() to Model.ifmlints() for calcContextNode(Model.class);
+
+            IfmlEntry<String,IfmlBoundaryInt[]> IfmlAttribute.getIntFVarsHelp() {
+                if (getIfmlAType() instanceof IfmlIntMType) {
+                // check also for bools, but not check in bool for ints!
+                    if (calcContextNode(Model.class).ifmlbools().contains(featureName()+"."+getName()))
+                        isRepeated = true;
+                    IfmlIntMType type = (IfmlIntMType) getIfmlAType();
+                    final IfmlBoundaryInt[] boundaries = {type.getMin(),type.getMax()};
+                    return new IfmlEntry<String,IfmlBoundaryInt[]>(){ public String getKey(){return featureName()+"."+getName();}
+                    public IfmlBoundaryInt[] getValue(){return boundaries;}
+                    public IfmlAttribute getIfmlAttribute(){return IfmlAttribute.this;}};
+                } else
+                    if (getIfmlAType() instanceof IfmlIntListMType) {
+                        // check also for bools, but not check in bool for ints!
+                        if (calcContextNode(Model.class).ifmlbools().contains(featureName()+"."+getName()))
+                            isRepeated = true;
+                        IfmlIntListMType type = (IfmlIntListMType) getIfmlAType();
+                        // note that "type" is a list with at least a value, because of the parser
+                        int bsize = type.getIfmlBoundaryVals().getNumChild()+1;
+                        final IfmlBoundaryInt[] values = new IfmlBoundaryInt[bsize];
+                        values[0] = type.getIfmlBoundaryVal(0); // duplicate first value;
+                        for (int i=1; i<bsize; i++) {
+                            values[i] = type.getIfmlBoundaryVal(i-1);
+                        }
+                        return new IfmlEntry<String,IfmlBoundaryInt[]>(){ public String getKey(){return featureName()+"."+getName();}
+                        public IfmlBoundaryInt[] getValue(){return values;}
+                        public IfmlAttribute getIfmlAttribute(){return IfmlAttribute.this;}};
+                    } else return null;
+            }
+
+			// Check repeat for Bool variables inside attributes
+            IfmlAttribute contributes (new IfmlRLEntry(){ public String getItem(){return featureName()+"."+getName();}
+            public void setRepeated(boolean rep){isRepeated |= rep;}})
+            when (getIfmlAType() instanceof IfmlBoolMType)
+            to Model.ifmlbools()
+            for calcContextNode(Model.class);
+
+			// Check repeat for String variables inside attributes
+            IfmlAttribute contributes (new IfmlRLEntry(){ public String getItem(){return featureName()+"."+getName();}
+            public void setRepeated(boolean rep){isRepeated |= rep;}})
+            when (getIfmlAType() instanceof IfmlStringMType)
+            to Model.ifmlstrings()
+            for calcContextNode(Model.class);
+
+			// Check repeat for features
+            public boolean IfmlFeatureDecl.isRepeated = false;
+            IfmlFeatureDecl contributes (new IfmlRLEntry(){ public String getItem(){return getName();}
+            public void setRepeated(boolean rep){isRepeated |= rep;}})
+            to Model.ifmlfeatures() for calcContextNode(Model.class);
+
+			// Check repeat for groups
+            public boolean IfmlGroupDecl.isRepeated = false;
+            IfmlGroupDecl contributes (new IfmlRLEntry(){ public String getItem(){return getName();}
+            public void setRepeated(boolean rep){isRepeated |= rep;}})
+            to Model.ifmlgroups() for calcContextNode(Model.class);
+
+			// Check repeat for constraints
+            public boolean IfmlConstraintDecl.isRepeated = false;
+            IfmlConstraintDecl contributes (new IfmlRLEntry(){ public String getItem(){return getName();}
+            public void setRepeated(boolean rep){isRepeated |= rep;}})
+            to Model.ifmlconstraints() for calcContextNode(Model.class);
+
+}

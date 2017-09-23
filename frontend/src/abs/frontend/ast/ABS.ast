@@ -9,7 +9,7 @@ Model ::= CompilationUnit* /Product*/ ;
 //Model ::= CompilationUnit* ;
 
 
-CompilationUnit ::= <Name> ModuleDecl* DeltaDecl* UpdateDecl* [ProductLine] ProductDecl* FeatureDecl* FExt*;
+CompilationUnit ::= <Name> ModuleDecl* DeltaDecl* UpdateDecl* [ProductLine] ProductDecl* FeatureDecl* FExt* IfmlFeatureDeclAll* IfmlGroupDecl* IfmlConstraintDecl*;
 ModuleDecl ::= <Name> Export* Import* Decl* [Block:MainBlock];
 DeltaDecl ::= <Name> Param:DeltaParamDecl* DeltaAccess* ModuleModifier* ;
 UpdateDecl ::= <Name> ObjectUpdate* ;
