@@ -17,6 +17,23 @@ aspect IfmlErrorCheck {
             getChild(i).checkIfmlType(type,c);
     }
 
+    //Check if same feature has been included in multiple groups
+    public void CompilationUnit.collectErrors(SemanticConditionList c) {
+    	if(hasIfmlGroupDecl()) {
+    		ArrayList<String> featuresInGroupList = new ArrayList<String>();
+    		for(int i = 0; i<getNumIfmlGroupDecl();i++){
+    			IfmlGroupDecl ifmlGroupDecl = getIfmlGroupDecl(i);
+    			for(int j=0;j<ifmlGroupDecl.getNumIfmlGroupDeclFeature();j++) {
+    				String featureName = ifmlGroupDecl.getIfmlGroupDeclFeature(j).getIfmlFeatVar().getIfmlFName();
+    				if(featuresInGroupList.contains(featureName)) {
+    					c.add(new SemanticError(this,ErrorMessage.SAME_FEATURE_IN_MULTIPLE_GROUPS,featureName,ifmlGroupDecl.getName()));
+    				}
+    				featuresInGroupList.add(featureName);
+    			}
+    		}
+    	}
+    }
+    
 	// Check if ifeature name is repeated
     public void IfmlFeatureDecl.collectErrors(SemanticConditionList c) {  
         super.collectErrors(c);
@@ -49,7 +66,7 @@ aspect IfmlErrorCheck {
 			}
    		}
     }
-
+    
 	// Check if iconstraint name is repeated
     public void IfmlConstraintDecl.collectErrors(SemanticConditionList c) {  
         super.collectErrors(c);
@@ -113,8 +130,7 @@ aspect IfmlErrorCheck {
 					if(((Model)calcContextNode(Model.class)).ifmlgroups().contains(ifmlConstraintDeclGroupFeature.getName())) {
 						c.add(new SemanticError(this,ErrorMessage.OPTIONAL_CONSTRAINT_ERROR,ifmlConstraintDeclGroupFeature.getName()));
 					}
-				}
-				
+				}				
 			}
    		}
     }
