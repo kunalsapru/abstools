@@ -26,6 +26,7 @@ aspect IfmlErrorCheck {
     			for(int j=0;j<ifmlGroupDecl.getNumIfmlGroupDeclFeature();j++) {
     				String featureName = ifmlGroupDecl.getIfmlGroupDeclFeature(j).getIfmlFeatVar().getIfmlFName();
     				if(featuresInGroupList.contains(featureName)) {
+    					//Show error - Same feature can't be part of multiple groups.
     					c.add(new SemanticError(this,ErrorMessage.SAME_FEATURE_IN_MULTIPLE_GROUPS,featureName,ifmlGroupDecl.getName()));
     				}
     				featuresInGroupList.add(featureName);
