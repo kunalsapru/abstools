@@ -146,7 +146,8 @@ public enum ErrorMessage {
     CONSTRAINT_FEATURE_CARDINALITY("Feature %s can not have cardinality constraint."
             + " Cardinality constraints are only applicable on groups."),
     UNDECLARED_FEATURE_EXCLUDES("Undeclared feature %s found inside 'excludes' constraint of %s."),
-    UNDECLARED_FEATURE_REQUIRES("Undeclared feature %s found inside 'requires' constraint of %s.")
+    UNDECLARED_FEATURE_REQUIRES("Undeclared feature %s found inside 'requires' constraint of %s."),
+    OPTIONAL_CONSTRAINT_ERROR("Invalid constraint 'opt' on group %s. Optional constraint can only be applied on features.")
     ;
 
     private String pattern;

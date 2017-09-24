@@ -108,13 +108,19 @@ aspect IfmlErrorCheck {
 						}
 			   		}
 				}
+				//Check for opt constraint in case of groups.
+				if(ifmlConstraint instanceof IfmlOpt) {
+					if(((Model)calcContextNode(Model.class)).ifmlgroups().contains(ifmlConstraintDeclGroupFeature.getName())) {
+						c.add(new SemanticError(this,ErrorMessage.OPTIONAL_CONSTRAINT_ERROR,ifmlConstraintDeclGroupFeature.getName()));
+					}
+				}
 				
 			}
    		}
     }
 
 
-    // check if variable is already defined, and its type is well-formed.
+    // Check if attribute variable is already defined, and its type is well-formed.
     public void IfmlAttribute.collectErrors(SemanticConditionList c) {
         super.collectErrors(c);
         if(java.util.Collections.frequency(((Model)calcContextNode(Model.class)).ifmlattributes(), 
