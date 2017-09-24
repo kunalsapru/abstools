@@ -46,6 +46,7 @@ aspect IfmlVariables {
     eq   IfmlFAVar.getFullName() = getIfmlFName() + "." + getIfmlAName();
     eq  IfmlAttVar.getFullName() = getIfmlAName(); // can not figure out parent feature name yet, may be we won't need full name
     eq IfmlFeatVar.getFullName() = getIfmlFName();
+    eq IfmlConsVar.getFullName() = getIfmlCName();
 
     // Checks type of variables and features.
 
@@ -53,11 +54,13 @@ aspect IfmlVariables {
     eq   IfmlFAVar.isBool() = calcContextNode(Model.class).ifmlbools().contains(getFullName());
     eq  IfmlAttVar.isBool() = calcContextNode(Model.class).ifmlbools().contains(getFullName());
     eq IfmlFeatVar.isBool() = calcContextNode(Model.class).ifmlfeatures().contains(getIfmlFName());
+    eq IfmlConsVar.isBool() = calcContextNode(Model.class).ifmlfeatures().contains(getIfmlCName());
 
     syn boolean IfmlVariable.isInt();
     eq   IfmlFAVar.isInt() = calcContextNode(Model.class).ints().containsKey(getFullName());
     eq  IfmlAttVar.isInt() = calcContextNode(Model.class).ints().containsKey(getFullName());
     eq IfmlFeatVar.isInt() = false;
+    eq IfmlConsVar.isInt() = false;
 
     // get variables in an attribute declaration, and checks if it is repeated.
     public boolean IfmlAttribute.isRepeated = false;
@@ -96,15 +99,13 @@ aspect IfmlVariables {
             IfmlAttribute contributes (new IfmlRLEntry(){ public String getItem(){return featureName()+"."+getName();}
             public void setRepeated(boolean rep){isRepeated |= rep;}})
             when (getIfmlAType() instanceof IfmlBoolMType)
-            to Model.ifmlbools()
-            for calcContextNode(Model.class);
+            to Model.ifmlbools() for calcContextNode(Model.class);
 
 			// Check repeat for String variables inside attributes
             IfmlAttribute contributes (new IfmlRLEntry(){ public String getItem(){return featureName()+"."+getName();}
             public void setRepeated(boolean rep){isRepeated |= rep;}})
             when (getIfmlAType() instanceof IfmlStringMType)
-            to Model.ifmlstrings()
-            for calcContextNode(Model.class);
+            to Model.ifmlstrings() for calcContextNode(Model.class);
 
 			// Check repeat for features
             public boolean IfmlFeatureDecl.isRepeated = false;
@@ -120,8 +121,9 @@ aspect IfmlVariables {
 
 			// Check repeat for constraints
             public boolean IfmlConstraintDecl.isRepeated = false;
-            IfmlConstraintDecl contributes (new IfmlRLEntry(){ public String getItem(){return getName();}
-            public void setRepeated(boolean rep){isRepeated |= rep;}})
-            to Model.ifmlconstraints() for calcContextNode(Model.class);
+            IfmlConstraintDecl contributes (new IfmlRLEntry(){ public String getItem(){ return getIfmlConsVar().getIfmlCName();}
+            	public void setRepeated(boolean rep){isRepeated |= rep;}})
+            when (hasIfmlConsVar())
+            to Model.ifmlconstraints() for calcContextNode(Model.class);            	
 
 }

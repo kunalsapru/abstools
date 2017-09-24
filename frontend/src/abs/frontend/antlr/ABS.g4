@@ -485,10 +485,10 @@ ifml_attribute :
 ifml_group_decl : TYPE_IDENTIFIER '{' ifml_group_decl_feature (',' ifml_group_decl_feature)* '}' ;
 ifml_group_decl_feature : TYPE_IDENTIFIER ;
 //Declaring iconstraint grammar
-ifml_constraint_decl : TYPE_IDENTIFIER '{'
+ifml_constraint_decl : (ifml_constraint_name)? '{'
 	(ifml_constraint_decl_group_feature ';') (ifml_constraint_decl_group_feature ';')*
 	'}' ;
-
+ifml_constraint_name : TYPE_IDENTIFIER;
 ifml_constraint_decl_group_feature : TYPE_IDENTIFIER (ifml_cardinality | ifml_constraint) (',' ifml_constraint)* ;
 
 ifml_cardinality : o='oneof' | a='allof' | '[' l=INTLITERAL '..' (u=INTLITERAL | s='*') ']' ;

@@ -1171,7 +1171,10 @@ new List<ModuleDecl>(),
             setV(ctx, new IfmlGroupDeclFeature(new IfmlFeatVar(ctx.TYPE_IDENTIFIER().getText())));
         }
         @Override public void exitIfml_constraint_decl(ABSParser.Ifml_constraint_declContext ctx) {
-            setV(ctx, new IfmlConstraintDecl(ctx.TYPE_IDENTIFIER().getText(), l(ctx.ifml_constraint_decl_group_feature())));
+            setV(ctx, new IfmlConstraintDecl(o(ctx.ifml_constraint_name()), l(ctx.ifml_constraint_decl_group_feature())));
+        }
+        @Override public void exitIfml_constraint_name(ABSParser.Ifml_constraint_nameContext ctx) {
+            setV(ctx, new IfmlConsVar(ctx.TYPE_IDENTIFIER().getText()));
         }
         @Override public void exitIfml_constraint_decl_group_feature(ABSParser.Ifml_constraint_decl_group_featureContext ctx) {
             setV(ctx, new IfmlConstraintDeclGroupFeature(ctx.TYPE_IDENTIFIER().getText(), o(ctx.ifml_cardinality()), l(ctx.ifml_constraint())));

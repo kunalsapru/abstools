@@ -53,16 +53,20 @@ aspect IfmlErrorCheck {
 	// Check if iconstraint name is repeated
     public void IfmlConstraintDecl.collectErrors(SemanticConditionList c) {  
         super.collectErrors(c);
-        if (isRepeated)
-            c.add(new SemanticError(this,ErrorMessage.DUPLICATE_CONSTRAINT,getName()));
-        // Check for same constraint and feature name. If a constraint name is already used as a feature, show an error.
-		if(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(getName())) {
-				c.add(new SemanticError(this,ErrorMessage.DUPLICATE_CONSTRAINT_FEATURE,getName()));
+        if(hasIfmlConsVar()) {
+        	// Strangely, isRepeated does not work until we either print ifmlcontraints or use Collections.frequency method
+            if (java.util.Collections.frequency(((Model)calcContextNode(Model.class)).ifmlconstraints(), 
+        			getIfmlConsVar().getIfmlCName()) > 1 && isRepeated) {
+            	c.add(new SemanticError(this,ErrorMessage.DUPLICATE_CONSTRAINT,getIfmlConsVar().getIfmlCName()));
+            }// Check for same constraint and feature name. If a constraint name is already used as a feature, show an error.
+            else if(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(getIfmlConsVar().getIfmlCName())) {
+    				c.add(new SemanticError(this,ErrorMessage.DUPLICATE_CONSTRAINT_FEATURE,getIfmlConsVar().getIfmlCName()));
 			}
-        // Check for same constraint and group name. If a constraint name is already used as a group, show an error.
-		if(((Model)calcContextNode(Model.class)).ifmlgroups().contains(getName())) {
-				c.add(new SemanticError(this,ErrorMessage.DUPLICATE_CONSTRAINT_GROUP,getName()));
-			}
+            // Check for same constraint and group name. If a constraint name is already used as a group, show an error.
+            else if(((Model)calcContextNode(Model.class)).ifmlgroups().contains(getIfmlConsVar().getIfmlCName())) {
+    				c.add(new SemanticError(this,ErrorMessage.DUPLICATE_CONSTRAINT_GROUP,getIfmlConsVar().getIfmlCName()));
+    			}
+        }
         // Check if group/feature is declared or not, before adding to constraints
    		for(int i=0;i<getNumIfmlConstraintDeclGroupFeature();i++) {
 	   		IfmlConstraintDeclGroupFeature ifmlConstraintDeclGroupFeature = getIfmlConstraintDeclGroupFeature(i);
@@ -72,9 +76,9 @@ aspect IfmlErrorCheck {
 				//Not in group
 				if(!(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(groupFeatureInConstraint))) {
 				//Not in feature
-					c.add(new SemanticError(this,ErrorMessage.UNDECLARED_GROUP_FEATURE_CONSTRAINT,groupFeatureInConstraint,getName()));
+					c.add(new SemanticError(this,ErrorMessage.UNDECLARED_GROUP_FEATURE_CONSTRAINT,groupFeatureInConstraint));
 				} else if(ifmlConstraintDeclGroupFeature.hasIfmlCard()) {//Features can not have cardinality constraints.
-					c.add(new SemanticError(this,ErrorMessage.CONSTRAINT_FEATURE_CARDINALITY,groupFeatureInConstraint,getName()));
+					c.add(new SemanticError(this,ErrorMessage.CONSTRAINT_FEATURE_CARDINALITY,groupFeatureInConstraint));
 				}
 			}
 			//Check for valid features and expressions in ifml constraints.
@@ -88,7 +92,8 @@ aspect IfmlErrorCheck {
 					for(int k=0;k<ifmlExcludes.getNumIfmlFeatVar();k++) {
 			   			String featureInExcludes = ifmlExcludes.getIfmlFeatVar(k).getIfmlFName();
 						if(!(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(featureInExcludes))) {
-							c.add(new SemanticError(this,ErrorMessage.UNDECLARED_FEATURE_EXCLUDES,featureInExcludes,ifmlConstraintDeclGroupFeature.getName(),getName()));
+							c.add(new SemanticError(this,ErrorMessage.UNDECLARED_FEATURE_EXCLUDES,featureInExcludes,
+									ifmlConstraintDeclGroupFeature.getName()));
 						}
 			   		}
 				}
@@ -98,7 +103,8 @@ aspect IfmlErrorCheck {
 					for(int x=0;x<ifmlRequires.getNumIfmlFeatVar();x++) {
 			   			String featureInRequires = ifmlRequires.getIfmlFeatVar(x).getIfmlFName();
 						if(!(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(featureInRequires))) {
-							c.add(new SemanticError(this,ErrorMessage.UNDECLARED_FEATURE_REQUIRES,featureInRequires,ifmlConstraintDeclGroupFeature.getName(),getName()));
+							c.add(new SemanticError(this,ErrorMessage.UNDECLARED_FEATURE_REQUIRES,featureInRequires,
+									ifmlConstraintDeclGroupFeature.getName()));
 						}
 			   		}
 				}

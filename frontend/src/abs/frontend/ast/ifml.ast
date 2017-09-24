@@ -24,7 +24,7 @@ IfmlGroupDecl ::= <Name> IfmlGroupDeclFeature*;
 IfmlGroupDeclFeature ::= IfmlFeatVar;
 
 // iconstraint declaration part
-IfmlConstraintDecl ::= <Name> IfmlConstraintDeclGroupFeature*;
+IfmlConstraintDecl ::= [IfmlConsVar] IfmlConstraintDeclGroupFeature*;
 IfmlConstraintDeclGroupFeature ::= <Name> [IfmlCard:IfmlCardinality] IfmlConstraint*;
  
 abstract IfmlCardinality;
@@ -90,4 +90,4 @@ IfmlMValue : IfmlSimpleExp ::= Value;
 IfmlAttVar:IfmlVariable ::= <IfmlAName>;
 IfmlFeatVar:IfmlVariable ::= <IfmlFName>;
 IfmlFAVar:IfmlVariable ::= <IfmlFName> <IfmlAName>;
-
+IfmlConsVar:IfmlVariable ::= <IfmlCName>;

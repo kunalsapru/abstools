@@ -142,11 +142,11 @@ public enum ErrorMessage {
     DUPLICATE_GROUP_FEATURE("Group %s is already defined as a feature. Please select a different name."),
     DUPLICATE_CONSTRAINT_FEATURE("Constraint %s is already defined as a feature. Please select a different name."),
     DUPLICATE_CONSTRAINT_GROUP("Constraint %s is already defined as a group. Please select a different name."),
-    UNDECLARED_GROUP_FEATURE_CONSTRAINT("Undeclared group/feature %s found inside constraint %s."),
-    CONSTRAINT_FEATURE_CARDINALITY("Feature %s inside %s can not have cardinality constraint."
+    UNDECLARED_GROUP_FEATURE_CONSTRAINT("Undeclared group/feature %s found inside constraint."),
+    CONSTRAINT_FEATURE_CARDINALITY("Feature %s can not have cardinality constraint."
             + " Cardinality constraints are only applicable on groups."),
-    UNDECLARED_FEATURE_EXCLUDES("Undeclared feature %s found inside 'excludes' constraint of %s in %s."),
-    UNDECLARED_FEATURE_REQUIRES("Undeclared feature %s found inside 'requires' constraint of %s in %s.")
+    UNDECLARED_FEATURE_EXCLUDES("Undeclared feature %s found inside 'excludes' constraint of %s."),
+    UNDECLARED_FEATURE_REQUIRES("Undeclared feature %s found inside 'requires' constraint of %s.")
     ;
 
     private String pattern;
