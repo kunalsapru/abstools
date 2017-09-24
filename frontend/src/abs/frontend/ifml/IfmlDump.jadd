@@ -8,6 +8,7 @@ aspect MyDumpIFML {
             println("ifeatures: "+ifmlfeatures());
             println("igroups: "+ifmlgroups());
             println("iconstraints: "+ifmlconstraints());
+            println("ifmlattributes: "+ifmlattributes());
         }
     }
 

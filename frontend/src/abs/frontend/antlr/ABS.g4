@@ -474,12 +474,12 @@ boundary_val : m='-'? i=INTLITERAL ;
 //Declaring ifeatures grammar with attribute declaration.
 ifml_feature_decl_all : ifml_feature_decl (',' ifml_feature_decl)*;
 ifml_feature_decl : TYPE_IDENTIFIER ('{' ifml_attributes '}')? ;
-ifml_attributes : ifml_attribute*;
+ifml_attributes : ifml_attribute (',' ifml_attribute)*;
 ifml_attribute :
-        TYPE_IDENTIFIER IDENTIFIER 'in' '{' is+=ifml_boundary_val (',' is+=ifml_boundary_val)* '}' ';'
-    | TYPE_IDENTIFIER IDENTIFIER 'in' '[' l=ifml_boundary_int '..' u=ifml_boundary_int ']' ';'
-    | TYPE_IDENTIFIER '[' l=ifml_boundary_int '..' u=ifml_boundary_int ']' IDENTIFIER ';'
-    | TYPE_IDENTIFIER IDENTIFIER ';' ;
+        TYPE_IDENTIFIER IDENTIFIER 'in' '{' is+=ifml_boundary_val (',' is+=ifml_boundary_val)* '}'
+    | TYPE_IDENTIFIER IDENTIFIER 'in' '[' l=ifml_boundary_int '..' u=ifml_boundary_int ']'
+    | TYPE_IDENTIFIER '[' l=ifml_boundary_int '..' u=ifml_boundary_int ']' IDENTIFIER
+    | TYPE_IDENTIFIER IDENTIFIER ;
 
 //Declaring igroup grammar
 ifml_group_decl : TYPE_IDENTIFIER '{' ifml_group_decl_feature (',' ifml_group_decl_feature)* '}' ;

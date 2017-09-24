@@ -117,8 +117,9 @@ aspect IfmlErrorCheck {
     // check if variable is already defined, and its type is well-formed.
     public void IfmlAttribute.collectErrors(SemanticConditionList c) {
         super.collectErrors(c);
-        if (isRepeated) {
-            c.add(new SemanticError(this, ErrorMessage.DUPLICATE_VARIABLE, featureName()+"."+getName()));
+        if(java.util.Collections.frequency(((Model)calcContextNode(Model.class)).ifmlattributes(), 
+        			featureName()+"."+getName()) > 1 && isRepeated) {
+        		c.add(new SemanticError(this, ErrorMessage.DUPLICATE_VARIABLE, featureName()+"."+getName()));
         }
         this.getIfmlAType().collectErrors(c);
     }

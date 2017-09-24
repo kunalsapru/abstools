@@ -34,6 +34,8 @@ aspect IfmlVariables {
     coll IfmlRepeatList Model.ifmlfeatures() [new IfmlRepeatList()] with ifmlAddNonNull root Model;
     coll IfmlRepeatList Model.ifmlgroups() [new IfmlRepeatList()] with ifmlAddNonNull root Model;
     coll IfmlRepeatList Model.ifmlconstraints() [new IfmlRepeatList()] with ifmlAddNonNull root Model;
+    coll IfmlRepeatList Model.ifmlattributes() [new IfmlRepeatList()] with ifmlAddNonNull root Model;
+    
 
     // get Feature names in attributes (scope of attributes).
 	
@@ -68,9 +70,6 @@ aspect IfmlVariables {
 
             IfmlEntry<String,IfmlBoundaryInt[]> IfmlAttribute.getIntFVarsHelp() {
                 if (getIfmlAType() instanceof IfmlIntMType) {
-                // check also for bools, but not check in bool for ints!
-                    if (calcContextNode(Model.class).ifmlbools().contains(featureName()+"."+getName()))
-                        isRepeated = true;
                     IfmlIntMType type = (IfmlIntMType) getIfmlAType();
                     final IfmlBoundaryInt[] boundaries = {type.getMin(),type.getMax()};
                     return new IfmlEntry<String,IfmlBoundaryInt[]>(){ public String getKey(){return featureName()+"."+getName();}
@@ -78,9 +77,6 @@ aspect IfmlVariables {
                     public IfmlAttribute getIfmlAttribute(){return IfmlAttribute.this;}};
                 } else
                     if (getIfmlAType() instanceof IfmlIntListMType) {
-                        // check also for bools, but not check in bool for ints!
-                        if (calcContextNode(Model.class).ifmlbools().contains(featureName()+"."+getName()))
-                            isRepeated = true;
                         IfmlIntListMType type = (IfmlIntListMType) getIfmlAType();
                         // note that "type" is a list with at least a value, because of the parser
                         int bsize = type.getIfmlBoundaryVals().getNumChild()+1;
@@ -95,6 +91,12 @@ aspect IfmlVariables {
                     } else return null;
             }
 
+			// Check repeat for all attributes
+            IfmlAttribute contributes (new IfmlRLEntry(){ public String getItem(){return featureName()+"."+getName();}
+            public void setRepeated(boolean rep){isRepeated |= rep;}})
+            when (!(getIfmlAType() instanceof IfmlUnresolvedMType))
+            to Model.ifmlattributes() for calcContextNode(Model.class);
+
 			// Check repeat for Bool variables inside attributes
             IfmlAttribute contributes (new IfmlRLEntry(){ public String getItem(){return featureName()+"."+getName();}
             public void setRepeated(boolean rep){isRepeated |= rep;}})
@@ -106,7 +108,7 @@ aspect IfmlVariables {
             public void setRepeated(boolean rep){isRepeated |= rep;}})
             when (getIfmlAType() instanceof IfmlStringMType)
             to Model.ifmlstrings() for calcContextNode(Model.class);
-
+            		
 			// Check repeat for features
             public boolean IfmlFeatureDecl.isRepeated = false;
             IfmlFeatureDecl contributes (new IfmlRLEntry(){ public String getItem(){return getName();}
