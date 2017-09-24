@@ -284,7 +284,8 @@ public class Main {
 
         if (dump) {
             m.dumpMVars();
-            m.dump();
+            m.dumpIfmlVars();
+            //m.dump();
         }
 
         final SemanticConditionList semErrs = m.getErrors();
