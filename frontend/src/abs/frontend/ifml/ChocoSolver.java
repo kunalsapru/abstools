@@ -4,8 +4,6 @@
  */
 package abs.frontend.ifml;
 
-import org.chocosolver.solver.Model;
-import org.chocosolver.solver.variables.IntVar;
 
 /**
 * Trivial example showing how to use Choco Solver
@@ -18,21 +16,4 @@ import org.chocosolver.solver.variables.IntVar;
 * @since 9/02/2016
 */
 
-public class ChocoSolver {
-    
-    public static void main(String[] args){
-        //1.Create Model
-        Model model = new Model("My First Choco Model");
-        //2.Create Variables
-        IntVar x = model.intVar("X", 0, 5);
-        IntVar y = model.intVar("Y", new int[]{2,3,8,-2});
-        //3. Post constraints
-        model.arithm(x,"+",y,"<",5).post();
-        model.times(x,y,4).post();
-        //4.Solve the problem
-        model.getSolver().solve();
-        //5.Print the solution
-        System.out.println(x+" and "+y);
-    }
-
-}
+public class ChocoSolver {}

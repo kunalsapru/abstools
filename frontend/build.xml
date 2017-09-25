@@ -107,6 +107,7 @@
     <pathelement location="${ext.dir}/sat4j-maxsat.jar" />
     <pathelement location="${ext.dir}/sat4j-pb.jar" />
     <pathelement location="${ext.dir}/choco-solver-2.1.1.jar" />
+    <pathelement location="${ext.dir}/choco-solver-4.0.4-with-dependencies.jar" />
     <pathelement location="${ext.dir}/${apfloat.jar}" />
     <pathelement location="${ext.dir}/${guava.jar}" />
     <pathelement location="${ext.dir}/${commons-io.jar}" />
@@ -127,7 +128,8 @@
     <pathelement location="${ext.dir}/${cglib.jar}" />
     <pathelement location="${ext.dir}/${objenesis.jar}" />
     <pathelement location="${ext.dir}/jsr305.jar" />
-      <pathelement location="${ext.dir}/choco-solver-2.1.1.jar" />
+    <pathelement location="${ext.dir}/choco-solver-2.1.1.jar" />
+  	<pathelement location="${ext.dir}/choco-solver-4.0.4-with-dependencies.jar"/>
         <path refid="common.classpath"/>
   </path>
 
@@ -170,6 +172,7 @@
       <zipfileset src="${ext.dir}/org.sat4j.pb.jar" />
       <zipfileset src="${ext.dir}/sat4j-maxsat.jar" />
       <zipfileset src="${ext.dir}/choco-solver-2.1.1.jar" />
+      <zipfileset src="${ext.dir}/choco-solver-4.0.4-with-dependencies.jar" />
       <zipfileset src="${ext.dir}/semisolver.jar" />
       <zipfileset src="${ext.dir}/${guava.jar}" />
       <zipfileset src="${ext.dir}/${commons-io.jar}" />
@@ -394,6 +397,7 @@
         <include name="META-INF/"/>
         <include name="${ext.dir}/${apfloat.jar}"/>
         <include name="${ext.dir}/choco-solver-2.1.1.jar"/>
+      	<include name="${ext.dir}/choco-solver-4.0.4-with-dependencies.jar"/>
         <include name="${ext.dir}/sat4j-maxsat.jar" />
         <include name="${ext.dir}/semisolver.jar" />
         <include name="${ext.dir}/${guava.jar}" />

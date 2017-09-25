@@ -19,7 +19,8 @@ aspect IfmlErrorCheck {
 
     //Check if same feature has been included in multiple groups
     public void CompilationUnit.collectErrors(SemanticConditionList c) {
-    	if(hasIfmlGroupDecl()) {
+    	super.collectErrors(c);
+		if(hasIfmlGroupDecl()) {
     		ArrayList<String> featuresInGroupList = new ArrayList<String>();
     		for(int i = 0; i<getNumIfmlGroupDecl();i++){
     			IfmlGroupDecl ifmlGroupDecl = getIfmlGroupDecl(i);
@@ -39,7 +40,8 @@ aspect IfmlErrorCheck {
     public void IfmlFeatureDecl.collectErrors(SemanticConditionList c) {  
         super.collectErrors(c);
         // check if repeated feature
-        if (isRepeated)
+        if (java.util.Collections.frequency(((Model)calcContextNode(Model.class)).ifmlfeatures(), 
+    			getName()) > 1 && isRepeated)
             c.add(new SemanticError(this,ErrorMessage.DUPLICATE_FEATURE,getName()));
 		// check for attributes in feature and apply type check         
       	if(hasIfmlAttributes()) {
@@ -53,7 +55,8 @@ aspect IfmlErrorCheck {
 	// Check if igroup name is repeated
     public void IfmlGroupDecl.collectErrors(SemanticConditionList c) {  
         super.collectErrors(c);
-        if (isRepeated)
+        if (java.util.Collections.frequency(((Model)calcContextNode(Model.class)).ifmlgroups(), 
+    			getName()) > 1 && isRepeated)
             c.add(new SemanticError(this,ErrorMessage.DUPLICATE_GROUP,getName()));
         // Check for same group and feature name. If a group name is already used as a feature, show an error
 		if(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(getName())) {

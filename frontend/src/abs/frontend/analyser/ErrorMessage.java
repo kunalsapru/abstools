@@ -136,18 +136,18 @@ public enum ErrorMessage {
     DUPLICATE_INTERFACE_IMPLEMENTATION("Class %s already implements interface %s."),
     MISSING_INTERFACE_IMPLEMENTATION("Class %s does not implement interface %s."),
     //IFML Error messages
-    DUPLICATE_GROUP("Group %s is already defined."),
-    DUPLICATE_CONSTRAINT("Constraint %s is already defined."),
-    UNDECLARED_FEATURE("Undeclared feature %s found inside group %s."),
-    DUPLICATE_GROUP_FEATURE("Group %s is already defined as a feature. Please select a different name."),
-    DUPLICATE_CONSTRAINT_FEATURE("Constraint %s is already defined as a feature. Please select a different name."),
-    DUPLICATE_CONSTRAINT_GROUP("Constraint %s is already defined as a group. Please select a different name."),
-    UNDECLARED_GROUP_FEATURE_CONSTRAINT("Undeclared group/feature %s found inside constraint."),
-    CONSTRAINT_FEATURE_CARDINALITY("Feature %s can not have cardinality constraint."
+    DUPLICATE_GROUP("Group '%s' is already defined."),
+    DUPLICATE_CONSTRAINT("Constraint '%s' is already defined."),
+    UNDECLARED_FEATURE("Undeclared feature '%s' found inside group '%s'."),
+    DUPLICATE_GROUP_FEATURE("Group '%s' is already defined as a feature. Please select a different name."),
+    DUPLICATE_CONSTRAINT_FEATURE("Constraint '%s' is already defined as a feature. Please select a different name."),
+    DUPLICATE_CONSTRAINT_GROUP("Constraint '%s' is already defined as a group. Please select a different name."),
+    UNDECLARED_GROUP_FEATURE_CONSTRAINT("Undeclared group/feature '%s' found inside constraint."),
+    CONSTRAINT_FEATURE_CARDINALITY("Feature '%s' can not have cardinality constraint."
             + " Cardinality constraints are only applicable on groups."),
-    UNDECLARED_FEATURE_EXCLUDES("Undeclared feature %s found inside 'excludes' constraint of %s."),
-    UNDECLARED_FEATURE_REQUIRES("Undeclared feature %s found inside 'requires' constraint of %s."),
-    OPTIONAL_CONSTRAINT_ERROR("Invalid constraint 'opt' on group %s. 'Optional' constraint can only be applied on features."),
+    UNDECLARED_FEATURE_EXCLUDES("Undeclared feature '%s' found inside 'excludes' constraint of '%s'."),
+    UNDECLARED_FEATURE_REQUIRES("Undeclared feature '%s' found inside 'requires' constraint of '%s'."),
+    OPTIONAL_CONSTRAINT_ERROR("Invalid constraint 'opt' on group '%s'. 'Optional' constraint can only be applied on features."),
     SAME_FEATURE_IN_MULTIPLE_GROUPS("Feature '%s' in group '%s' is already a part of some other group or is declared multiple "
             + "times in the same group.")
     ;
