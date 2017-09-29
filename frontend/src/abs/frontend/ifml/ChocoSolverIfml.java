@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.chocosolver.solver.Model;
-import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Arithmetic;
 import org.chocosolver.solver.constraints.Constraint;
@@ -17,9 +16,6 @@ import org.chocosolver.solver.constraints.Operator;
 import org.chocosolver.solver.constraints.unary.Member;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.Variable;
-import org.chocosolver.util.ESat;
-
 import abs.frontend.ast.IfmlBoundaryInt;
 import abs.frontend.ast.IfmlBoundaryVal;
 import abs.frontend.ast.IfmlLimit;
@@ -60,7 +56,6 @@ public class ChocoSolverIfml {
 
     public void addIntVar(String name, int from, int to) {
         IntVar v = cs4model.intVar(name, from, to);// IntVar value is the lower bound.
-        addConstraint(new Member(v,from,to));
         vars.put(name, v);
         defaultvals.put(name,from);
     }
@@ -69,10 +64,8 @@ public class ChocoSolverIfml {
         IntVar v;
         if (from) {
             v = cs4model.intVar(name, fromto, IntVar.MAX_INT_BOUND);
-            addConstraint(new Arithmetic(v,Operator.GE,fromto));
         } else {
             v = cs4model.intVar(name, IntVar.MIN_INT_BOUND, fromto);
-            addConstraint(new Arithmetic(v,Operator.LE,fromto));
         }
         vars.put(name, v);
         defaultvals.put(name, fromto);
@@ -80,8 +73,6 @@ public class ChocoSolverIfml {
 
     public void addIntVar(String name, int[] vals) {
         IntVar v = cs4model.intVar(name, vals);
-        addConstraint(new Member(v, vals));
-        addConstraint(new Arithmetic(v, Operator.GE, 69));
         vars.put(name, v);
         defaultvals.put(name, vals[0]); // vals has at least 1 element! (by the parser constraints)
     }
