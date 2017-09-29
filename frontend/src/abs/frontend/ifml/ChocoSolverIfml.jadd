@@ -10,7 +10,7 @@ import org.chocosolver.util.ESat;
 aspect ChocoSolverIfml {
 
     public ChocoSolverIfml Model.instantiateCS4Model() {
-    	ChocoSolverIfml solver = new ChocoSolverIfml(this);
+    	ChocoSolverIfml chocoSolverIfml = new ChocoSolverIfml(this);
 
         // new int variable for all int variables
         for (java.util.Map.Entry<String, IfmlBoundaryInt[]> entry : ifmlints().entrySet()) {
@@ -18,29 +18,37 @@ aspect ChocoSolverIfml {
             if (entry.getValue().length == 2) {
                 IfmlBoundaryInt b1 = entry.getValue()[0];
                 IfmlBoundaryInt b2 = entry.getValue()[1];
-                solver.addBoundedVar(st, b1, b2);
+                chocoSolverIfml.addBoundedVar(st, b1, b2);
             }
             else {
-                solver.addSetVar(st, entry.getValue());
+                chocoSolverIfml.addSetVar(st, entry.getValue());
             }
         }
         for (String st : ifmlbools())
-            solver.addBoolVar(st);
+            chocoSolverIfml.addBoolVar(st);
+        for (String st : ifmlfeatures())
+            chocoSolverIfml.addBoolVar(st);
+        for (String st : ifmlgroups())
+            chocoSolverIfml.addBoolVar(st);
+		for(String st : ifmlconstraints())
+			chocoSolverIfml.addBoolVar(st);
+		for(String st : ifmlstrings())
+			chocoSolverIfml.addBoolVar(st);
 
-        collectIfmlConstraints(solver); // is adding intvars to the model!
-        return solver;
+        collectIfmlConstraints(chocoSolverIfml); // is adding intvars to the model!
+        return chocoSolverIfml;
     }
 
     // GENERAL NODE: propagate
-    public void ASTNode.collectIfmlConstraints(ChocoSolverIfml s) {
+    public void ASTNode.collectIfmlConstraints(ChocoSolverIfml chocoSolverIfml) {
         for(int i = 0; i < getNumChild(); i++)
-            getChildNoTransform(i).collectIfmlConstraints(s);
+            getChildNoTransform(i).collectIfmlConstraints(chocoSolverIfml);
     }
 
     // Features and Groups must be present
-    public void CompilationUnit.collectIfmlConstraints(ChocoSolverIfml s) {
+    public void CompilationUnit.collectIfmlConstraints(ChocoSolverIfml chocoSolverIfml) {
         
-        super.collectIfmlConstraints(s);
+        super.collectIfmlConstraints(chocoSolverIfml);
     }    
     
 }

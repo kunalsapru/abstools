@@ -10,10 +10,7 @@ import java.util.List;
 import java.util.Map;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.Arithmetic;
 import org.chocosolver.solver.constraints.Constraint;
-import org.chocosolver.solver.constraints.Operator;
-import org.chocosolver.solver.constraints.unary.Member;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 import abs.frontend.ast.IfmlBoundaryInt;
@@ -28,6 +25,7 @@ public class ChocoSolverIfml {
     public final Map<String, IntVar> vars;
     public final Map<String, Integer> defaultvals;
     private List<Constraint> constraints = new ArrayList<Constraint>();
+    @SuppressWarnings("unused")
     private abs.frontend.ast.Model absmodel = new abs.frontend.ast.Model();
 
     public ChocoSolverIfml() {
@@ -123,7 +121,7 @@ public class ChocoSolverIfml {
         Solver solver = cs4model.getSolver();
         int val;
         IntVar[] intVars = cs4model.retrieveIntVars(true);
-        boolean domainCheck = true;
+        boolean domainCheckError = false;
         //Check for variable's domain
         for(IntVar var : intVars){
             if(solution.containsKey(var.getName())){
@@ -134,13 +132,13 @@ public class ChocoSolverIfml {
                             solver.propagate();
                         } catch (ContradictionException e) {
                             solver.getEngine().flush();
-                            domainCheck = false;
+                            domainCheckError = true;
                             result.add("Out of domain error for "+var.getName()+" with value "+val);
                         }
                     cs4model.getEnvironment().worldPop();
             }
         }
-        if(domainCheck) {
+        if(!domainCheckError) {
             //Check for constraints, only in case of no domain error(s)
             for(Constraint c : constraints) {
                 cs4model.post(c);
@@ -153,7 +151,6 @@ public class ChocoSolverIfml {
                             solver.propagate();
                         } catch (ContradictionException e) {
                             solver.getEngine().flush();
-                            domainCheck = false;
                             result.add("Constraint failed for "+var.getName()+" with value "+val+" --> "+c.toString());
                         }
                         cs4model.getEnvironment().worldPop();
