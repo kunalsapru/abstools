@@ -33,10 +33,11 @@ import abs.frontend.antlr.parser.ABSParserWrapper;
 import abs.frontend.ast.*;
 import abs.frontend.delta.DeltaModellingException;
 import abs.frontend.delta.ProductLineAnalysisHelper;
+import abs.frontend.ifml.ChocoSolverIfml;
 import abs.frontend.typechecker.locationtypes.LocationType;
 import abs.frontend.typechecker.locationtypes.infer.LocationTypeInferrerExtension;
 import abs.frontend.typechecker.locationtypes.infer.LocationTypeInferrerExtension.LocationTypingPrecision;
-
+import abs.frontend.ast.Model;
 /**
  * @author rudi
  *
@@ -301,6 +302,7 @@ public class Main {
         if (!semErrs.containsErrors()) {
             typeCheckModel(m);
             analyzeMTVL(m);
+            analyzeIFML(m);
         }
     }
 
@@ -518,6 +520,26 @@ public class Main {
                 ChocoSolver s = m.instantiateCSModel();
                 System.out.println("Number of solutions found (without attributes): "+s.countSolutions());
             }
+        }
+    }
+
+    /**
+     * Analyzing feature model of IFML using ChocoSolver 4.0.4
+     * @param abs.frontend.ast.Model m
+     */
+    private void analyzeIFML(Model m) {
+        ProductDecl productDecl = null;
+        try {
+            productDecl = product == null ? null : m.findProduct(product);
+        } catch (WrongProgramArgumentException e) {
+            // ignore in case we're just solving.
+        }
+        if (m.hasIFML()) {
+                if (verbose)
+                    System.out.println("Checking solution for the ifml feature model...");
+                ChocoSolverIfml s = m.instantiateCS4Model();
+//                s.getSolution();
+
         }
     }
 

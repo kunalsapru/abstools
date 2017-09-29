@@ -12,7 +12,11 @@
 	<classpathentry kind="lib" path="lib/commons-io-2.5.jar"/>
 	<classpathentry kind="lib" path="lib/guava-20.0.jar"/>
 	<classpathentry kind="lib" path="lib/semisolver.jar"/>
-	<classpathentry kind="lib" path="lib/choco-solver-4.0.4-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="lib/choco-solver-4.0.4-with-dependencies.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/kunal/Downloads/choco-4.0.4/apidocs-4.0.4.zip!/apidocs"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="tests"/>

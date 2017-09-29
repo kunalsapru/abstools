@@ -241,7 +241,7 @@ public class TypeCheckerHelper {
         }
 
         // Check solution from getProduct()
-        if (prod.getProduct() != null) {
+        if (prod.getProduct() != null && prod.getModel().hasMTVL()) {
             java.util.List<String> errors = prod.getModel().instantiateCSModel().checkSolutionWithErrors(
                     prod.getProduct().getSolution(),
                     prod.getModel());
@@ -252,6 +252,18 @@ public class TypeCheckerHelper {
                     failedConstraints += "\n- " + s;
 
                 e.add(new TypeError(prod, ErrorMessage.INVALID_PRODUCT, prod.getName(), failedConstraints));
+            }
+        } else if(prod.getProduct() != null && prod.getModel().hasIFML()){
+            java.util.List<String> errors = prod.getModel().instantiateCS4Model().checkSolutionWithErrors(
+                    prod.getProduct().getSolution(),
+                    prod.getModel());
+
+            if (!errors.isEmpty()) {
+                String failedConstraints = "";
+                for (String s: errors)
+                    failedConstraints += "\n- " + s;
+
+                e.add(new TypeError(prod, ErrorMessage.INVALID_PRODUCT_IFML, prod.getName(), failedConstraints));
             }
         }
 

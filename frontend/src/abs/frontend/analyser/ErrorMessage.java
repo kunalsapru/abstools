@@ -149,7 +149,8 @@ public enum ErrorMessage {
     UNDECLARED_FEATURE_REQUIRES("Undeclared feature '%s' found inside 'requires' constraint of '%s'."),
     OPTIONAL_CONSTRAINT_ERROR("Invalid constraint 'opt' on group '%s'. 'Optional' constraint can only be applied on features."),
     SAME_FEATURE_IN_MULTIPLE_GROUPS("Feature '%s' in group '%s' is already a part of some other group or is declared multiple "
-            + "times in the same group.")
+            + "times in the same group."),
+    INVALID_PRODUCT_IFML("Product %s does not satisfy the ifml feature model. Constraints failed: %s.")
     ;
 
     private String pattern;

@@ -1,0 +1,58 @@
+import java.util.Collection;
+import java.util.ArrayList;
+
+import abs.frontend.ifml.ChocoSolverIfml;
+import abs.frontend.ast.Model;
+import abs.frontend.ast.IfmlBoundaryInt;
+
+import org.chocosolver.util.ESat;
+
+aspect ChocoSolverIfml {
+
+    public ChocoSolverIfml Model.instantiateCS4Model() {
+    	ChocoSolverIfml solver = new ChocoSolverIfml(this);
+
+        // new int variable for all int variables
+        for (java.util.Map.Entry<String, IfmlBoundaryInt[]> entry : ifmlints().entrySet()) {
+            String st = entry.getKey();
+            if (entry.getValue().length == 2) {
+                IfmlBoundaryInt b1 = entry.getValue()[0];
+                IfmlBoundaryInt b2 = entry.getValue()[1];
+                solver.addBoundedVar(st, b1, b2);
+            }
+            else {
+                solver.addSetVar(st, entry.getValue());
+            }
+        }
+        for (String st : ifmlbools())
+            solver.addBoolVar(st);
+
+        collectIfmlConstraints(solver); // is adding intvars to the model!
+        return solver;
+    }
+
+    // GENERAL NODE: propagate
+    public void ASTNode.collectIfmlConstraints(ChocoSolverIfml s) {
+        for(int i = 0; i < getNumChild(); i++)
+            getChildNoTransform(i).collectIfmlConstraints(s);
+    }
+
+    // Features and Groups must be present
+    public void CompilationUnit.collectIfmlConstraints(ChocoSolverIfml s) {
+        for (int i = 0; i < getNumIfmlFeatureDeclAll(); i++) {
+        	IfmlFeatureDeclAll ifmlFeatureDeclAll = getIfmlFeatureDeclAll(i);
+        	for(int j=0; j< ifmlFeatureDeclAll.getNumIfmlFeatureDecl();j++) {
+        		IfmlFeatureDecl ifmlFeatureDecl = ifmlFeatureDeclAll.getIfmlFeatureDecl(j);
+        		s.forceTrue(ifmlFeatureDecl.getName());
+        	}
+        }
+        
+        for (int i = 0; i < getNumIfmlGroupDecl(); i++) {
+        	IfmlGroupDecl ifmlGroupDecl = getIfmlGroupDecl(i);
+        	s.forceTrue(ifmlGroupDecl.getName());
+        }
+        
+        super.collectIfmlConstraints(s);
+    }    
+    
+}
