@@ -1164,6 +1164,20 @@ new List<ModuleDecl>(),
                                         new IfmlUnresolvedMType(t)));
             }
         }
+
+        @Override public void exitIfml_boundary_int(ABSParser.Ifml_boundary_intContext ctx) {
+            if (ctx.star != null) {
+                setV(ctx, new IfmlLimit());
+            } else {
+                setV(ctx, v(ctx.ifml_boundary_val()));
+            }
+        }
+
+        @Override public void exitIfml_boundary_val(ABSParser.Ifml_boundary_valContext ctx) {
+            setV(ctx, new IfmlBoundaryVal((ctx.m == null ? +1 : -1) * Integer.parseInt(ctx.INTLITERAL().getText())));
+        }       
+        
+        
         @Override public void exitIfml_group_decl(ABSParser.Ifml_group_declContext ctx) {
             setV(ctx, new IfmlGroupDecl(ctx.TYPE_IDENTIFIER().getText(), l(ctx.ifml_group_decl_feature())));
         }
@@ -1283,15 +1297,5 @@ new List<ModuleDecl>(),
             }
         }
         
-        @Override public void exitIfml_boundary_int(ABSParser.Ifml_boundary_intContext ctx) {
-            if (ctx.star != null) {
-                setV(ctx, new IfmlLimit());
-            } else {
-                setV(ctx, v(ctx.ifml_boundary_val()));
-            }
-        }
-        @Override public void exitIfml_boundary_val(ABSParser.Ifml_boundary_valContext ctx) {
-            setV(ctx, new IfmlBoundaryVal((ctx.m == null ? +1 : -1) * Integer.parseInt(ctx.INTLITERAL().getText())));
-        }       
         
 }

@@ -424,9 +424,8 @@ public class ChocoSolver {
         for (Constraint c : constraints) {
             CPModel m = new CPModel();
             m.addConstraint(c);
-            System.out.println(prettyConst(c));
-            if (!checkSolution(solution, model, m)){}
-//                res.add(prettyConst(c));
+            if (!checkSolution(solution, model, m))
+                res.add(prettyConst(c));
         }
         return res;
     }

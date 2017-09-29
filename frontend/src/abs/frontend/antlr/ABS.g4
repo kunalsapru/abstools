@@ -481,6 +481,9 @@ ifml_attribute :
     | TYPE_IDENTIFIER '[' l=ifml_boundary_int '..' u=ifml_boundary_int ']' IDENTIFIER
     | TYPE_IDENTIFIER IDENTIFIER ;
 
+ifml_boundary_int : star='*' | ifml_boundary_val ;
+ifml_boundary_val : m='-'? i=INTLITERAL ;
+
 //Declaring igroup grammar
 ifml_group_decl : TYPE_IDENTIFIER '{' ifml_group_decl_feature (',' ifml_group_decl_feature)* '}' ;
 ifml_group_decl_feature : TYPE_IDENTIFIER ;
@@ -515,10 +518,6 @@ ifml_mexp : TYPE_IDENTIFIER '.' IDENTIFIER
     | l=ifml_mexp op=OROR r=ifml_mexp
     | '(' a=ifml_mexp ')'
     ;
-
-ifml_boundary_int : star='*' | ifml_boundary_val ;
-
-ifml_boundary_val : m='-'? i=INTLITERAL ;
 
 // End of ifml feature model
 

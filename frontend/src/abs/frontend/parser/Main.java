@@ -302,7 +302,7 @@ public class Main {
         if (!semErrs.containsErrors()) {
             typeCheckModel(m);
             analyzeMTVL(m);
-            analyzeIFML(m);
+            //analyzeIFML(m);
         }
     }
 

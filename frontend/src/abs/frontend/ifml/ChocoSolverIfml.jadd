@@ -39,18 +39,6 @@ aspect ChocoSolverIfml {
 
     // Features and Groups must be present
     public void CompilationUnit.collectIfmlConstraints(ChocoSolverIfml s) {
-        for (int i = 0; i < getNumIfmlFeatureDeclAll(); i++) {
-        	IfmlFeatureDeclAll ifmlFeatureDeclAll = getIfmlFeatureDeclAll(i);
-        	for(int j=0; j< ifmlFeatureDeclAll.getNumIfmlFeatureDecl();j++) {
-        		IfmlFeatureDecl ifmlFeatureDecl = ifmlFeatureDeclAll.getIfmlFeatureDecl(j);
-        		s.forceTrue(ifmlFeatureDecl.getName());
-        	}
-        }
-        
-        for (int i = 0; i < getNumIfmlGroupDecl(); i++) {
-        	IfmlGroupDecl ifmlGroupDecl = getIfmlGroupDecl(i);
-        	s.forceTrue(ifmlGroupDecl.getName());
-        }
         
         super.collectIfmlConstraints(s);
     }    

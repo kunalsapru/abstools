@@ -11,7 +11,9 @@ import java.util.Map;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.Arithmetic;
 import org.chocosolver.solver.constraints.Constraint;
+import org.chocosolver.solver.constraints.Operator;
 import org.chocosolver.solver.constraints.unary.Member;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
@@ -57,32 +59,36 @@ public class ChocoSolverIfml {
     }
 
     public void addIntVar(String name, int from, int to) {
-        IntVar v = cs4model.intVar(name, from, to);
-        addConstraint(cs4model.arithm(v, ">=",50));
+        IntVar v = cs4model.intVar(name, from, to);// IntVar value is the lower bound.
+        addConstraint(new Member(v,from,to));
         vars.put(name, v);
         defaultvals.put(name,from);
     }
 
     public void addIntVar(String name, int fromto, boolean from) {
-        IntVar v = cs4model.intVar(name,0);
-        if (from)
-            addConstraint(cs4model.arithm(v,">=",fromto));
-      else
-          addConstraint(cs4model.arithm(v,"<=",fromto));
+        IntVar v;
+        if (from) {
+            v = cs4model.intVar(name, fromto, IntVar.MAX_INT_BOUND);
+            addConstraint(new Arithmetic(v,Operator.GE,fromto));
+        } else {
+            v = cs4model.intVar(name, IntVar.MIN_INT_BOUND, fromto);
+            addConstraint(new Arithmetic(v,Operator.LE,fromto));
+        }
         vars.put(name, v);
         defaultvals.put(name, fromto);
     }
 
     public void addIntVar(String name, int[] vals) {
         IntVar v = cs4model.intVar(name, vals);
-        addConstraint(cs4model.member(v, vals));
+        addConstraint(new Member(v, vals));
+        addConstraint(new Arithmetic(v, Operator.GE, 69));
         vars.put(name, v);
         defaultvals.put(name, vals[0]); // vals has at least 1 element! (by the parser constraints)
     }
     
     public void addBoolVar(String name) {
         IntVar v = cs4model.boolVar(name);
-        addConstraint(cs4model.member(v,0,1));
+        addConstraint(new Member(v,0,1));
         vars.put(name, v);
         defaultvals.put(name,0);
     }
@@ -90,9 +96,9 @@ public class ChocoSolverIfml {
     /** set a bool variable to true **/
     public void forceTrue(String name) {
         IntVar v = cs4model.intVar(name, 1, 1);
+        addConstraint(new Member(v, 1, 1));
         vars.put(name, v);
         defaultvals.put(name, 1);
-        addConstraint(cs4model.member(v, 1, 1));
     }
     
     public IntVar getVar(String var) {
@@ -110,67 +116,68 @@ public class ChocoSolverIfml {
     }
     
     public void addBoundedVar(String name, IfmlBoundaryInt b1, IfmlBoundaryInt b2) {
-        if (b1 instanceof IfmlLimit)
-            if (b2 instanceof IfmlLimit)
+        if(b1 instanceof IfmlLimit) {
+            if(b2 instanceof IfmlLimit) {
                 addIntVar(name);
-            else
+            } else {
                 addIntVar(name,((IfmlBoundaryVal) b2).getValue(), false);
-        else if (b2 instanceof IfmlLimit)
-            addIntVar(name,((IfmlBoundaryVal) b1).getValue(), true);
-        else
-            addIntVar(name, ((IfmlBoundaryVal) b1).getValue(), ((IfmlBoundaryVal) b2).getValue());
-    }
-    
-    public boolean solve() {
-        // add the constraints
-        if (!solved) {
-            for (Constraint c : constraints) {
-                System.out.println("Posting constraints :: "+c.toString());
-                c.post();
             }
+        } else if(b2 instanceof IfmlLimit) {
+            addIntVar(name,((IfmlBoundaryVal) b1).getValue(), true);
+        } else {
+            addIntVar(name, ((IfmlBoundaryVal) b1).getValue(), ((IfmlBoundaryVal) b2).getValue());
         }
-        // Solve the model
-        newsol = cs4model.getSolver().solve();
-        solved = true;
-        return newsol;
     }
     
     public List<String> checkSolutionWithErrors(Map<String, Integer> solution, abs.frontend.ast.Model absmodel) {
-        List<String> res = new ArrayList<String>();
+        List<String> result = new ArrayList<String>();
+        Solver solver = cs4model.getSolver();
+        int val;
         IntVar[] intVars = cs4model.retrieveIntVars(true);
-        for(IntVar var : intVars) {
-            int val;
+        boolean domainCheck = true;
+        //Check for variable's domain
+        for(IntVar var : intVars){
             if(solution.containsKey(var.getName())){
                 val = solution.get(var.getName());
-                if(!(var.contains(val))){
-                    res.add("Domain validation failed for variable :: "+var.getName()+" Invalid value: "+val);
+                    cs4model.getEnvironment().worldPush();
+                        try {
+                            var.instantiateTo(val, null);
+                            solver.propagate();
+                        } catch (ContradictionException e) {
+                            solver.getEngine().flush();
+                            domainCheck = false;
+                            result.add("Out of domain error for "+var.getName()+" with value "+val);
+                        }
+                    cs4model.getEnvironment().worldPop();
+            }
+        }
+        if(domainCheck) {
+            //Check for constraints, only in case of no domain error(s)
+            for(IntVar var : intVars){
+                if(solution.containsKey(var.getName())){
+                    val = solution.get(var.getName());
+                    for(Constraint c : constraints) {
+                        cs4model.getEnvironment().worldPush();
+                        cs4model.post(c);
+                            try {
+                                var.instantiateTo(val, null);
+                                solver.propagate();
+                            } catch (ContradictionException e) {
+                                solver.getEngine().flush();
+                                domainCheck = false;
+                                result.add("Constraint failed for "+var.getName()+" with value "+val+" --> "+c.toString());
+                            }
+                        cs4model.unpost(c);
+                        cs4model.getEnvironment().worldPop();
+                        if(!(domainCheck)){
+                            break;
+                        }
+                    }
                 }
             }
         }
-
-        // now check all explicit constraints
-        for (Constraint c : constraints) {
-            c.post();
-            System.out.println("Checking solution for constraint "+c.toString()+"-- Result is :: "+checkSolution(solution, c));
-//            if (!(checkSolution(solution, c)))
-//                res.add("Constraint Failed :: "+c.toString());
-//            else if (checkSolution(solution, c))
-//                res.add("Constraint Satisfied :: "+c.toString());
-        }
-        return res;
-    }
-
-    public boolean checkSolution(Map<String, Integer> solution, Constraint c) {
-        Solver solver = cs4model.getSolver();
-        int val;
-        for(Variable var : cs4model.getVars()){
-            if(solution.containsKey(var.getName())){
-                val = solution.get(var.getName());
-                IntVar v = cs4model.intVar(var.getName(),val);
-                var = v;
-            }
-        }
         
-        return solver.solve();
+        return result;
     }
+
 }
