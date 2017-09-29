@@ -79,7 +79,6 @@ public class ChocoSolverIfml {
     
     public void addBoolVar(String name) {
         IntVar v = cs4model.boolVar(name);
-        addConstraint(new Member(v,0,1));
         vars.put(name, v);
         defaultvals.put(name,0);
     }
@@ -87,7 +86,6 @@ public class ChocoSolverIfml {
     /** set a bool variable to true **/
     public void forceTrue(String name) {
         IntVar v = cs4model.intVar(name, 1, 1);
-        addConstraint(new Member(v, 1, 1));
         vars.put(name, v);
         defaultvals.put(name, 1);
     }
@@ -144,27 +142,24 @@ public class ChocoSolverIfml {
         }
         if(domainCheck) {
             //Check for constraints, only in case of no domain error(s)
-            for(IntVar var : intVars){
-                if(solution.containsKey(var.getName())){
-                    val = solution.get(var.getName());
-                    for(Constraint c : constraints) {
+            for(Constraint c : constraints) {
+                cs4model.post(c);
+                for(IntVar var : intVars){
+                    if(solution.containsKey(var.getName())){
+                        val = solution.get(var.getName());
                         cs4model.getEnvironment().worldPush();
-                        cs4model.post(c);
-                            try {
-                                var.instantiateTo(val, null);
-                                solver.propagate();
-                            } catch (ContradictionException e) {
-                                solver.getEngine().flush();
-                                domainCheck = false;
-                                result.add("Constraint failed for "+var.getName()+" with value "+val+" --> "+c.toString());
-                            }
-                        cs4model.unpost(c);
-                        cs4model.getEnvironment().worldPop();
-                        if(!(domainCheck)){
-                            break;
+                        try {
+                            var.instantiateTo(val, null);
+                            solver.propagate();
+                        } catch (ContradictionException e) {
+                            solver.getEngine().flush();
+                            domainCheck = false;
+                            result.add("Constraint failed for "+var.getName()+" with value "+val+" --> "+c.toString());
                         }
+                        cs4model.getEnvironment().worldPop();
                     }
                 }
+                cs4model.unpost(c);
             }
         }
         
