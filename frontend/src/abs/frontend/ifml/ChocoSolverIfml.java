@@ -15,6 +15,9 @@ import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 import abs.frontend.ast.IfmlBoundaryInt;
 import abs.frontend.ast.IfmlBoundaryVal;
+import abs.frontend.ast.IfmlCardinality;
+import abs.frontend.ast.IfmlConstraint;
+import abs.frontend.ast.IfmlGroupDecl;
 import abs.frontend.ast.IfmlLimit;
 
 public class ChocoSolverIfml {
@@ -25,8 +28,9 @@ public class ChocoSolverIfml {
     public final Map<String, IntVar> vars;
     public final Map<String, Integer> defaultvals;
     private List<Constraint> constraints = new ArrayList<Constraint>();
-    @SuppressWarnings("unused")
-    private abs.frontend.ast.Model absmodel = new abs.frontend.ast.Model();
+    private List<Constraint> groupConstraints = new ArrayList<Constraint>();
+    private List<Constraint> featureConstraints = new ArrayList<Constraint>();
+//    private abs.frontend.ast.Model absmodel = new abs.frontend.ast.Model();
 
     public ChocoSolverIfml() {
         // Build the ChocoSolver4 model
@@ -37,7 +41,6 @@ public class ChocoSolverIfml {
 
     public ChocoSolverIfml(abs.frontend.ast.Model m) {
         this();
-        absmodel = m;
     }
 
     /** add ChocoSolver4 constraint **/
@@ -45,6 +48,14 @@ public class ChocoSolverIfml {
         constraints.add(c);
     }
 
+    /** add ChocoSolver4 constraint **/
+    public void addGroupConstraint(Constraint c) {
+        groupConstraints.add(c);
+    }
+    /** add ChocoSolver4 constraint **/
+    public void addFeatureConstraint(Constraint c) {
+        featureConstraints.add(c);
+    }
     private void addIntVar(String name) {
         IntVar v = cs4model.intVar(name, IntVar.MIN_INT_BOUND, IntVar.MAX_INT_BOUND);
         vars.put(name, v);
@@ -118,6 +129,29 @@ public class ChocoSolverIfml {
     
     public List<String> checkSolutionWithErrors(Map<String, Integer> solution, abs.frontend.ast.Model absmodel) {
         List<String> result = new ArrayList<String>();
+        for(Map.Entry<String, Integer> entry : solution.entrySet()) {
+            String featureName = entry.getKey();
+            if(!(featureName.contains("."))) {
+                //Get all constraints for this feature
+                ArrayList<IfmlConstraint> ifmlFeatureConstraintList = absmodel.getAllFeatureConstraints(featureName);
+                //Add feature constraints to featureConstraints list
+                
+                // Getting group for feature 'featureName'
+                IfmlGroupDecl ifmlGroupDecl = absmodel.getIfmlGroupDecl(featureName);
+                if(ifmlGroupDecl!=null) {
+                    //Get group constraints for this group
+                    ArrayList<IfmlConstraint> ifmlGroupConstraintList = absmodel.getAllGroupConstraints(ifmlGroupDecl.getName());
+                    //Add group constraints to groupConstraints list
+                    ArrayList<IfmlCardinality> ifmlCardinalityList = absmodel.getGroupCardinality(ifmlGroupDecl.getName());
+                    if(ifmlCardinalityList.size() > 1){
+                        //Show Error for multiple cardinalities
+                        result.add("Multiple cardinalities found for group '"+ifmlGroupDecl.getName()+"'.");
+                    } else if(ifmlCardinalityList.size() == 1){
+                        //Add cardinality constraint to groupConstraints list
+                    }
+                }
+            }
+        }
         Solver solver = cs4model.getSolver();
         int val;
         IntVar[] intVars = cs4model.retrieveIntVars(true);

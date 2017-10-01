@@ -1197,9 +1197,9 @@ new List<ModuleDecl>(),
             IfmlCardinality c = null;
             if (ctx.o != null) c = new IfmlCRange(1,1); // oneof
             else if (ctx.a != null) c = new IfmlAllOf(); // allof
-            else if (ctx.s != null) c = new IfmlMinim(Integer.parseInt(ctx.l.getText()));
+            else if (ctx.s != null) c = new IfmlMinim(Integer.parseInt(ctx.l.getText()));//for eg. [1..*]
             else c = new IfmlCRange(Integer.parseInt(ctx.l.getText()),
-                              Integer.parseInt(ctx.u.getText()));      
+                              Integer.parseInt(ctx.u.getText()));      //for eg. [2..4]
             setV(ctx, c);
         }
         @Override public void exitIfmlIfIn(ABSParser.IfmlIfInContext ctx) {

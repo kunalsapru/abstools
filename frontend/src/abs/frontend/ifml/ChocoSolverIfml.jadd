@@ -35,7 +35,7 @@ aspect ChocoSolverIfml {
 		for(String st : ifmlstrings())
 			chocoSolverIfml.addBoolVar(st);
 
-        collectIfmlConstraints(chocoSolverIfml); // is adding intvars to the model!
+        collectIfmlConstraints(chocoSolverIfml);
         return chocoSolverIfml;
     }
 
@@ -45,10 +45,110 @@ aspect ChocoSolverIfml {
             getChildNoTransform(i).collectIfmlConstraints(chocoSolverIfml);
     }
 
-    // Features and Groups must be present
     public void CompilationUnit.collectIfmlConstraints(ChocoSolverIfml chocoSolverIfml) {
-        
         super.collectIfmlConstraints(chocoSolverIfml);
     }    
+
+    //Returns IfmlGroupDecl object based on feature name. As per semantics, one feature can be part of a single group only. 
+    public IfmlGroupDecl Model.getIfmlGroupDecl(String featureName){
+    	IfmlGroupDecl ifmlGroupDecl = null;
+    	//Iterating over no of compilation units
+    	for(int i=0;i<getNumCompilationUnit();i++) {
+    		CompilationUnit compilationUnit = getCompilationUnit(i);
+    		//Iterating over number of igroups
+    		for(int j=0;j<compilationUnit.getNumIfmlGroupDecl();j++) {
+    			IfmlGroupDecl tempIfmlGroupDecl = compilationUnit.getIfmlGroupDecl(j);
+    			//Iterating over all features inside this group
+    			for(int k=0;k<tempIfmlGroupDecl.getNumIfmlGroupDeclFeature();k++) {
+    				IfmlGroupDeclFeature ifmlGroupDeclFeature = tempIfmlGroupDecl.getIfmlGroupDeclFeature(k);
+    				//If feature name matches the name in the argument, set ifmlGroupDecl to tempIfmlGroupDecl
+    				if(ifmlGroupDeclFeature.getIfmlFeatVar().getIfmlFName().equals(featureName)) {
+    					ifmlGroupDecl = tempIfmlGroupDecl;
+    				}
+    			}
+    		}
+    	}
+    	return ifmlGroupDecl;
+    }
     
+	//Returns a list of all features inside a group based on group name
+	public ArrayList<String> IfmlGroupDecl.getFeatureNames(String groupName){
+		ArrayList<String> listOfFeatures = new ArrayList<String>();
+		//Iterating over all features inside this group
+		for(int i=0;i<getNumIfmlGroupDeclFeature();i++) {
+			IfmlGroupDeclFeature ifmlGroupDeclFeature = getIfmlGroupDeclFeature(i);
+			listOfFeatures.add(ifmlGroupDeclFeature.getIfmlFeatVar().getIfmlFName());
+		}
+		return listOfFeatures;
+	}
+	
+	//Get all IfmlConstraintDecl objects
+	public ArrayList<IfmlConstraintDecl> Model.getIfmlConstraintDeclList(){
+		ArrayList<IfmlConstraintDecl> ifmlConstraintDeclList = new ArrayList<IfmlConstraintDecl>();
+		for(int i=0;i<getNumCompilationUnit();i++) {
+    		CompilationUnit compilationUnit = getCompilationUnit(i);
+    		//Iterating over number of iconstraints
+    		for(int j=0;j<compilationUnit.getNumIfmlConstraintDecl();j++) {
+    			ifmlConstraintDeclList.add(compilationUnit.getIfmlConstraintDecl(j));
+    		}
+		}
+		return ifmlConstraintDeclList;
+	}
+	
+	//Get all feature constraints inside a constraint object
+	public ArrayList<IfmlConstraint> Model.getAllFeatureConstraints(String featureName){
+		ArrayList<IfmlConstraint> ifmlFeatureConstraints = new ArrayList<IfmlConstraint>();
+		ArrayList<IfmlConstraintDecl> ifmlConstraintDeclList = getIfmlConstraintDeclList();
+		for(int i=0;i<ifmlConstraintDeclList.size();i++) {
+			IfmlConstraintDecl ifmlConstraintDecl = ifmlConstraintDeclList.get(i);
+			for(int j =0; j<ifmlConstraintDecl.getNumIfmlConstraintDeclGroupFeature();j++){
+				IfmlConstraintDeclGroupFeature ifmlConstraintDeclGroupFeature = ifmlConstraintDecl.getIfmlConstraintDeclGroupFeature(j);
+				if(ifmlConstraintDeclGroupFeature.getName().equals(featureName)){
+					for(int k=0;k<ifmlConstraintDeclGroupFeature.getNumIfmlConstraint();k++) {
+						IfmlConstraint ifmlConstraint = ifmlConstraintDeclGroupFeature.getIfmlConstraint(k);
+						ifmlFeatureConstraints.add(ifmlConstraint);
+					}
+				}
+			}
+		}
+		return ifmlFeatureConstraints;
+	}
+	//Get all group constraints inside a constraint object
+	public ArrayList<IfmlConstraint> Model.getAllGroupConstraints(String groupName){
+		ArrayList<IfmlConstraint> ifmlGroupConstraints = new ArrayList<IfmlConstraint>();
+		ArrayList<IfmlConstraintDecl> ifmlConstraintDeclList = getIfmlConstraintDeclList();
+		for(int i=0;i<ifmlConstraintDeclList.size();i++) {
+			IfmlConstraintDecl ifmlConstraintDecl = ifmlConstraintDeclList.get(i);
+			for(int j =0; j<ifmlConstraintDecl.getNumIfmlConstraintDeclGroupFeature();j++){
+				IfmlConstraintDeclGroupFeature ifmlConstraintDeclGroupFeature = ifmlConstraintDecl.getIfmlConstraintDeclGroupFeature(j);
+				if(ifmlConstraintDeclGroupFeature.getName().equals(groupName)){
+					for(int k=0;k<ifmlConstraintDeclGroupFeature.getNumIfmlConstraint();k++) {
+						IfmlConstraint ifmlConstraint = ifmlConstraintDeclGroupFeature.getIfmlConstraint(k);
+						ifmlGroupConstraints.add(ifmlConstraint);
+					}
+				}
+			}
+		}
+		return ifmlGroupConstraints;
+	}
+	
+	//Get group cardinality
+	public ArrayList<IfmlCardinality> Model.getGroupCardinality(String groupName){
+		ArrayList<IfmlCardinality> ifmlCardinalityList = new ArrayList<IfmlCardinality>();
+		ArrayList<IfmlConstraintDecl> ifmlConstraintDeclList = getIfmlConstraintDeclList();
+		for(int i=0;i<ifmlConstraintDeclList.size();i++) {
+			IfmlConstraintDecl ifmlConstraintDecl = ifmlConstraintDeclList.get(i);
+			for(int j =0; j<ifmlConstraintDecl.getNumIfmlConstraintDeclGroupFeature();j++){
+				IfmlConstraintDeclGroupFeature ifmlConstraintDeclGroupFeature = ifmlConstraintDecl.getIfmlConstraintDeclGroupFeature(j);
+				if(ifmlConstraintDeclGroupFeature.getName().equals(groupName)){
+					if(ifmlConstraintDeclGroupFeature.hasIfmlCard()){
+						ifmlCardinalityList.add(ifmlConstraintDeclGroupFeature.getIfmlCard());
+					}
+				}
+			}
+		}
+		return ifmlCardinalityList;
+	}
+	
+	
 }
