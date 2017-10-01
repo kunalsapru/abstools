@@ -13,6 +13,7 @@ import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
+
 import abs.frontend.ast.IfmlBoundaryInt;
 import abs.frontend.ast.IfmlBoundaryVal;
 import abs.frontend.ast.IfmlCardinality;
@@ -142,12 +143,10 @@ public class ChocoSolverIfml {
                     //Get group constraints for this group
                     ArrayList<IfmlConstraint> ifmlGroupConstraintList = absmodel.getAllGroupConstraints(ifmlGroupDecl.getName());
                     //Add group constraints to groupConstraints list
-                    ArrayList<IfmlCardinality> ifmlCardinalityList = absmodel.getGroupCardinality(ifmlGroupDecl.getName());
-                    if(ifmlCardinalityList.size() > 1){
-                        //Show Error for multiple cardinalities
-                        result.add("Multiple cardinalities found for group '"+ifmlGroupDecl.getName()+"'.");
-                    } else if(ifmlCardinalityList.size() == 1){
-                        //Add cardinality constraint to groupConstraints list
+                    IfmlCardinality ifmlCardinality = absmodel.getGroupCardinality(ifmlGroupDecl.getName());
+                    if(ifmlCardinality != null){
+                        //Add cardinality constraint here
+                        
                     }
                 }
             }

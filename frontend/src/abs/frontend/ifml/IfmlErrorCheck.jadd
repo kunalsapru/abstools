@@ -34,6 +34,36 @@ aspect IfmlErrorCheck {
     			}
     		}
     	}
+		//Checking same group for multiple cardinalities
+		if(hasIfmlConstraintDecl()) {
+			for(String groupName : ((Model)calcContextNode(Model.class)).ifmlgroups()) {
+				ArrayList<IfmlCardinality> ifmlCardinalityList = new ArrayList<IfmlCardinality>();
+				for(int i=0;i<getNumIfmlConstraintDecl();i++) {
+					IfmlConstraintDecl ifmlConstraintDecl = getIfmlConstraintDecl(i);
+					for(int j =0; j<ifmlConstraintDecl.getNumIfmlConstraintDeclGroupFeature();j++){
+						IfmlConstraintDeclGroupFeature ifmlConstraintDeclGroupFeature = ifmlConstraintDecl.getIfmlConstraintDeclGroupFeature(j);
+						if(ifmlConstraintDeclGroupFeature.getName().equals(groupName)){
+							if(ifmlConstraintDeclGroupFeature.hasIfmlCard()){
+								ifmlCardinalityList.add(ifmlConstraintDeclGroupFeature.getIfmlCard());
+								if(ifmlCardinalityList.size() > 1) {
+									IfmlCardinality ifmlCardinality = ifmlCardinalityList.get(0);
+									String strCardinality = ifmlCardinality.getIfmlCardinalityPrettyName();
+									String strCardinalityError = ifmlConstraintDeclGroupFeature.getIfmlCard().getIfmlCardinalityPrettyName();
+									String iconstraintName = "";
+									if(ifmlConstraintDecl.hasIfmlConsVar()) {
+										iconstraintName = ifmlConstraintDecl.getIfmlConsVar().getIfmlCName();
+									}
+									c.add(new SemanticError(this,ErrorMessage.MULTIPLE_CARDINALITY_GROUP,
+											strCardinalityError,groupName, iconstraintName, strCardinality));
+								}
+							}
+						}
+						
+					}
+				}
+			}
+		}
+
     }
     
 	// Check if ifeature name is repeated
@@ -88,55 +118,57 @@ aspect IfmlErrorCheck {
     				c.add(new SemanticError(this,ErrorMessage.DUPLICATE_CONSTRAINT_GROUP,getIfmlConsVar().getIfmlCName()));
     			}
         }
-        // Check if group/feature is declared or not, before adding to constraints
-   		for(int i=0;i<getNumIfmlConstraintDeclGroupFeature();i++) {
-	   		IfmlConstraintDeclGroupFeature ifmlConstraintDeclGroupFeature = getIfmlConstraintDeclGroupFeature(i);
-   			String groupFeatureInConstraint = ifmlConstraintDeclGroupFeature.getName();
-   			
-			if(!(((Model)calcContextNode(Model.class)).ifmlgroups().contains(groupFeatureInConstraint))) {
-				//Not in group
-				if(!(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(groupFeatureInConstraint))) {
-				//Not in feature
-					c.add(new SemanticError(this,ErrorMessage.UNDECLARED_GROUP_FEATURE_CONSTRAINT,groupFeatureInConstraint));
-				} else if(ifmlConstraintDeclGroupFeature.hasIfmlCard()) {//Features can not have cardinality constraints.
-					c.add(new SemanticError(this,ErrorMessage.CONSTRAINT_FEATURE_CARDINALITY,groupFeatureInConstraint));
-				}
+    }
+    
+    public void IfmlConstraintDeclGroupFeature.collectErrors(SemanticConditionList c){
+    	super.collectErrors(c);
+    	// Check if group/feature is declared or not, before adding to constraints
+		String groupFeatureInConstraint = getName();
+			
+		if(!(((Model)calcContextNode(Model.class)).ifmlgroups().contains(groupFeatureInConstraint))) {
+			//Not in group
+			if(!(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(groupFeatureInConstraint))) {
+			//Not in feature
+				c.add(new SemanticError(this,ErrorMessage.UNDECLARED_GROUP_FEATURE_CONSTRAINT,groupFeatureInConstraint));
+			} else if(hasIfmlCard()) {//Features can not have cardinality constraints.
+				String strCardinality = getIfmlCard().getIfmlCardinalityPrettyName();
+				c.add(new SemanticError(this,ErrorMessage.CONSTRAINT_FEATURE_CARDINALITY,groupFeatureInConstraint, strCardinality));
 			}
-			//Check for valid features and expressions in ifml constraints.
-			for(int j=0; j<ifmlConstraintDeclGroupFeature.getNumIfmlConstraint();j++) {
-				IfmlConstraint ifmlConstraint = ifmlConstraintDeclGroupFeature.getIfmlConstraint(j);
-				if(ifmlConstraint instanceof IfmlIfIn){}
-				if(ifmlConstraint instanceof IfmlIfOut){}
-				if(ifmlConstraint instanceof IfmlExcludes){
-					IfmlExcludes ifmlExcludes = (IfmlExcludes)(ifmlConstraintDeclGroupFeature.getIfmlConstraint(j));
-//					//Check if feature is valid or not
-					for(int k=0;k<ifmlExcludes.getNumIfmlFeatVar();k++) {
-			   			String featureInExcludes = ifmlExcludes.getIfmlFeatVar(k).getIfmlFName();
-						if(!(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(featureInExcludes))) {
-							c.add(new SemanticError(this,ErrorMessage.UNDECLARED_FEATURE_EXCLUDES,featureInExcludes,
-									ifmlConstraintDeclGroupFeature.getName()));
-						}
-			   		}
-				}
-				if(ifmlConstraint instanceof IfmlRequires){
-					IfmlRequires ifmlRequires = (IfmlRequires)(ifmlConstraintDeclGroupFeature.getIfmlConstraint(j));
-//					//Check if feature is valid or not
-					for(int x=0;x<ifmlRequires.getNumIfmlFeatVar();x++) {
-			   			String featureInRequires = ifmlRequires.getIfmlFeatVar(x).getIfmlFName();
-						if(!(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(featureInRequires))) {
-							c.add(new SemanticError(this,ErrorMessage.UNDECLARED_FEATURE_REQUIRES,featureInRequires,
-									ifmlConstraintDeclGroupFeature.getName()));
-						}
-			   		}
-				}
-				//Check for opt constraint in case of groups.
-				if(ifmlConstraint instanceof IfmlOpt) {
-					if(((Model)calcContextNode(Model.class)).ifmlgroups().contains(ifmlConstraintDeclGroupFeature.getName())) {
-						c.add(new SemanticError(this,ErrorMessage.OPTIONAL_CONSTRAINT_ERROR,ifmlConstraintDeclGroupFeature.getName()));
+		}
+		//Check for valid features and expressions in ifml constraints.
+		for(int j=0; j<getNumIfmlConstraint();j++) {
+			IfmlConstraint ifmlConstraint = getIfmlConstraint(j);
+			if(ifmlConstraint instanceof IfmlIfIn){}
+			if(ifmlConstraint instanceof IfmlIfOut){}
+			if(ifmlConstraint instanceof IfmlExcludes){
+				IfmlExcludes ifmlExcludes = (IfmlExcludes)(getIfmlConstraint(j));
+				//Check if feature is valid or not
+				for(int k=0;k<ifmlExcludes.getNumIfmlFeatVar();k++) {
+		   			String featureInExcludes = ifmlExcludes.getIfmlFeatVar(k).getIfmlFName();
+					if(!(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(featureInExcludes))) {
+						c.add(new SemanticError(this,ErrorMessage.UNDECLARED_FEATURE_EXCLUDES,featureInExcludes,
+								getName()));
 					}
-				}				
+		   		}
 			}
-   		}
+			if(ifmlConstraint instanceof IfmlRequires){
+				IfmlRequires ifmlRequires = (IfmlRequires)(getIfmlConstraint(j));
+				//Check if feature is valid or not
+				for(int x=0;x<ifmlRequires.getNumIfmlFeatVar();x++) {
+		   			String featureInRequires = ifmlRequires.getIfmlFeatVar(x).getIfmlFName();
+					if(!(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(featureInRequires))) {
+						c.add(new SemanticError(this,ErrorMessage.UNDECLARED_FEATURE_REQUIRES,featureInRequires,
+								getName()));
+					}
+		   		}
+			}
+			//Check for opt constraint in case of groups.
+			if(ifmlConstraint instanceof IfmlOpt) {
+				if(((Model)calcContextNode(Model.class)).ifmlgroups().contains(getName())) {
+					c.add(new SemanticError(this,ErrorMessage.OPTIONAL_CONSTRAINT_ERROR,getName()));
+				}
+			}				
+		}
     }
 
 

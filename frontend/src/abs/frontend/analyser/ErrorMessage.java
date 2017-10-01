@@ -143,14 +143,16 @@ public enum ErrorMessage {
     DUPLICATE_CONSTRAINT_FEATURE("Constraint '%s' is already defined as a feature. Please select a different name."),
     DUPLICATE_CONSTRAINT_GROUP("Constraint '%s' is already defined as a group. Please select a different name."),
     UNDECLARED_GROUP_FEATURE_CONSTRAINT("Undeclared group/feature '%s' found inside constraint."),
-    CONSTRAINT_FEATURE_CARDINALITY("Feature '%s' can not have cardinality constraint."
+    CONSTRAINT_FEATURE_CARDINALITY("Feature '%s' can not have '%s' constraint."
             + " Cardinality constraints are only applicable on groups."),
     UNDECLARED_FEATURE_EXCLUDES("Undeclared feature '%s' found inside 'excludes' constraint of '%s'."),
     UNDECLARED_FEATURE_REQUIRES("Undeclared feature '%s' found inside 'requires' constraint of '%s'."),
     OPTIONAL_CONSTRAINT_ERROR("Invalid constraint 'opt' on group '%s'. 'Optional' constraint can only be applied on features."),
     SAME_FEATURE_IN_MULTIPLE_GROUPS("Feature '%s' in group '%s' is already a part of some other group or is declared multiple "
             + "times in the same group."),
-    INVALID_PRODUCT_IFML("Product %s does not satisfy the ifml feature model. %s")
+    INVALID_PRODUCT_IFML("Product %s does not satisfy the ifml feature model. %s"),
+    MULTIPLE_CARDINALITY_GROUP("Can not assign cardinality '%s' to group '%s' in iconstraint '%s'. "
+            + "Cardinality '%s' has already been defined for this group.")
     ;
 
     private String pattern;

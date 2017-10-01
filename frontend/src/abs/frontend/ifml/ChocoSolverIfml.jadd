@@ -1,6 +1,6 @@
 import java.util.Collection;
 import java.util.ArrayList;
-
+import java.lang.String;
 import abs.frontend.ifml.ChocoSolverIfml;
 import abs.frontend.ast.Model;
 import abs.frontend.ast.IfmlBoundaryInt;
@@ -133,8 +133,8 @@ aspect ChocoSolverIfml {
 	}
 	
 	//Get group cardinality
-	public ArrayList<IfmlCardinality> Model.getGroupCardinality(String groupName){
-		ArrayList<IfmlCardinality> ifmlCardinalityList = new ArrayList<IfmlCardinality>();
+	public IfmlCardinality Model.getGroupCardinality(String groupName){
+		IfmlCardinality ifmlCardinality = null;
 		ArrayList<IfmlConstraintDecl> ifmlConstraintDeclList = getIfmlConstraintDeclList();
 		for(int i=0;i<ifmlConstraintDeclList.size();i++) {
 			IfmlConstraintDecl ifmlConstraintDecl = ifmlConstraintDeclList.get(i);
@@ -142,12 +142,31 @@ aspect ChocoSolverIfml {
 				IfmlConstraintDeclGroupFeature ifmlConstraintDeclGroupFeature = ifmlConstraintDecl.getIfmlConstraintDeclGroupFeature(j);
 				if(ifmlConstraintDeclGroupFeature.getName().equals(groupName)){
 					if(ifmlConstraintDeclGroupFeature.hasIfmlCard()){
-						ifmlCardinalityList.add(ifmlConstraintDeclGroupFeature.getIfmlCard());
+						ifmlCardinality = ifmlConstraintDeclGroupFeature.getIfmlCard();
 					}
 				}
 			}
 		}
-		return ifmlCardinalityList;
+		return ifmlCardinality;
+	}
+	
+	//Get pretty name for cardinality 
+	public String IfmlCardinality.getIfmlCardinalityPrettyName() {
+		String strCardinality = "";
+        if(this instanceof IfmlAllOf){
+        	strCardinality = "allof"; 
+        } else if(this instanceof IfmlMinim){
+            strCardinality = "["+((IfmlMinim) this).getIfmlCFrom()+"..*]";
+        } else if(this instanceof IfmlCRange){
+            if(((IfmlCRange) this).getIfmlCFrom() == 1 && ((IfmlCRange) this).getIfmlCTo() == 1){
+                strCardinality = "oneof";
+            } else {
+                strCardinality = "["+((IfmlCRange) this).getIfmlCFrom()+".."+
+                        ((IfmlCRange) this).getIfmlCTo()+"]";
+            }
+        }
+        
+        return strCardinality;
 	}
 	
 	
