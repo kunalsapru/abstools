@@ -162,11 +162,23 @@ aspect IfmlErrorCheck {
 					}
 		   		}
 			}
-			//Check for opt constraint in case of groups.
+			//Check for opt constraint.
 			if(ifmlConstraint instanceof IfmlOpt) {
+				//Groups can not have 'opt' constraint
 				if(((Model)calcContextNode(Model.class)).ifmlgroups().contains(getName())) {
 					c.add(new SemanticError(this,ErrorMessage.OPTIONAL_CONSTRAINT_ERROR,getName()));
 				}
+				//If feature has 'opt' constraint, cardinality of it's group must be allof.
+				if(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(getName())) {
+                    IfmlGroupDecl ifmlGroupDecl = ((Model)calcContextNode(Model.class)).getIfmlGroupDecl(getName());
+                    IfmlCardinality ifmlCardinality = ifmlGroupDecl!=null ? 
+                            ((Model)calcContextNode(Model.class)).getGroupCardinality(ifmlGroupDecl.getName()):null;
+                    if(ifmlCardinality!=null && !(ifmlCardinality instanceof IfmlAllOf)) {
+                        c.add(new SemanticError(this,ErrorMessage.OPTIONAL_CONSTRAINT_ERROR_FEATURE_ALLOF,
+                        		getName(), ifmlGroupDecl.getName(), ifmlCardinality.getIfmlCardinalityPrettyName()));
+                    }
+                }
+
 			}				
 		}
     }

@@ -152,7 +152,9 @@ public enum ErrorMessage {
             + "times in the same group."),
     INVALID_PRODUCT_IFML("Product %s does not satisfy the ifml feature model. Constraints failed: %s"),
     MULTIPLE_CARDINALITY_GROUP("Can not assign cardinality '%s' to group '%s' in iconstraint '%s'. "
-            + "Cardinality '%s' has already been defined for this group.")
+            + "Cardinality '%s' has already been defined for this group."),
+    OPTIONAL_CONSTRAINT_ERROR_FEATURE_ALLOF("Invalid constraint 'opt' on feature '%s'. "
+            + "Cardinality of it's group '%s' is '%s', it should be allof.")
     ;
 
     private String pattern;

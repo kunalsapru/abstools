@@ -27,6 +27,7 @@ import abs.frontend.ast.IfmlConstraint;
 import abs.frontend.ast.IfmlGroupDecl;
 import abs.frontend.ast.IfmlLimit;
 import abs.frontend.ast.IfmlMinim;
+import abs.frontend.ast.IfmlOpt;
 
 public class ChocoSolverIfml {
 
@@ -140,7 +141,7 @@ public class ChocoSolverIfml {
 
         //Add, all constraint failure errors to list, only when there are no domain errors
         if(result.isEmpty()) {
-            result.addAll(checkAllIfmlConstraints(solution));
+            result.addAll(checkAllIfmlConstraints(solution, absmodel));
         }
         return removeDuplicateFromList(result);
     }
@@ -202,7 +203,9 @@ public class ChocoSolverIfml {
                 //Get all constraints for this feature
                 ArrayList<IfmlConstraint> ifmlFeatureConstraintList = absmodel.getAllFeatureConstraints(featureName);
                 //Add feature constraints to featureConstraints list
-                addFeatureConstraints(ifmlFeatureConstraintList, featureName);
+                if(!(ifmlFeatureConstraintList.isEmpty())) {
+                    addFeatureConstraints(ifmlFeatureConstraintList, featureName);
+                }
             }
         }
         //Add Group constraints 
@@ -230,9 +233,10 @@ public class ChocoSolverIfml {
 
     /**
      * @param solution map created by user in ABS program
+     * @param absmodel 
      * @return List of failed constraint(s)
      */
-    private List<String> checkAllIfmlConstraints(Map<String, Integer> solution){
+    private List<String> checkAllIfmlConstraints(Map<String, Integer> solution, abs.frontend.ast.Model absmodel){
         Solver solver = cs4model.getSolver();
         List<String> result = new ArrayList<>();
         IntVar[] intVars = cs4model.retrieveIntVars(true);
@@ -254,7 +258,23 @@ public class ChocoSolverIfml {
                         val = solution.get(var.getName());
                         var.instantiateTo(val, Cause.Null);
                     } else {
-                        if(defaultvals.get(var.getName()) != null) {
+                        boolean optFeatureFlag = false;
+                        String featureName = var.getName();
+                        if(!(featureName.contains("."))) {
+                            //Get all constraints for this feature
+                            ArrayList<IfmlConstraint> ifmlFeatureConstraintList = absmodel.getAllFeatureConstraints(featureName);
+                            //Add feature constraints to featureConstraints list
+                            if(!(ifmlFeatureConstraintList.isEmpty())) {
+                                for(IfmlConstraint ifmlConstraint : ifmlFeatureConstraintList) {
+                                    if(ifmlConstraint instanceof IfmlOpt) {
+                                        var.instantiateTo(1, Cause.Null); //Set optional feature value to true
+                                        optFeatureFlag = true;
+                                    }
+                                }
+                            }
+                        }
+
+                        if(!optFeatureFlag && defaultvals.get(var.getName()) != null) {
                             val = defaultvals.get(var.getName());
                             var.instantiateTo(val, Cause.Null);
                         }
