@@ -154,22 +154,28 @@ public class ChocoSolverIfml {
     private List<String> getDomainErrorList(Map<String, Integer> solution) {
         List<String> result = new ArrayList<String>();
         Solver solver = cs4model.getSolver();
-        int val;
+        int val = 0;
         IntVar[] intVars = cs4model.retrieveIntVars(true);
         //Check for variable's domain
         for(IntVar var : intVars){
-            if(solution.containsKey(var.getName())){
-                val = solution.get(var.getName());
-                    cs4model.getEnvironment().worldPush();
-                        try {
-                            var.instantiateTo(val, null);
-                            solver.propagate();
-                        } catch (ContradictionException e) {
-                            solver.getEngine().flush();
-                            result.add("Out of domain error for "+var.getName()+" with value "+val);
-                        }
-                    cs4model.getEnvironment().worldPop();
+            cs4model.getEnvironment().worldPush();
+            try {
+                solver.propagate();
+                if(solution.containsKey(var.getName())){
+                    val = solution.get(var.getName());
+                                var.instantiateTo(val, null);
+                } else {
+                    if(defaultvals.get(var.getName()) != null) {
+                        val = defaultvals.get(var.getName());
+                        var.instantiateTo(val, Cause.Null);
+                    }
+                }
+                solver.propagate();
+            } catch (ContradictionException e) {
+                solver.getEngine().flush();
+                result.add("Out of domain error for "+var.getName()+" with value "+val);
             }
+            cs4model.getEnvironment().worldPop();
         }
         return removeDuplicateFromList(result);
     }
@@ -193,11 +199,10 @@ public class ChocoSolverIfml {
                         groupListForProduct.add(ifmlGroupDecl.getName());
                     }
                 }
-
                 //Get all constraints for this feature
                 ArrayList<IfmlConstraint> ifmlFeatureConstraintList = absmodel.getAllFeatureConstraints(featureName);
                 //Add feature constraints to featureConstraints list
-                
+                addFeatureConstraints(ifmlFeatureConstraintList, featureName);
             }
         }
         //Add Group constraints 
@@ -208,7 +213,7 @@ public class ChocoSolverIfml {
                 IfmlCardinality ifmlCardinality = absmodel.getGroupCardinality(ifmlGroupDecl.getName());
                 if(ifmlCardinality != null){
                     //Add cardinality constraint here
-                    addCardinalityConstraint(ifmlGroupDecl, ifmlCardinality, solution);
+                    addCardinalityConstraint(ifmlGroupDecl, ifmlCardinality);
                 }
 
                 //Get group constraints for this group
@@ -216,6 +221,11 @@ public class ChocoSolverIfml {
                 //Now add IfmlConstraints to constraints list
             }
         }        
+    }
+
+    private void addFeatureConstraints(ArrayList<IfmlConstraint> ifmlFeatureConstraintList, String featureName) {
+        // TODO Auto-generated method stub
+        
     }
 
     /**
@@ -265,7 +275,13 @@ public class ChocoSolverIfml {
         return removeDuplicateFromList(result);
     }
 
-    private void addCardinalityConstraint(IfmlGroupDecl ifmlGroupDecl, IfmlCardinality ifmlCardinality,Map<String, Integer> solution) {
+    /**
+     * This function adds cardinality constraints like allof, oneof to groups
+     * @param ifmlGroupDecl
+     * @param ifmlCardinality
+     * @param solution map created by user in ABS program
+     */
+    private void addCardinalityConstraint(IfmlGroupDecl ifmlGroupDecl, IfmlCardinality ifmlCardinality) {
         //Get all features inside a group
         BoolVar[] allFeaturesInGroup = getAllFeaturesInGroup(ifmlGroupDecl);
         //Applying cardinality constraints
@@ -274,14 +290,14 @@ public class ChocoSolverIfml {
           //Every group must have atleast one feature
             addConstraint(cs4model.sum(allFeaturesInGroup, "=" , allFeaturesInGroup.length));
         } else if(ifmlCardinality instanceof IfmlMinim){
-            //Apply [int..*] cardinality
+            //Apply [From..*] cardinality
             addConstraint(cs4model.sum(allFeaturesInGroup, ">=" , ((IfmlMinim) ifmlCardinality).getIfmlCFrom()));
         } else if(ifmlCardinality instanceof IfmlCRange){
             if(((IfmlCRange) ifmlCardinality).getIfmlCFrom() == 1 && ((IfmlCRange) ifmlCardinality).getIfmlCTo() == 1){
                 //Apply oneof cardinality
                 addConstraint(cs4model.sum(allFeaturesInGroup, "=" , 1));
             } else {
-                //Apply [int..int] cardinality
+                //Apply [From..To] cardinality
                 addConstraint(cs4model.sum(allFeaturesInGroup, ">=" , ((IfmlCRange) ifmlCardinality).getIfmlCFrom()));
                 addConstraint(cs4model.sum(allFeaturesInGroup, "<=" , ((IfmlCRange) ifmlCardinality).getIfmlCTo()));
             }
