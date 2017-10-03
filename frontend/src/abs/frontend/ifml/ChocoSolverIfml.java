@@ -24,10 +24,15 @@ import abs.frontend.ast.IfmlBoundaryVal;
 import abs.frontend.ast.IfmlCRange;
 import abs.frontend.ast.IfmlCardinality;
 import abs.frontend.ast.IfmlConstraint;
+import abs.frontend.ast.IfmlExcludes;
+import abs.frontend.ast.IfmlFeatVar;
 import abs.frontend.ast.IfmlGroupDecl;
+import abs.frontend.ast.IfmlIfIn;
+import abs.frontend.ast.IfmlIfOut;
 import abs.frontend.ast.IfmlLimit;
 import abs.frontend.ast.IfmlMinim;
 import abs.frontend.ast.IfmlOpt;
+import abs.frontend.ast.IfmlRequires;
 
 public class ChocoSolverIfml {
 
@@ -111,6 +116,12 @@ public class ChocoSolverIfml {
         addIntVar(name,vals);
     }
     
+    /**
+     * This function takes bounded integer variables and creates IntVar variables for choco solver model
+     * @param name of the variable
+     * @param b1 First boundary variable
+     * @param b2 Second boundary variable
+     */
     public void addBoundedVar(String name, IfmlBoundaryInt b1, IfmlBoundaryInt b2) {
         if(b1 instanceof IfmlLimit) {
             if(b2 instanceof IfmlLimit) {
@@ -204,7 +215,7 @@ public class ChocoSolverIfml {
                 ArrayList<IfmlConstraint> ifmlFeatureConstraintList = absmodel.getAllFeatureConstraints(featureName);
                 //Add feature constraints to featureConstraints list
                 if(!(ifmlFeatureConstraintList.isEmpty())) {
-                    addFeatureConstraints(ifmlFeatureConstraintList, featureName);
+                    addIfmlConstraints(ifmlFeatureConstraintList);
                 }
             }
         }
@@ -222,13 +233,50 @@ public class ChocoSolverIfml {
                 //Get group constraints for this group
                 ArrayList<IfmlConstraint> ifmlGroupConstraintList = absmodel.getAllGroupConstraints(ifmlGroupDecl.getName());
                 //Now add IfmlConstraints to constraints list
+                if(!(ifmlGroupConstraintList.isEmpty())) {
+                    addIfmlConstraints(ifmlGroupConstraintList);
+                }
             }
         }        
     }
 
-    private void addFeatureConstraints(ArrayList<IfmlConstraint> ifmlFeatureConstraintList, String featureName) {
-        // TODO Auto-generated method stub
-        
+    /**
+     * This function adds all IfmlConstraints for features and groups in the constraints list
+     * @param ifmlConstraintList list containing IfmlConstraint objects
+     */
+    private void addIfmlConstraints(ArrayList<IfmlConstraint> ifmlConstraintList) {
+        //IfmlOpt constraint is handled while checking solution
+        IntVar[] featureVars = cs4model.retrieveIntVars(true);
+        for(IfmlConstraint ifmlConstraint : ifmlConstraintList) {
+            //Adding Requires constraint
+            if(ifmlConstraint instanceof IfmlRequires) {
+                IfmlRequires ifmlRequires = (IfmlRequires)ifmlConstraint;
+                for(IfmlFeatVar ifmlFeatVar : ifmlRequires.getIfmlFeatVarList()){
+                    String featName = ifmlFeatVar.getIfmlFName();
+                    for(IntVar featureVar : featureVars){
+                        if(featureVar.getName().equals(featName)) {
+                            addConstraint(cs4model.arithm(featureVar,"=",1));
+                        }
+                    }
+                    
+                }
+            } else if(ifmlConstraint instanceof IfmlExcludes){//Adding Excludes constraint
+                IfmlExcludes ifmlExcludes = (IfmlExcludes)ifmlConstraint;
+                for(IfmlFeatVar ifmlFeatVar : ifmlExcludes.getIfmlFeatVarList()){
+                    String featName = ifmlFeatVar.getIfmlFName();
+                    for(IntVar featureVar : featureVars){
+                        if(featureVar.getName().equals(featName)) {
+                            addConstraint(cs4model.arithm(featureVar,"=",0));
+                        }
+                    }
+                    
+                }
+            } else if(ifmlConstraint instanceof IfmlIfIn){
+                System.out.println(ifmlConstraint.toString());
+            } else if (ifmlConstraint instanceof IfmlIfOut){
+                
+            }
+        }
     }
 
     /**
@@ -325,6 +373,7 @@ public class ChocoSolverIfml {
     }
 
     /**
+     * This function gets all features inside a group and stores in BoolVar array
      * @param ifmlGroupDecl IfmlGroupDecl object
      * @return a list of all features inside ifmlGroupDecl object
      */
@@ -345,7 +394,12 @@ public class ChocoSolverIfml {
         return allFeaturesInGroup;
        
     }
-    //Removing duplicate constraints from error result
+    
+    /**
+     * This function takes a List<String> and removes any duplicate entries before returning the list
+     * @param result a list of strings
+     * @return a list with unique set of values
+     */
     private List<String> removeDuplicateFromList(List<String> result) {
         HashSet<String> tempHashSet = new HashSet<String>();
         tempHashSet.addAll(result);
