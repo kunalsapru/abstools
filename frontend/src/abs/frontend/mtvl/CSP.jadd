@@ -29,7 +29,7 @@ aspect CSP {
         } else if(check && hasIFML()){//Check added for IFML
             java.util.List<String> errors = instantiateCS4Model().checkSolutionWithErrors(prod.getProduct().getSolution(), this);
             if (!errors.isEmpty()) {
-                String msg = "Product [" + prod.getName() + "] does not satisfy the ifml feature model.";
+                String msg = "Product [" + prod.getName() + "] does not satisfy the ifml feature model. Constraints failed:";
                 for (String s: errors)
                     msg = msg + "\n- " + s;
                 throw new WrongProgramArgumentException(msg);

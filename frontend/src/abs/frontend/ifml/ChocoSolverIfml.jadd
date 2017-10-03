@@ -71,8 +71,25 @@ aspect ChocoSolverIfml {
     	return ifmlGroupDecl;
     }
     
-	//Returns a list of all features inside a group based on group name
-	public ArrayList<String> IfmlGroupDecl.getFeatureNames(String groupName){
+    //Returns IfmlGroupDecl object based on feature name. As per semantics, one feature can be part of a single group only. 
+    public IfmlGroupDecl Model.getIfmlGroupDeclByGroupName(String groupName){
+    	IfmlGroupDecl ifmlGroupDecl = null;
+    	//Iterating over no of compilation units
+    	for(int i=0;i<getNumCompilationUnit();i++) {
+    		CompilationUnit compilationUnit = getCompilationUnit(i);
+    		//Iterating over number of igroups
+    		for(int j=0;j<compilationUnit.getNumIfmlGroupDecl();j++) {
+    			IfmlGroupDecl tempIfmlGroupDecl = compilationUnit.getIfmlGroupDecl(j);
+    			if(tempIfmlGroupDecl.getName().equals(groupName)) {
+    				ifmlGroupDecl = tempIfmlGroupDecl;
+    			}
+    		}
+    	}
+    	return ifmlGroupDecl;
+    }
+    
+	//Returns list of all features inside a group
+	public ArrayList<String> IfmlGroupDecl.getFeatureNames(){
 		ArrayList<String> listOfFeatures = new ArrayList<String>();
 		//Iterating over all features inside this group
 		for(int i=0;i<getNumIfmlGroupDeclFeature();i++) {
