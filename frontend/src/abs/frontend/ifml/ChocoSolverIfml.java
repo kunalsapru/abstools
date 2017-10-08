@@ -17,7 +17,6 @@ import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
-
 import abs.frontend.ast.IfmlAllOf;
 import abs.frontend.ast.IfmlBoundaryInt;
 import abs.frontend.ast.IfmlBoundaryVal;
@@ -25,7 +24,6 @@ import abs.frontend.ast.IfmlCRange;
 import abs.frontend.ast.IfmlCardinality;
 import abs.frontend.ast.IfmlConstraint;
 import abs.frontend.ast.IfmlExcludes;
-import abs.frontend.ast.IfmlFeatVar;
 import abs.frontend.ast.IfmlGroupDecl;
 import abs.frontend.ast.IfmlIfIn;
 import abs.frontend.ast.IfmlIfOut;
@@ -147,11 +145,11 @@ public class ChocoSolverIfml {
         //Add domain errors to list
         result.addAll(getDomainErrorList(solution));
 
-        //Add constraints for features and groups selected by user
-        addConstraintsForFeaturesAndGroups(solution, absmodel);
+        if (result.isEmpty()) {
+            //Add constraints for features and groups selected by user, only when there are no domain errors
+            addConstraintsForFeaturesAndGroups(solution, absmodel);
 
-        //Add, all constraint failure errors to list, only when there are no domain errors
-        if(result.isEmpty()) {
+            //Add, all constraint failure errors to list, only when there are no domain errors
             result.addAll(checkAllIfmlConstraints(solution, absmodel));
         }
         return removeDuplicateFromList(result);
@@ -175,7 +173,7 @@ public class ChocoSolverIfml {
                 solver.propagate();
                 if(solution.containsKey(var.getName())){
                     val = solution.get(var.getName());
-                                var.instantiateTo(val, null);
+                                var.instantiateTo(val, Cause.Null);
                 } else {
                     if(defaultvals.get(var.getName()) != null) {
                         val = defaultvals.get(var.getName());
@@ -246,34 +244,20 @@ public class ChocoSolverIfml {
      */
     private void addIfmlConstraints(ArrayList<IfmlConstraint> ifmlConstraintList) {
         //IfmlOpt constraint is handled while checking solution
-        IntVar[] featureVars = cs4model.retrieveIntVars(true);
         for(IfmlConstraint ifmlConstraint : ifmlConstraintList) {
             //Adding Requires constraint
             if(ifmlConstraint instanceof IfmlRequires) {
                 IfmlRequires ifmlRequires = (IfmlRequires)ifmlConstraint;
-                for(IfmlFeatVar ifmlFeatVar : ifmlRequires.getIfmlFeatVarList()){
-                    String featName = ifmlFeatVar.getIfmlFName();
-                    for(IntVar featureVar : featureVars){
-                        if(featureVar.getName().equals(featName)) {
-                            addConstraint(cs4model.arithm(featureVar,"=",1));
-                        }
-                    }
-                    
-                }
+                ifmlRequires.addIfmlConstraints(this, cs4model);
+                
             } else if(ifmlConstraint instanceof IfmlExcludes){//Adding Excludes constraint
                 IfmlExcludes ifmlExcludes = (IfmlExcludes)ifmlConstraint;
-                for(IfmlFeatVar ifmlFeatVar : ifmlExcludes.getIfmlFeatVarList()){
-                    String featName = ifmlFeatVar.getIfmlFName();
-                    for(IntVar featureVar : featureVars){
-                        if(featureVar.getName().equals(featName)) {
-                            addConstraint(cs4model.arithm(featureVar,"=",0));
-                        }
-                    }
-                    
-                }
-            } else if(ifmlConstraint instanceof IfmlIfIn){
-                System.out.println(ifmlConstraint.toString());
-            } else if (ifmlConstraint instanceof IfmlIfOut){
+                ifmlExcludes.addIfmlConstraints(this, cs4model);
+                
+            } else if(ifmlConstraint instanceof IfmlIfIn){//Adding IfIn constraints
+//                System.out.println(ifmlConstraint.toString());
+                
+            } else if (ifmlConstraint instanceof IfmlIfOut){//Adding IfOUt constraints
                 
             }
         }
@@ -284,11 +268,28 @@ public class ChocoSolverIfml {
      * @param absmodel 
      * @return List of failed constraint(s)
      */
-    private List<String> checkAllIfmlConstraints(Map<String, Integer> solution, abs.frontend.ast.Model absmodel){
+    private List<String> checkAllIfmlConstraints(Map<String, Integer> solution, abs.frontend.ast.Model absModel){
+        List<String> result = new ArrayList<>();
+        
+        List<String> listIfInIfOutConstraint = checkIfInIfOutConstraints(solution, absModel);
+
+        
+        //Check ifml constraints only when all ifin/ifout constraints are satisfied. 
+        //This is required because ifin/ifout constraints are posted automatically, as soon as they are defined.
+        if(listIfInIfOutConstraint.isEmpty()) {
+            result.addAll(checkOnlyIfmlConstraints(solution, absModel));
+        } else {
+            result.addAll(listIfInIfOutConstraint);
+        }
+        return removeDuplicateFromList(result);
+    }
+
+    private List<String> checkIfInIfOutConstraints(Map<String, Integer> solution, abs.frontend.ast.Model absModel) {
         Solver solver = cs4model.getSolver();
         List<String> result = new ArrayList<>();
         IntVar[] intVars = cs4model.retrieveIntVars(true);
         int val=0;
+
         try {
             solver.propagate();
         } catch (ContradictionException e1) {
@@ -296,6 +297,60 @@ public class ChocoSolverIfml {
         } catch(Exception e2){
             result.add("Exception while propagating solver --> "+e2.toString());
         }
+        
+        //There is no need to iterate over constraints list,  as all ifin/ifout constraints are posted automatically
+        //as soon as they are defined
+        cs4model.getEnvironment().worldPush();
+        for(IntVar var : intVars){
+            try {
+                solver.propagate();
+                if(solution.containsKey(var.getName())){
+                    val = solution.get(var.getName());
+                    var.instantiateTo(val, Cause.Null);
+                } else {
+                    if(defaultvals.get(var.getName()) != null) {
+                        val = defaultvals.get(var.getName());
+                        var.instantiateTo(val, Cause.Null);
+                    }
+                }
+                solver.propagate();
+            } catch (ContradictionException e) {
+                solver.getEngine().flush();
+                result.add("**IfIn/IfOut Cons failed for variable "+var.getName()+"="+val+
+                        ". Expected value/domain :: "+e.v);
+                e.printStackTrace();
+            } catch (Exception e1) {
+                solver.getEngine().flush();
+                result.add(e1.toString());
+                e1.printStackTrace();
+            }
+        }
+        cs4model.getEnvironment().worldPop();        
+        
+        return removeDuplicateFromList(result);
+    }
+
+    /**
+     * This method is called when all ifin/ifout constraints are satisfied. 
+     * This method checks for all constraints like cardinality, requires, excludes etc. except ifin/ifout
+     * @param solution map created by user in ABS program
+     * @param absModel
+     * @return
+     */
+    private List<String> checkOnlyIfmlConstraints(Map<String, Integer> solution, abs.frontend.ast.Model absModel) {
+        Solver solver = cs4model.getSolver();
+        List<String> result = new ArrayList<>();
+        IntVar[] intVars = cs4model.retrieveIntVars(true);
+        int val=0;
+        
+        try {
+            solver.propagate();
+        } catch (ContradictionException e1) {
+            result.add("Exception while propagating solver --> "+e1.toString());
+        } catch(Exception e2){
+            result.add("Exception while propagating solver --> "+e2.toString());
+        }
+
         for(Constraint c : constraints) {
             cs4model.post(c);
             cs4model.getEnvironment().worldPush();
@@ -310,7 +365,7 @@ public class ChocoSolverIfml {
                         String featureName = var.getName();
                         if(!(featureName.contains("."))) {
                             //Get all constraints for this feature
-                            ArrayList<IfmlConstraint> ifmlFeatureConstraintList = absmodel.getAllFeatureConstraints(featureName);
+                            ArrayList<IfmlConstraint> ifmlFeatureConstraintList = absModel.getAllFeatureConstraints(featureName);
                             //Add feature constraints to featureConstraints list
                             if(!(ifmlFeatureConstraintList.isEmpty())) {
                                 for(IfmlConstraint ifmlConstraint : ifmlFeatureConstraintList) {
@@ -321,24 +376,27 @@ public class ChocoSolverIfml {
                                 }
                             }
                         }
-
+                        //If current variable is not an optional feature
                         if(!optFeatureFlag && defaultvals.get(var.getName()) != null) {
-                            val = defaultvals.get(var.getName());
-                            var.instantiateTo(val, Cause.Null);
+                                val = defaultvals.get(var.getName());
+                                var.instantiateTo(val, Cause.Null);
                         }
                     }
                     solver.propagate();
                 } catch (ContradictionException e) {
                     solver.getEngine().flush();
                     result.add(c.toString());
+                    e.printStackTrace();
                 } catch (Exception e1) {
                     solver.getEngine().flush();
                     result.add(c.toString());
+                    e1.printStackTrace();
                 }
             }
             cs4model.getEnvironment().worldPop();
             cs4model.unpost(c);
         }
+        
         
         return removeDuplicateFromList(result);
     }

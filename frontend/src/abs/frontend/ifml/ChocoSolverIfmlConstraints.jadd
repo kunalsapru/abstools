@@ -1,0 +1,34 @@
+import abs.frontend.ifml.ChocoSolverIfml;
+import org.chocosolver.solver.variables.IntVar;
+
+
+aspect ChocoSolverIfmlConstraints {
+
+    // REQUIRES
+    public void IfmlRequires.addIfmlConstraints(ChocoSolverIfml chocoSolverIfml, org.chocosolver.solver.Model cs4model) {
+	    IntVar[] featureVars = cs4model.retrieveIntVars(true);
+	    for(IfmlFeatVar ifmlFeatVar : getIfmlFeatVarList()){
+	        String featName = ifmlFeatVar.getIfmlFName();
+	        for(IntVar featureVar : featureVars){
+	            if(featureVar.getName().equals(featName)) {
+	                chocoSolverIfml.addConstraint(cs4model.arithm(featureVar,"=",1));
+	            }
+	        }
+	    }
+    }
+
+    // EXCLUDES
+    public void IfmlExcludes.addIfmlConstraints(ChocoSolverIfml chocoSolverIfml, org.chocosolver.solver.Model cs4model) {
+	    IntVar[] featureVars = cs4model.retrieveIntVars(true);
+	    for(IfmlFeatVar ifmlFeatVar : getIfmlFeatVarList()){
+	        String featName = ifmlFeatVar.getIfmlFName();
+	        for(IntVar featureVar : featureVars){
+	            if(featureVar.getName().equals(featName)) {
+	                chocoSolverIfml.addConstraint(cs4model.arithm(featureVar,"=",0));
+	            }
+	        }
+	    }
+    }
+    
+    
+}
