@@ -138,8 +138,9 @@ aspect IfmlErrorCheck {
 		//Check for valid features and expressions in ifml constraints.
 		for(int j=0; j<getNumIfmlConstraint();j++) {
 			IfmlConstraint ifmlConstraint = getIfmlConstraint(j);
-			if(ifmlConstraint instanceof IfmlIfIn){}
-			if(ifmlConstraint instanceof IfmlIfOut){}
+			//checking types
+			ifmlConstraint.checkIfmlType(IfmlTypes.BOOL,c);
+			//Errors for IfmlIfIn/IfmlIfOut are shown while checking IfmlTypes
 			if(ifmlConstraint instanceof IfmlExcludes){
 				IfmlExcludes ifmlExcludes = (IfmlExcludes)(getIfmlConstraint(j));
 				//Check if feature is valid or not

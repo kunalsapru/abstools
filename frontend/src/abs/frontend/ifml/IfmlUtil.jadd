@@ -1,53 +1,6 @@
-import java.util.Collection;
-import java.util.ArrayList;
-import java.lang.String;
-import abs.frontend.ifml.ChocoSolverIfml;
 import abs.frontend.ast.Model;
-import abs.frontend.ast.IfmlBoundaryInt;
 
-import org.chocosolver.util.ESat;
-
-aspect ChocoSolverIfml {
-
-    public ChocoSolverIfml Model.instantiateCS4Model() {
-    	ChocoSolverIfml chocoSolverIfml = new ChocoSolverIfml(this);
-
-        // new int variable for all int variables
-        for (java.util.Map.Entry<String, IfmlBoundaryInt[]> entry : ifmlints().entrySet()) {
-            String st = entry.getKey();
-            if (entry.getValue().length == 2) {
-                IfmlBoundaryInt b1 = entry.getValue()[0];
-                IfmlBoundaryInt b2 = entry.getValue()[1];
-                chocoSolverIfml.addBoundedVar(st, b1, b2);
-            }
-            else {
-                chocoSolverIfml.addSetVar(st, entry.getValue());
-            }
-        }
-        for (String st : ifmlbools())
-            chocoSolverIfml.addBoolVar(st);
-        for (String st : ifmlfeatures())
-            chocoSolverIfml.addBoolVar(st);
-        for (String st : ifmlgroups())
-            chocoSolverIfml.addBoolVar(st);
-		for(String st : ifmlconstraints())
-			chocoSolverIfml.addBoolVar(st);
-		for(String st : ifmlstrings())
-			chocoSolverIfml.addBoolVar(st);
-
-        collectIfmlConstraints(chocoSolverIfml);
-        return chocoSolverIfml;
-    }
-
-    // GENERAL NODE: propagate
-    public void ASTNode.collectIfmlConstraints(ChocoSolverIfml chocoSolverIfml) {
-        for(int i = 0; i < getNumChild(); i++)
-            getChildNoTransform(i).collectIfmlConstraints(chocoSolverIfml);
-    }
-
-    public void CompilationUnit.collectIfmlConstraints(ChocoSolverIfml chocoSolverIfml) {
-        super.collectIfmlConstraints(chocoSolverIfml);
-    }    
+aspect IfmlUtil {
 
     //Returns IfmlGroupDecl object based on feature name. As per semantics, one feature can be part of a single group only. 
     public IfmlGroupDecl Model.getIfmlGroupDecl(String featureName){

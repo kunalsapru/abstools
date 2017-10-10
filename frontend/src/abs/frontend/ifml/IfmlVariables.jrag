@@ -44,6 +44,12 @@ aspect IfmlVariables {
     inh String IfmlAttributes.featureName();
     eq 	IfmlFeatureDecl.getIfmlAttributes().featureName() = this.getName();
     // get the full name of a variable
+    
+    inh String IfmlConstraint.parentName();
+    eq IfmlConstraintDeclGroupFeature.getIfmlConstraint(int i).parentName() {
+    	return this.getName();
+    }
+    
     syn String IfmlVariable.getFullName();
     eq   IfmlFAVar.getFullName() = getIfmlFName() + "." + getIfmlAName();
     eq  IfmlAttVar.getFullName() = getIfmlAName(); // can not figure out parent feature name yet, may be we won't need full name
@@ -59,8 +65,8 @@ aspect IfmlVariables {
     eq IfmlConsVar.isBool() = calcContextNode(Model.class).ifmlfeatures().contains(getIfmlCName());
 
     syn boolean IfmlVariable.isInt();
-    eq   IfmlFAVar.isInt() = calcContextNode(Model.class).ints().containsKey(getFullName());
-    eq  IfmlAttVar.isInt() = calcContextNode(Model.class).ints().containsKey(getFullName());
+    eq   IfmlFAVar.isInt() = calcContextNode(Model.class).ifmlints().containsKey(getFullName());
+    eq  IfmlAttVar.isInt() = calcContextNode(Model.class).ifmlints().containsKey(getFullName());
     eq IfmlFeatVar.isInt() = false;
     eq IfmlConsVar.isInt() = false;
 

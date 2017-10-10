@@ -1,34 +1,322 @@
 import abs.frontend.ifml.ChocoSolverIfml;
 import org.chocosolver.solver.variables.IntVar;
-
+import org.chocosolver.solver.variables.BoolVar;
+import org.chocosolver.solver.expression.discrete.arithmetic.ArExpression;
+import abs.frontend.ast.IfmlBoundaryInt;
 
 aspect ChocoSolverIfmlConstraints {
 
+    public ChocoSolverIfml Model.instantiateCS4Model() {
+    	ChocoSolverIfml cs = new ChocoSolverIfml();
+
+        // new int variable for all int variables
+        for (java.util.Map.Entry<String, IfmlBoundaryInt[]> entry : ifmlints().entrySet()) {
+            String st = entry.getKey();
+            if (entry.getValue().length == 2) {
+                IfmlBoundaryInt b1 = entry.getValue()[0];
+                IfmlBoundaryInt b2 = entry.getValue()[1];
+                cs.addBoundedVar(st, b1, b2);
+            } else {
+                cs.addSetVar(st, entry.getValue());
+            }
+        }
+        for (String st : ifmlbools())
+            cs.addBoolVar(st);
+        for (String st : ifmlfeatures())
+            cs.addBoolVar(st);
+        for (String st : ifmlgroups())
+            cs.addBoolVar(st);
+		for(String st : ifmlconstraints())
+			cs.addBoolVar(st);
+		for(String st : ifmlstrings())
+			cs.addBoolVar(st);
+
+    //    collectIfmlConstraints(cs);
+        return cs;
+    }
+	
+//    // GENERAL NODE: propagate
+//    public org.chocosolver.solver.constraints.Constraint ASTNode.collectIfmlConstraints(ChocoSolverIfml cs) {
+//        for(int i = 0; i < getNumChild(); i++)
+//            getChildNoTransform(i).collectIfmlConstraints(cs);
+//        return cs.cs4model.trueConstraint();
+//    }
+//
+//    public org.chocosolver.solver.constraints.Constraint CompilationUnit.collectIfmlConstraints(ChocoSolverIfml cs) {
+//        super.collectIfmlConstraints(cs);
+//        return cs.cs4model.trueConstraint();
+//    }
+//    
+//    public org.chocosolver.solver.constraints.Constraint IfmlConstraintDecl.collectIfmlConstraints(ChocoSolverIfml cs) {
+//    	super.collectIfmlConstraints(cs);
+//    	for(int i=0;i<getNumIfmlConstraintDeclGroupFeature();i++) {
+//    		IfmlConstraintDeclGroupFeature groupFeatDecl = getIfmlConstraintDeclGroupFeature(i);
+//    		System.out.println("i="+i);
+//    		for(int j=0;j<groupFeatDecl.getNumIfmlConstraint();j++){
+//        		System.out.println("j="+j);
+//    			IfmlConstraint ifmlConstraint = groupFeatDecl.getIfmlConstraint(j);
+//    			if(ifmlConstraint instanceof IfmlRequires)
+//    				((IfmlRequires)ifmlConstraint).addIfmlConstraints(cs);
+//    		}
+//    	}
+//    	return cs.cs4model.trueConstraint();
+//    }
+	
     // REQUIRES
-    public void IfmlRequires.addIfmlConstraints(ChocoSolverIfml chocoSolverIfml, org.chocosolver.solver.Model cs4model) {
+    public void IfmlRequires.addIfmlConstraints(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
 	    IntVar[] featureVars = cs4model.retrieveIntVars(true);
-	    for(IfmlFeatVar ifmlFeatVar : getIfmlFeatVarList()){
-	        String featName = ifmlFeatVar.getIfmlFName();
+    	org.chocosolver.solver.constraints.Constraint c1 = null;
+    	if(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(parentName())) {
+    		//parent is feature
+    		IntVar featVar = cs.getVar(parentName());
+    		c1 = cs4model.arithm(featVar,"=",1);
+    	} else {
+    		//parent is group
+    		IfmlGroupDecl ifmlGroupDecl = ((Model)calcContextNode(Model.class)).getIfmlGroupDeclByGroupName(parentName());
+    		BoolVar[] featVarsInGroup = cs.getAllFeaturesInGroup(ifmlGroupDecl);
+    		c1 = cs4model.or(featVarsInGroup);
+    	}
+    	BoolVar c1_bool = c1.reify();
+    	for(int i=0;i<getNumIfmlFeatVar();i++){
+	        String featName = getIfmlFeatVar(i).getIfmlFName();
 	        for(IntVar featureVar : featureVars){
 	            if(featureVar.getName().equals(featName)) {
-	                chocoSolverIfml.addConstraint(cs4model.arithm(featureVar,"=",1));
+	            	org.chocosolver.solver.constraints.Constraint c2 = cs4model.arithm(featureVar,"=",1);
+	            	BoolVar c2_bool = c2.reify();
+	            	org.chocosolver.solver.constraints.Constraint cstr = cs4model.arithm(c1_bool,"<=", c2_bool);
+	            	cstr.setName(parentName()+" -> "+featName);
+	                cs.addConstraint(cstr);
 	            }
 	        }
 	    }
     }
 
     // EXCLUDES
-    public void IfmlExcludes.addIfmlConstraints(ChocoSolverIfml chocoSolverIfml, org.chocosolver.solver.Model cs4model) {
+    public void IfmlExcludes.addIfmlConstraints(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
 	    IntVar[] featureVars = cs4model.retrieveIntVars(true);
-	    for(IfmlFeatVar ifmlFeatVar : getIfmlFeatVarList()){
-	        String featName = ifmlFeatVar.getIfmlFName();
+    	org.chocosolver.solver.constraints.Constraint c1 = null;
+    	if(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(parentName())) {
+    		//parent is feature
+    		IntVar featVar = cs.getVar(parentName());
+    		c1 = cs4model.arithm(featVar,"=",1);
+    	} else {
+    		//parent is group
+    		IfmlGroupDecl ifmlGroupDecl = ((Model)calcContextNode(Model.class)).getIfmlGroupDeclByGroupName(parentName());
+    		BoolVar[] featVarsInGroup = cs.getAllFeaturesInGroup(ifmlGroupDecl);
+    		c1 = cs4model.or(featVarsInGroup);
+    	}
+    	BoolVar c1_bool = c1.reify();
+    	for(int i=0;i<getNumIfmlFeatVar();i++){
+	        String featName = getIfmlFeatVar(i).getIfmlFName();
 	        for(IntVar featureVar : featureVars){
 	            if(featureVar.getName().equals(featName)) {
-	                chocoSolverIfml.addConstraint(cs4model.arithm(featureVar,"=",0));
+	            	org.chocosolver.solver.constraints.Constraint c2 = cs4model.arithm(featureVar,"=",0);
+	            	BoolVar c2_bool = c2.reify();
+	            	org.chocosolver.solver.constraints.Constraint cstr = cs4model.arithm(c1_bool,"<=", c2_bool);
+	            	cstr.setName(parentName()+" excludes "+featName);
+	                cs.addConstraint(cstr);
 	            }
 	        }
 	    }
     }
+
+    // IFIN
+    public void IfmlIfIn.addIfmlConstraints(ChocoSolverIfml cs,org.chocosolver.solver.Model cs4model) {
+    	org.chocosolver.solver.constraints.Constraint c1 = null;
+    	if(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(parentName())) {
+    		//parent is feature
+    		IntVar featVar = cs.getVar(parentName());
+    		c1 = cs4model.arithm(featVar,"=",1);
+    	} else {
+    		//parent is group
+    		IfmlGroupDecl ifmlGroupDecl = ((Model)calcContextNode(Model.class)).getIfmlGroupDeclByGroupName(parentName());
+    		BoolVar[] featVarsInGroup = cs.getAllFeaturesInGroup(ifmlGroupDecl);
+    		c1 = cs4model.or(featVarsInGroup);
+    	}    	
+    	
+        org.chocosolver.solver.constraints.Constraint c2 = getIfmlExpr().collectIfmlConstraints(cs, cs4model);
+    	BoolVar c1_bool = c1.reify();
+    	BoolVar c2_bool = c2.reify();
+    	org.chocosolver.solver.constraints.Constraint cstr = cs4model.arithm(c1_bool,"<=", c2_bool);
+    	cstr.setName(parentName()+" --> "+c1.toString()+", "+c2.toString());
+        cs.addConstraint(cstr);
+    }
     
+    //IfOut
+    public void IfmlIfOut.addIfmlConstraints(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
+    	org.chocosolver.solver.constraints.Constraint c1 = null;
+    	if(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(parentName())) {
+    		//parent is feature
+    		IntVar featVar = cs.getVar(parentName());
+    		c1 = cs4model.arithm(featVar,"=",0);
+    	} else {
+    		//parent is group
+    		IfmlGroupDecl ifmlGroupDecl = ((Model)calcContextNode(Model.class)).getIfmlGroupDeclByGroupName(parentName());
+    		BoolVar[] featVarsInGroup = cs.getAllFeaturesInGroup(ifmlGroupDecl);
+    		c1 = cs4model.not(cs4model.or(featVarsInGroup));
+    	}    	
+    	
+        org.chocosolver.solver.constraints.Constraint c2 = getIfmlExpr().collectIfmlConstraints(cs, cs4model);
+    	BoolVar c1_bool = c1.reify();
+    	BoolVar c2_bool = c2.reify();
+    	org.chocosolver.solver.constraints.Constraint cstr = cs4model.arithm(c1_bool,"<=", c2_bool);
+    	cstr.setName(parentName()+" ifout "+" :: "+c1.toString()+", "+c2.toString());
+        cs.addConstraint(cstr);
+    }
+
+    // EXPRESSIONS
+    // EXP: GENERAL (always overwritten when the program type-checks, as IfmlMExp is abstract)
+    public org.chocosolver.solver.constraints.Constraint IfmlMExp.collectIfmlConstraints(ChocoSolverIfml cs, 
+    		org.chocosolver.solver.Model cs4model) {
+        return null;
+    }
+    public ArExpression IfmlMExp.collectArExpression(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
+        return null;
+    }
+    // EXP:VARS
+    public org.chocosolver.solver.constraints.Constraint IfmlVariable.collectIfmlConstraints(ChocoSolverIfml cs, 
+    		org.chocosolver.solver.Model cs4model) {
+    	return cs4model.arithm(cs.getVar(getFullName()),"=",1);
+    }
+
+    public ArExpression IfmlVariable.collectArExpression(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
+        return cs.getVar(getFullName());
+    }
+
+    //EXP:VALUES
+    // > ????
+    public org.chocosolver.solver.constraints.Constraint IfmlMValue.collectIfmlConstraints(ChocoSolverIfml cs, 
+    		org.chocosolver.solver.Model cs4model) {
+        return getValue().collectIfmlConstraints(cs,cs4model);
+    }
+    public ArExpression IfmlMValue.collectArExpression(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
+        return getValue().collectArExpression(cs,cs4model);
+    }
+    // null is overwritten always for well-typed elements
+    public org.chocosolver.solver.constraints.Constraint Value.collectIfmlConstraints(ChocoSolverIfml cs, 
+    		org.chocosolver.solver.Model cs4model) {
+    	return null;
+	}
+    public ArExpression Value.collectArExpression(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
+    	return null;
+	}
+    // < ?????
+
+    public org.chocosolver.solver.constraints.Constraint BoolVal.collectIfmlConstraints(ChocoSolverIfml cs, 
+    		org.chocosolver.solver.Model cs4model) {
+        if (getValue())
+            return cs4model.trueConstraint();
+        else
+            return cs4model.falseConstraint();
+    }
+    public ArExpression IntVal.collectArExpression(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
+        return cs4model.intVar(getValue());
+    }
+
+    // EXP: AddExp
+    public ArExpression IfmlMAddAddExp.collectArExpression(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
+        return getIfmlLeft().collectArExpression(cs,cs4model).add(getIfmlRight().collectArExpression(cs,cs4model));
+    }
+    public ArExpression IfmlMSubAddExp.collectArExpression(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
+        return getIfmlLeft().collectArExpression(cs,cs4model).sub(getIfmlRight().collectArExpression(cs,cs4model));
+    }
+
+    // EXP: MultExp
+    public ArExpression IfmlMMultMultExp.collectArExpression(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
+        return getIfmlLeft().collectArExpression(cs,cs4model).mul(getIfmlRight().collectArExpression(cs,cs4model));
+    }
+    public ArExpression IfmlMDivMultExp.collectArExpression(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
+        return getIfmlLeft().collectArExpression(cs,cs4model).div(getIfmlRight().collectArExpression(cs,cs4model));
+    }
+    public ArExpression IfmlMModMultExp.collectArExpression(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
+        return getIfmlLeft().collectArExpression(cs,cs4model).mod(getIfmlRight().collectArExpression(cs,cs4model));
+    }
+
+    // EXP: Unary
+    public ArExpression IfmlMMinusExp.collectArExpression(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
+    	return getIfmlOperand().collectArExpression(cs,cs4model).neg();
+    }
+    public org.chocosolver.solver.constraints.Constraint IfmlMNegExp.collectIfmlConstraints(ChocoSolverIfml cs, 
+    		org.chocosolver.solver.Model cs4model) {
+        return cs4model.not(getIfmlOperand().collectIfmlConstraints(cs,cs4model));
+    }
+
+    // EXP: EqualityExpr
+    public org.chocosolver.solver.constraints.Constraint IfmlMEqExp.collectIfmlConstraints(ChocoSolverIfml cs, 
+    		org.chocosolver.solver.Model cs4model) {
+        // Need to type check JUST the equality of expressions, to know if the constraints should produce  '==' or '<->'.
+        // All other type checking should be done after flattening.
+    	checkIfmlType(IfmlTypes.BOOL, new SemanticConditionList());
+        if (isInt) {
+        	return getIfmlLeft().collectArExpression(cs,cs4model).eq(getIfmlRight().collectArExpression(cs,cs4model)).decompose();
+        	//decompose(), returns the topmost constraint representing the expression. 
+        	//If needed, a call to this method creates additional variables and posts additional constraints.
+        } else {//<-> ifOnlyIf constraint
+        	org.chocosolver.solver.constraints.Constraint ifCstr = getIfmlLeft().collectIfmlConstraints(cs,cs4model);
+        	org.chocosolver.solver.constraints.Constraint thenCstr = getIfmlRight().collectIfmlConstraints(cs,cs4model);
+            
+            BoolVar ifCstr_bool = ifCstr.reify();
+            BoolVar thenCstr_bool = thenCstr.reify();
+            org.chocosolver.solver.constraints.Constraint cstr = cs4model.arithm(ifCstr_bool,"=", thenCstr_bool);
+            cstr.setName("<-> "+ifCstr.toString()+", "+thenCstr.toString());
+            return cstr;
+        }
+    }
+
+    // EXP: RelationalExpr
+    public org.chocosolver.solver.constraints.Constraint IfmlMGTEQExp.collectIfmlConstraints(ChocoSolverIfml cs, 
+    		org.chocosolver.solver.Model cs4model) {
+        return getIfmlLeft().collectArExpression(cs,cs4model).ge(getIfmlRight().collectArExpression(cs,cs4model)).decompose();
+    }
+    public org.chocosolver.solver.constraints.Constraint IfmlMLTEQExp.collectIfmlConstraints(ChocoSolverIfml cs, 
+    		org.chocosolver.solver.Model cs4model) {
+        return getIfmlLeft().collectArExpression(cs,cs4model).le(getIfmlRight().collectArExpression(cs,cs4model)).decompose();
+    }
+    public org.chocosolver.solver.constraints.Constraint IfmlMGTExp.collectIfmlConstraints(ChocoSolverIfml cs, 
+    		org.chocosolver.solver.Model cs4model) {
+        return getIfmlLeft().collectArExpression(cs,cs4model).gt(getIfmlRight().collectArExpression(cs,cs4model)).decompose();
+    }
+    public org.chocosolver.solver.constraints.Constraint IfmlMLTExp.collectIfmlConstraints(ChocoSolverIfml cs, 
+    		org.chocosolver.solver.Model cs4model) {
+        return getIfmlLeft().collectArExpression(cs,cs4model).lt(getIfmlRight().collectArExpression(cs,cs4model)).decompose();
+    }
+
+    // EXP: BoolExp
+    public org.chocosolver.solver.constraints.Constraint IfmlMEquivExp.collectIfmlConstraints(ChocoSolverIfml cs, 
+    		org.chocosolver.solver.Model cs4model) {
+    	org.chocosolver.solver.constraints.Constraint ifCstr = getIfmlLeft().collectIfmlConstraints(cs,cs4model);
+    	org.chocosolver.solver.constraints.Constraint thenCstr = getIfmlRight().collectIfmlConstraints(cs,cs4model);
+        BoolVar ifCstr_bool = ifCstr.reify();
+        BoolVar thenCstr_bool = thenCstr.reify();
+        org.chocosolver.solver.constraints.Constraint cstr = cs4model.arithm(ifCstr_bool,"=", thenCstr_bool);
+        cstr.setName("<-> "+ifCstr.toString()+", "+thenCstr.toString());
+        return cstr;
+    }
+    public org.chocosolver.solver.constraints.Constraint IfmlMImpliesExp.collectIfmlConstraints(ChocoSolverIfml cs, 
+    		org.chocosolver.solver.Model cs4model) {
+    	org.chocosolver.solver.constraints.Constraint ifCstr = getIfmlLeft().collectIfmlConstraints(cs,cs4model);
+    	org.chocosolver.solver.constraints.Constraint thenCstr = getIfmlRight().collectIfmlConstraints(cs,cs4model);
+        BoolVar ifCstr_bool = ifCstr.reify();
+        BoolVar thenCstr_bool = thenCstr.reify();
+        org.chocosolver.solver.constraints.Constraint cstr = cs4model.arithm(ifCstr_bool,"<=", thenCstr_bool);
+        cstr.setName(" -> "+ifCstr.toString()+", "+thenCstr.toString());
+        return cstr;
+    }
+    public org.chocosolver.solver.constraints.Constraint IfmlMOrBoolExp.collectIfmlConstraints(ChocoSolverIfml cs, 
+    		org.chocosolver.solver.Model cs4model) {
+        org.chocosolver.solver.constraints.Constraint leftCstr = getIfmlLeft().collectIfmlConstraints(cs,cs4model);
+        org.chocosolver.solver.constraints.Constraint rightCstr = getIfmlRight().collectIfmlConstraints(cs,cs4model);
+        org.chocosolver.solver.constraints.Constraint cstr = cs4model.or(leftCstr, rightCstr);
+        cstr.setName("|| "+leftCstr.toString()+" "+rightCstr.toString());
+        return cstr;
+    }
+    public org.chocosolver.solver.constraints.Constraint IfmlMAndBoolExp.collectIfmlConstraints(ChocoSolverIfml cs, 
+    		org.chocosolver.solver.Model cs4model) {
+        org.chocosolver.solver.constraints.Constraint leftCstr = getIfmlLeft().collectIfmlConstraints(cs,cs4model);
+        org.chocosolver.solver.constraints.Constraint rightCstr = getIfmlRight().collectIfmlConstraints(cs,cs4model);
+        org.chocosolver.solver.constraints.Constraint cstr = cs4model.and(leftCstr, rightCstr);
+        cstr.setName("|| "+leftCstr.toString()+" "+rightCstr.toString());
+        return cstr;
+    }    
     
 }
