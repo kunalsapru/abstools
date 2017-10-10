@@ -196,7 +196,6 @@ public class ChocoSolverIfml {
      * @param absmodel
      */
     private void addConstraintsForFeaturesAndGroups(Map<String, Integer> solution, abs.frontend.ast.Model absmodel) {
- //       ArrayList<String> groupListForProduct = new ArrayList<String>();
         for(Map.Entry<String, IntVar> entry : vars.entrySet()) {
             String featureOrGroupName = entry.getKey();
             if(!(featureOrGroupName.contains("."))) {
@@ -227,34 +226,8 @@ public class ChocoSolverIfml {
                         }
                     }
                 }
-//                // Getting group for feature 'featureName'
-//                IfmlGroupDecl ifmlGroupDecl = absmodel.getIfmlGroupDecl(featureName);
-//                if(ifmlGroupDecl!=null) {
-//                    if(!(groupListForProduct.contains(ifmlGroupDecl.getName()))){
-//                        groupListForProduct.add(ifmlGroupDecl.getName());
-//                    }
-//                }
             }
         }
-        //Add Group constraints
-//        for(String groupName: groupListForProduct) {
-//            //Add Cardinality constraints for this group
-//            IfmlGroupDecl ifmlGroupDecl = absmodel.getIfmlGroupDeclByGroupName(groupName);
-//            if(ifmlGroupDecl != null) {
-//                IfmlCardinality ifmlCardinality = absmodel.getGroupCardinality(ifmlGroupDecl.getName());
-//                if(ifmlCardinality != null){
-//                    //Add cardinality constraint here
-//                    addCardinalityConstraint(ifmlGroupDecl, ifmlCardinality);
-//                }
-//
-//                //Get group constraints for this group
-//                ArrayList<IfmlConstraint> ifmlGroupConstraintList = absmodel.getAllGroupConstraints(ifmlGroupDecl.getName());
-//                //Now add IfmlConstraints to constraints list
-//                if(!(ifmlGroupConstraintList.isEmpty())) {
-//                    addIfmlConstraints(ifmlGroupConstraintList);
-//                }
-//            }
-//        }
     }
 
     /**
@@ -292,62 +265,9 @@ public class ChocoSolverIfml {
      */
     private List<String> checkAllIfmlConstraints(Map<String, Integer> solution, abs.frontend.ast.Model absModel){
         List<String> result = new ArrayList<>();
-        
-//        List<String> listIfInIfOutConstraint = checkIfInIfOutConstraints(solution, absModel);
-
-        
-        //Check ifml constraints only when all ifin/ifout constraints are satisfied. 
-        //This is required because ifin/ifout constraints are posted automatically, as soon as they are defined.
-//        if(listIfInIfOutConstraint.isEmpty()) {
-            result.addAll(checkOnlyIfmlConstraints(solution, absModel));
-//        } else {
-//            result.addAll(listIfInIfOutConstraint);
-//        }
+        result.addAll(checkOnlyIfmlConstraints(solution, absModel));
         return removeDuplicateFromList(result);
     }
-
-//    private List<String> checkIfInIfOutConstraints(Map<String, Integer> solution, abs.frontend.ast.Model absModel) {
-//        Solver solver = cs4model.getSolver();
-//        List<String> result = new ArrayList<>();
-//        IntVar[] intVars = cs4model.retrieveIntVars(true);
-//        int val=0;
-//
-//        try {
-//            solver.propagate();
-//        } catch (ContradictionException e1) {
-//            result.add("Exception while propagating solver --> "+e1.toString());
-//        } catch(Exception e2){
-//            result.add("Exception while propagating solver --> "+e2.toString());
-//        }
-//        
-//        //There is no need to iterate over constraints list,  as all ifin/ifout constraints are posted automatically
-//        //as soon as they are defined
-//        cs4model.getEnvironment().worldPush();
-//        for(IntVar var : intVars){
-//            try {
-//                solver.propagate();
-//                if(solution.containsKey(var.getName())){
-//                    val = solution.get(var.getName());
-//                    var.instantiateTo(val, Cause.Null);
-//                } else {
-//                    if(defaultvals.get(var.getName()) != null) {
-//                        val = defaultvals.get(var.getName());
-//                        var.instantiateTo(val, Cause.Null);
-//                    }
-//                }
-//                solver.propagate();
-//            } catch (ContradictionException e) {
-//                solver.getEngine().flush();
-//                result.add("**IfIn/IfOut Cons failed for group/feature '"+var.getName()+"'");
-//            } catch (Exception e1) {
-//                solver.getEngine().flush();
-//                result.add(e1.toString());
-//            }
-//        }
-//        cs4model.getEnvironment().worldPop();        
-//        
-//        return removeDuplicateFromList(result);
-//    }
 
     /**
      * This method checks for all constraints like cardinality, requires, excludes etc.
@@ -412,8 +332,6 @@ public class ChocoSolverIfml {
             cs4model.getEnvironment().worldPop();
             cs4model.unpost(c);
         }
-        
-        
         return removeDuplicateFromList(result);
     }
 
