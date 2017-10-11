@@ -1129,7 +1129,7 @@ new List<ModuleDecl>(),
                                   * Integer.parseInt(ctx.INTLITERAL().getText())));
     }
 
-        // IFML
+        // IFML Code starts *********************************************************************************
 
         @Override public void exitIfml_feature_decl_all(ABSParser.Ifml_feature_decl_allContext ctx) {
             setV(ctx, new IfmlFeatureDeclAll(l(ctx.ifml_feature_decl())));
@@ -1296,6 +1296,6 @@ new List<ModuleDecl>(),
                 else setV(ctx, new IfmlFeatVar(id));
             }
         }
-        
+        // IFML code ends ***********************************************************************************
         
 }

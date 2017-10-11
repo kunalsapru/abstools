@@ -148,12 +148,11 @@ public class ChocoSolverIfml {
             //Add constraints for features and groups selected by user, only when there are no domain errors
             addConstraintsForFeaturesAndGroups(solution, absmodel);
 
-            //Add, all constraint failure errors to list, only when there are no domain errors
-            result.addAll(checkAllIfmlConstraints(solution, absmodel));
+            //Check all constraints and add failure errors to list, only when there are no domain errors
+            result.addAll(checkIfmlConstraints(solution, absmodel));
         }
         return removeDuplicateFromList(result);
     }
-    
     
     /**
      * This method checks for domain errors for all attributes selected inside a feature by the user
@@ -200,7 +199,6 @@ public class ChocoSolverIfml {
             String featureOrGroupName = entry.getKey();
             if(!(featureOrGroupName.contains("."))) {
                 if(absmodel.ifmlfeatures().contains(featureOrGroupName)) {
-                    //It's a feature
                     //Get all constraints for this feature
                     ArrayList<IfmlConstraint> ifmlFeatureConstraintList = absmodel.getAllFeatureConstraints(featureOrGroupName);
                     //Add feature constraints to featureConstraints list
@@ -208,18 +206,17 @@ public class ChocoSolverIfml {
                         addIfmlConstraints(ifmlFeatureConstraintList);
                     }
                 } else if(absmodel.ifmlgroups().contains(featureOrGroupName)){
-                    //It's a group
                     //Add Cardinality constraints for this group
                     IfmlGroupDecl ifmlGroupDecl = absmodel.getIfmlGroupDeclByGroupName(featureOrGroupName);
                     if(ifmlGroupDecl != null) {
-                        IfmlCardinality ifmlCardinality = absmodel.getGroupCardinality(ifmlGroupDecl.getName());
+                        String groupName = ifmlGroupDecl.getName();
+                        IfmlCardinality ifmlCardinality = absmodel.getGroupCardinality(groupName);
                         if(ifmlCardinality != null){
                             //Add cardinality constraint here
-                            addCardinalityConstraint(ifmlGroupDecl, ifmlCardinality);
+                            addCardinalityConstraints(ifmlGroupDecl, ifmlCardinality);
                         }
-
                         //Get group constraints for this group
-                        ArrayList<IfmlConstraint> ifmlGroupConstraintList = absmodel.getAllGroupConstraints(ifmlGroupDecl.getName());
+                        ArrayList<IfmlConstraint> ifmlGroupConstraintList = absmodel.getAllGroupConstraints(groupName);
                         //Now add IfmlConstraints to constraints list
                         if(!(ifmlGroupConstraintList.isEmpty())) {
                             addIfmlConstraints(ifmlGroupConstraintList);
@@ -241,19 +238,15 @@ public class ChocoSolverIfml {
             if(ifmlConstraint instanceof IfmlRequires) {
                 IfmlRequires ifmlRequires = (IfmlRequires)ifmlConstraint;
                 ifmlRequires.addIfmlConstraints(this, cs4model);
-                
             } else if(ifmlConstraint instanceof IfmlExcludes){//Adding Excludes constraint
                 IfmlExcludes ifmlExcludes = (IfmlExcludes)ifmlConstraint;
                 ifmlExcludes.addIfmlConstraints(this, cs4model);
-                
             } else if(ifmlConstraint instanceof IfmlIfIn){//Adding IfIn constraints
                 IfmlIfIn ifmlIfIn = (IfmlIfIn)ifmlConstraint;
                 ifmlIfIn.addIfmlConstraints(this, cs4model);
-
             } else if (ifmlConstraint instanceof IfmlIfOut){//Adding IfOUt constraints
                 IfmlIfOut ifmlIfOut = (IfmlIfOut)ifmlConstraint;
                 ifmlIfOut.addIfmlConstraints(this, cs4model);
-                
             }
         }
     }
@@ -263,19 +256,7 @@ public class ChocoSolverIfml {
      * @param absmodel 
      * @return List of failed constraint(s)
      */
-    private List<String> checkAllIfmlConstraints(Map<String, Integer> solution, abs.frontend.ast.Model absModel){
-        List<String> result = new ArrayList<>();
-        result.addAll(checkOnlyIfmlConstraints(solution, absModel));
-        return removeDuplicateFromList(result);
-    }
-
-    /**
-     * This method checks for all constraints like cardinality, requires, excludes etc.
-     * @param solution map created by user in ABS program
-     * @param absModel
-     * @return
-     */
-    private List<String> checkOnlyIfmlConstraints(Map<String, Integer> solution, abs.frontend.ast.Model absModel) {
+    private List<String> checkIfmlConstraints(Map<String, Integer> solution, abs.frontend.ast.Model absModel){
         Solver solver = cs4model.getSolver();
         List<String> result = new ArrayList<>();
         IntVar[] intVars = cs4model.retrieveIntVars(true);
@@ -288,7 +269,6 @@ public class ChocoSolverIfml {
         } catch(Exception e2){
             result.add("Exception while propagating solver --> "+e2.toString());
         }
-
         for(Constraint c : constraints) {
             cs4model.post(c);
             cs4model.getEnvironment().worldPush();
@@ -323,10 +303,10 @@ public class ChocoSolverIfml {
                     solver.propagate();
                 } catch (ContradictionException e) {
                     solver.getEngine().flush();
-                    result.add(c.toString());
+                    result.add(c.getName());
                 } catch (Exception e1) {
                     solver.getEngine().flush();
-                    result.add(c.toString());
+                    result.add(c.getName());
                 }
             }
             cs4model.getEnvironment().worldPop();
@@ -339,40 +319,21 @@ public class ChocoSolverIfml {
      * This function adds cardinality constraints like allof, oneof to groups
      * @param ifmlGroupDecl
      * @param ifmlCardinality
-     * @param solution map created by user in ABS program
      */
-    private void addCardinalityConstraint(IfmlGroupDecl ifmlGroupDecl, IfmlCardinality ifmlCardinality) {
+    private void addCardinalityConstraints(IfmlGroupDecl ifmlGroupDecl, IfmlCardinality ifmlCardinality) {
         //Get all features inside a group
         BoolVar[] allFeaturesInGroup = getAllFeaturesInGroup(ifmlGroupDecl);
+        String groupName = ifmlGroupDecl.getName();
         //Applying cardinality constraints
         if(ifmlCardinality instanceof IfmlAllOf){
-            //Apply allof cardinality
-          //Every group must have atleast one feature
-            Constraint allOf = cs4model.sum(allFeaturesInGroup, "=" , allFeaturesInGroup.length);
-            allOf.setName("Cardinality '"+IFMLCONSTRAINT_ALLOF+"' for "+ifmlGroupDecl.getName());
-            addConstraint(allOf);
+            IfmlAllOf ifmlAllOf = (IfmlAllOf)ifmlCardinality;
+            ifmlAllOf.addCardinalityConstraint(allFeaturesInGroup, groupName, this, cs4model);
         } else if(ifmlCardinality instanceof IfmlMinim){
-            //Apply [From..*] cardinality
-            Constraint minimCstr = cs4model.sum(allFeaturesInGroup, ">=" , ((IfmlMinim) ifmlCardinality).getIfmlCFrom());
-            minimCstr.setName("Cardinality '"+"["+((IfmlMinim) ifmlCardinality).getIfmlCFrom()+"..*]"+"' for "+ifmlGroupDecl.getName());
-            addConstraint(minimCstr);
+            IfmlMinim ifmlMinim = (IfmlMinim)ifmlCardinality;
+            ifmlMinim.addCardinalityConstraint(allFeaturesInGroup, groupName, this, cs4model);
         } else if(ifmlCardinality instanceof IfmlCRange){
-            if(((IfmlCRange) ifmlCardinality).getIfmlCFrom() == 1 && ((IfmlCRange) ifmlCardinality).getIfmlCTo() == 1){
-                //Apply oneof cardinality
-                Constraint oneof = cs4model.sum(allFeaturesInGroup, "=" , 1);
-                oneof.setName("Cardinality '"+IFMLCONSTRAINT_ONEOF+"' for "+ifmlGroupDecl.getName());
-                addConstraint(oneof);
-            } else {
-                //Apply [From..To] cardinality
-                String cstrName = "Cardinality '"+"["+((IfmlCRange) ifmlCardinality).getIfmlCFrom()+".."+
-                        ((IfmlCRange) ifmlCardinality).getIfmlCTo()+"]"+"' for "+ifmlGroupDecl.getName();
-                Constraint fromCstr = cs4model.sum(allFeaturesInGroup, ">=" , ((IfmlCRange) ifmlCardinality).getIfmlCFrom());
-                Constraint toCstr = cs4model.sum(allFeaturesInGroup, "<=" , ((IfmlCRange) ifmlCardinality).getIfmlCTo());
-                fromCstr.setName(cstrName);
-                toCstr.setName(cstrName);
-                addConstraint(fromCstr);
-                addConstraint(toCstr);
-            }
+            IfmlCRange ifmlCRange = (IfmlCRange)ifmlCardinality;
+            ifmlCRange.addCardinalityConstraint(allFeaturesInGroup, groupName, this, cs4model);
         }
     }
 
@@ -394,9 +355,7 @@ public class ChocoSolverIfml {
         }
         BoolVar[] allFeaturesInGroup = new BoolVar[newBoolVars.size()];
         allFeaturesInGroup = newBoolVars.toArray(allFeaturesInGroup);
-        
         return allFeaturesInGroup;
-       
     }
     
     /**

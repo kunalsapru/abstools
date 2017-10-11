@@ -35,29 +35,26 @@ aspect IfmlVariables {
     coll IfmlRepeatList Model.ifmlgroups() [new IfmlRepeatList()] with ifmlAddNonNull root Model;
     coll IfmlRepeatList Model.ifmlconstraints() [new IfmlRepeatList()] with ifmlAddNonNull root Model;
     coll IfmlRepeatList Model.ifmlattributes() [new IfmlRepeatList()] with ifmlAddNonNull root Model;
-    
 
-    // get Feature names in attributes (scope of attributes).
-	
-//    inh String IfmlAttribute.featureName();
+    // Get feature names in attributes.
     inh String IfmlAttribute.featureName();
     inh String IfmlAttributes.featureName();
     eq 	IfmlFeatureDecl.getIfmlAttributes().featureName() = this.getName();
-    // get the full name of a variable
     
+    //Get parent name of ifml constraints. It can be a feature or a group
     inh String IfmlConstraint.parentName();
     eq IfmlConstraintDeclGroupFeature.getIfmlConstraint(int i).parentName() {
     	return this.getName();
     }
     
+    // Get full name of variables 
     syn String IfmlVariable.getFullName();
     eq   IfmlFAVar.getFullName() = getIfmlFName() + "." + getIfmlAName();
-    eq  IfmlAttVar.getFullName() = getIfmlAName(); // can not figure out parent feature name yet, may be we won't need full name
+    eq  IfmlAttVar.getFullName() = parentName() + "." + getIfmlAName();
     eq IfmlFeatVar.getFullName() = getIfmlFName();
     eq IfmlConsVar.getFullName() = getIfmlCName();
 
-    // Checks type of variables and features.
-
+    // Checks type of variables and features
     syn boolean IfmlVariable.isBool();
     eq   IfmlFAVar.isBool() = calcContextNode(Model.class).ifmlbools().contains(getFullName());
     eq  IfmlAttVar.isBool() = calcContextNode(Model.class).ifmlbools().contains(getFullName());
@@ -70,7 +67,7 @@ aspect IfmlVariables {
     eq IfmlFeatVar.isInt() = false;
     eq IfmlConsVar.isInt() = false;
 
-    // get variables in an attribute declaration, and checks if it is repeated.
+    // Get variables in an attribute declaration, and checks if it is repeated.
     public boolean IfmlAttribute.isRepeated = false;
     IfmlAttribute contributes getIntFVarsHelp() to Model.ifmlints() for calcContextNode(Model.class);
 

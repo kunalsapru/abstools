@@ -469,7 +469,7 @@ boundary_int : star='*' | boundary_val ;
 
 boundary_val : m='-'? i=INTLITERAL ;
 
-// start of ifml feature model
+// Start of ifml feature model ***************************************************************************
 
 //Declaring ifeatures grammar with attribute declaration.
 ifml_feature_decl_all : ifml_feature_decl (',' ifml_feature_decl)*;
@@ -519,7 +519,7 @@ ifml_mexp : TYPE_IDENTIFIER '.' IDENTIFIER
     | '(' a=ifml_mexp ')'
     ;
 
-// End of ifml feature model
+// End of ifml feature model ********************************************************************************
 
 main_block : annotations '{' stmt* '}' ;
 

@@ -184,7 +184,6 @@ aspect IfmlErrorCheck {
 		}
     }
 
-
     // Check if attribute variable is already defined, and its type is well-formed.
     public void IfmlAttribute.collectErrors(SemanticConditionList c) {
         super.collectErrors(c);
@@ -294,8 +293,6 @@ aspect IfmlErrorCheck {
         else if(isInt() && type!=IfmlTypes.INT) 
             c.add(new SemanticError(this,ErrorMessage.EXPECTED_INT,getFullName()));
     }
-
-
 
 }
 // Local Variables:
