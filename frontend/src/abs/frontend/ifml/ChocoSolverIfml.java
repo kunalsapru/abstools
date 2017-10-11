@@ -148,7 +148,7 @@ public class ChocoSolverIfml {
             //Add constraints for features and groups selected by user, only when there are no domain errors
             addConstraintsForFeaturesAndGroups(solution, absmodel);
 
-            //Check all constraints and add failure errors to list, only when there are no domain errors
+            //Check all constraints and add errors to list, only when there are no domain errors
             result.addAll(checkIfmlConstraints(solution, absmodel));
         }
         return removeDuplicateFromList(result);

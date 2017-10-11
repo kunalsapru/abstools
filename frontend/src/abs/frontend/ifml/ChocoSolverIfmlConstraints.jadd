@@ -286,7 +286,7 @@ aspect ChocoSolverIfmlConstraints {
             BoolVar ifCstr_bool = ifCstr.reify();
             BoolVar thenCstr_bool = thenCstr.reify();
             org.chocosolver.solver.constraints.Constraint cstr = cs4model.arithm(ifCstr_bool,"=", thenCstr_bool);
-            cstr.setName("("+ifCstr.getName()+" <-> "+thenCstr.getName()+")");
+            cstr.setName("("+ifCstr.getName()+") <-> ("+thenCstr.getName()+")");
             return cstr;
         }
     }
