@@ -5,6 +5,7 @@
 package abs.frontend.ifml;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -110,6 +111,7 @@ public class ChocoSolverIfml {
         for (int i=0; i < bsize; i++) {
             vals[i] = ((IfmlBoundaryVal) bs[i+1]).getValue(); // drop first value - repeated
         }
+        Arrays.sort(vals);
         addIntVar(name,vals);
     }
     
