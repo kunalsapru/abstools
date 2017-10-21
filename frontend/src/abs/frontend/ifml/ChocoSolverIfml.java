@@ -104,10 +104,14 @@ public class ChocoSolverIfml {
         return vars.get(var);
     }
 
-    public void addSetVar(String name, IfmlBoundaryInt[] bs) {
+    /**
+     * This method is called only when the attribute domain is a set of values
+     * @param name of the variable
+     * @param bs an array of type IfmlBoundaryInt
+     */
+    public void addIntVarWithSetDomain(String name, IfmlBoundaryInt[] bs) {
         int bsize = bs.length - 1;
         int[] vals = new int[bsize];
-        // addSetVar only called if bs has only BoundaryVals
         for (int i=0; i < bsize; i++) {
             vals[i] = ((IfmlBoundaryVal) bs[i+1]).getValue(); // drop first value - repeated
         }
