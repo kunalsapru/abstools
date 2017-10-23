@@ -30,12 +30,6 @@ aspect ChocoSolverIfmlConstraints {
         // adding group names to choco solver
         for (String st : ifmlgroups())
             cs.addBoolVar(st);
-        // adding constraint names to choco solver
-        for(String st : ifmlconstraints())
-			cs.addBoolVar(st);
-        // adding string variables to choco solver
-        for(String st : ifmlstrings())
-			cs.addBoolVar(st);
 
         return cs;
     }
