@@ -202,34 +202,31 @@ public class ChocoSolverIfml {
      */
     private void addConstraintsForFeaturesAndGroups(Map<String, Integer> solution, abs.frontend.ast.Model absmodel) {
         for(Map.Entry<String, Integer> entry : solution.entrySet()) {
-            String featureOrGroupName = entry.getKey();
-            if(!(featureOrGroupName.contains("."))) {
-                if(absmodel.ifmlfeatures().contains(featureOrGroupName)) {
+            String featureName = entry.getKey();
+                if(absmodel.ifmlfeatures().contains(featureName)) {
                     //Get all constraints for this feature
-                    ArrayList<IfmlConstraint> ifmlFeatureConstraintList = absmodel.getAllFeatureConstraints(featureOrGroupName);
+                    ArrayList<IfmlConstraint> ifmlFeatureConstraintList = absmodel.getAllFeatureConstraints(featureName);
                     //Add feature constraints to featureConstraints list
                     if(!(ifmlFeatureConstraintList.isEmpty())) {
                         addIfmlConstraints(ifmlFeatureConstraintList);
                     }
-                } else if(absmodel.ifmlgroups().contains(featureOrGroupName)){
+                }
+                IfmlGroupDecl ifmlGroupDecl = absmodel.getIfmlGroupDecl(featureName);
+                if(ifmlGroupDecl != null){
                     //Add Cardinality constraints for this group
-                    IfmlGroupDecl ifmlGroupDecl = absmodel.getIfmlGroupDeclByGroupName(featureOrGroupName);
-                    if(ifmlGroupDecl != null) {
-                        String groupName = ifmlGroupDecl.getName();
-                        IfmlCardinality ifmlCardinality = absmodel.getGroupCardinality(groupName);
-                        if(ifmlCardinality != null){
-                            //Add cardinality constraint here
-                            addCardinalityConstraints(ifmlGroupDecl, ifmlCardinality);
-                        }
-                        //Get group constraints for this group
-                        ArrayList<IfmlConstraint> ifmlGroupConstraintList = absmodel.getAllGroupConstraints(groupName);
-                        //Now add IfmlConstraints to constraints list
-                        if(!(ifmlGroupConstraintList.isEmpty())) {
-                            addIfmlConstraints(ifmlGroupConstraintList);
-                        }
+                    String groupName = ifmlGroupDecl.getName();
+                    IfmlCardinality ifmlCardinality = absmodel.getGroupCardinality(groupName);
+                    if(ifmlCardinality != null){
+                        //Add cardinality constraint here
+                        addCardinalityConstraints(ifmlGroupDecl, ifmlCardinality);
+                    }
+                    //Get group constraints for this group
+                    ArrayList<IfmlConstraint> ifmlGroupConstraintList = absmodel.getAllGroupConstraints(groupName);
+                    //Now add IfmlConstraints to constraints list
+                    if(!(ifmlGroupConstraintList.isEmpty())) {
+                        addIfmlConstraints(ifmlGroupConstraintList);
                     }
                 }
-            }
         }
     }
 
