@@ -201,7 +201,7 @@ public class ChocoSolverIfml {
      * @param absmodel
      */
     private void addConstraintsForFeaturesAndGroups(Map<String, Integer> solution, abs.frontend.ast.Model absmodel) {
-        for(Map.Entry<String, IntVar> entry : vars.entrySet()) {
+        for(Map.Entry<String, Integer> entry : solution.entrySet()) {
             String featureOrGroupName = entry.getKey();
             if(!(featureOrGroupName.contains("."))) {
                 if(absmodel.ifmlfeatures().contains(featureOrGroupName)) {
