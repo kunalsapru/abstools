@@ -1,15 +1,6 @@
 // 91 (76 Features + 15 Groups) + 23 Constraints
 productline House;
 
-\addplot[style={rred,fill=rred,mark=none}]
-        coordinates {(91 Features,1.08) (371 Features,1.15) (721
-        Features,1.25) (1071 Features, 1.3)};
-
-   \addplot[style={ggreen,fill=ggreen,mark=none}]
-        coordinates {(91 Features,2.2) (371 Features,5.5) (721
-        Features,10.2) (1071 Features, 15.8)};
-
-
 features SlidingDoor, SwingingDoor, ElectronicBlinds,
 DoorSensor, FireSensor, MovementSensor, WindowSensor, COSensor,
 TemperatureSensor, FireAlarm, BurglarAlarm, COAlarm,
