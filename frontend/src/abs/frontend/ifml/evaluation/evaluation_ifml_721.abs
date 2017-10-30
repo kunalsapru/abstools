@@ -1,0 +1,443 @@
+// 721 (616 Features + 105 Groups) + 113 Constraints
+productline House;
+
+features SlidingDoor, SwingingDoor, ElectronicBlinds,
+DoorSensor, FireSensor, MovementSensor, WindowSensor, COSensor,
+TemperatureSensor, FireAlarm, BurglarAlarm, COAlarm,
+RemoteInterface, Gas, Electric, Oil,
+DoorSensor0, FireSensor0 ,MovementSensor0, WindowSensor0, COSensor0, TemperatureSensor0,
+DoorSensor1, FireSensor1 ,MovementSensor1, WindowSensor1, COSensor1, TemperatureSensor1,
+DoorSensor2, FireSensor2 ,MovementSensor2, WindowSensor2, COSensor2, TemperatureSensor2,
+DoorSensor3, FireSensor3 ,MovementSensor3, WindowSensor3, COSensor3, TemperatureSensor3,
+DoorSensor4, FireSensor4 ,MovementSensor4, WindowSensor4, COSensor4, TemperatureSensor4,
+DoorSensor5, FireSensor5 ,MovementSensor5, WindowSensor5, COSensor5, TemperatureSensor5,
+DoorSensor6, FireSensor6 ,MovementSensor6, WindowSensor6, COSensor6, TemperatureSensor6,
+DoorSensor7, FireSensor7 ,MovementSensor7, WindowSensor7, COSensor7, TemperatureSensor7,
+DoorSensor8, FireSensor8 ,MovementSensor8, WindowSensor8, COSensor8, TemperatureSensor8,
+DoorSensor9, FireSensor9 ,MovementSensor9, WindowSensor9, COSensor9, TemperatureSensor9,
+DoorSensor10, FireSensor10 ,MovementSensor10, WindowSensor10, COSensor10, TemperatureSensor10,
+DoorSensor11, FireSensor11 ,MovementSensor11, WindowSensor11, COSensor11, TemperatureSensor11,
+DoorSensor12, FireSensor12 ,MovementSensor12, WindowSensor12, COSensor12, TemperatureSensor12,
+DoorSensor13, FireSensor13 ,MovementSensor13, WindowSensor13, COSensor13, TemperatureSensor13,
+DoorSensor14, FireSensor14 ,MovementSensor14, WindowSensor14, COSensor14, TemperatureSensor14,
+DoorSensor15, FireSensor15 ,MovementSensor15, WindowSensor15, COSensor15, TemperatureSensor15,
+DoorSensor16, FireSensor16 ,MovementSensor16, WindowSensor16, COSensor16, TemperatureSensor16,
+DoorSensor17, FireSensor17 ,MovementSensor17, WindowSensor17, COSensor17, TemperatureSensor17,
+DoorSensor18, FireSensor18 ,MovementSensor18, WindowSensor18, COSensor18, TemperatureSensor18,
+DoorSensor19, FireSensor19 ,MovementSensor19, WindowSensor19, COSensor19, TemperatureSensor19,
+DoorSensor20, FireSensor20 ,MovementSensor20, WindowSensor20, COSensor20, TemperatureSensor20,
+DoorSensor21, FireSensor21 ,MovementSensor21, WindowSensor21, COSensor21, TemperatureSensor21,
+DoorSensor22, FireSensor22 ,MovementSensor22, WindowSensor22, COSensor22, TemperatureSensor22,
+DoorSensor23, FireSensor23 ,MovementSensor23, WindowSensor23, COSensor23, TemperatureSensor23,
+DoorSensor24, FireSensor24 ,MovementSensor24, WindowSensor24, COSensor24, TemperatureSensor24,
+DoorSensor25, FireSensor25 ,MovementSensor25, WindowSensor25, COSensor25, TemperatureSensor25,
+DoorSensor26, FireSensor26 ,MovementSensor26, WindowSensor26, COSensor26, TemperatureSensor26,
+DoorSensor27, FireSensor27 ,MovementSensor27, WindowSensor27, COSensor27, TemperatureSensor27,
+DoorSensor28, FireSensor28 ,MovementSensor28, WindowSensor28, COSensor28, TemperatureSensor28,
+DoorSensor29, FireSensor29 ,MovementSensor29, WindowSensor29, COSensor29, TemperatureSensor29,
+DoorSensor30, FireSensor30 ,MovementSensor30, WindowSensor30, COSensor30, TemperatureSensor30,
+DoorSensor31, FireSensor31 ,MovementSensor31, WindowSensor31, COSensor31, TemperatureSensor31,
+DoorSensor32, FireSensor32 ,MovementSensor32, WindowSensor32, COSensor32, TemperatureSensor32,
+DoorSensor33, FireSensor33 ,MovementSensor33, WindowSensor33, COSensor33, TemperatureSensor33,
+DoorSensor34, FireSensor34 ,MovementSensor34, WindowSensor34, COSensor34, TemperatureSensor34,
+DoorSensor35, FireSensor35 ,MovementSensor35, WindowSensor35, COSensor35, TemperatureSensor35,
+DoorSensor36, FireSensor36 ,MovementSensor36, WindowSensor36, COSensor36, TemperatureSensor36,
+DoorSensor37, FireSensor37 ,MovementSensor37, WindowSensor37, COSensor37, TemperatureSensor37,
+DoorSensor38, FireSensor38 ,MovementSensor38, WindowSensor38, COSensor38, TemperatureSensor38,
+DoorSensor39, FireSensor39 ,MovementSensor39, WindowSensor39, COSensor39, TemperatureSensor39,
+DoorSensor40, FireSensor40 ,MovementSensor40, WindowSensor40, COSensor40, TemperatureSensor40,
+DoorSensor41, FireSensor41 ,MovementSensor41, WindowSensor41, COSensor41, TemperatureSensor41,
+DoorSensor42, FireSensor42 ,MovementSensor42, WindowSensor42, COSensor42, TemperatureSensor42,
+DoorSensor43, FireSensor43 ,MovementSensor43, WindowSensor43, COSensor43, TemperatureSensor43,
+DoorSensor44, FireSensor44 ,MovementSensor44, WindowSensor44, COSensor44, TemperatureSensor44,
+DoorSensor45, FireSensor45 ,MovementSensor45, WindowSensor45, COSensor45, TemperatureSensor45,
+DoorSensor46, FireSensor46 ,MovementSensor46, WindowSensor46, COSensor46, TemperatureSensor46,
+DoorSensor47, FireSensor47 ,MovementSensor47, WindowSensor47, COSensor47, TemperatureSensor47,
+DoorSensor48, FireSensor48 ,MovementSensor48, WindowSensor48, COSensor48, TemperatureSensor48,
+DoorSensor49, FireSensor49 ,MovementSensor49, WindowSensor49, COSensor49, TemperatureSensor49,
+DoorSensor50, FireSensor50 ,MovementSensor50, WindowSensor50, COSensor50, TemperatureSensor50,
+DoorSensor51, FireSensor51 ,MovementSensor51, WindowSensor51, COSensor51, TemperatureSensor51,
+DoorSensor52, FireSensor52 ,MovementSensor52, WindowSensor52, COSensor52, TemperatureSensor52,
+DoorSensor53, FireSensor53 ,MovementSensor53, WindowSensor53, COSensor53, TemperatureSensor53,
+DoorSensor54, FireSensor54 ,MovementSensor54, WindowSensor54, COSensor54, TemperatureSensor54,
+DoorSensor55, FireSensor55 ,MovementSensor55, WindowSensor55, COSensor55, TemperatureSensor55,
+DoorSensor56, FireSensor56 ,MovementSensor56, WindowSensor56, COSensor56, TemperatureSensor56,
+DoorSensor57, FireSensor57 ,MovementSensor57, WindowSensor57, COSensor57, TemperatureSensor57,
+DoorSensor58, FireSensor58 ,MovementSensor58, WindowSensor58, COSensor58, TemperatureSensor58,
+DoorSensor59, FireSensor59 ,MovementSensor59, WindowSensor59, COSensor59, TemperatureSensor59,
+DoorSensor60, FireSensor60 ,MovementSensor60, WindowSensor60, COSensor60, TemperatureSensor60,
+DoorSensor61, FireSensor61 ,MovementSensor61, WindowSensor61, COSensor61, TemperatureSensor61,
+DoorSensor62, FireSensor62 ,MovementSensor62, WindowSensor62, COSensor62, TemperatureSensor62,
+DoorSensor63, FireSensor63 ,MovementSensor63, WindowSensor63, COSensor63, TemperatureSensor63,
+DoorSensor64, FireSensor64 ,MovementSensor64, WindowSensor64, COSensor64, TemperatureSensor64,
+DoorSensor65, FireSensor65 ,MovementSensor65, WindowSensor65, COSensor65, TemperatureSensor65,
+DoorSensor66, FireSensor66 ,MovementSensor66, WindowSensor66, COSensor66, TemperatureSensor66,
+DoorSensor67, FireSensor67 ,MovementSensor67, WindowSensor67, COSensor67, TemperatureSensor67,
+DoorSensor68, FireSensor68 ,MovementSensor68, WindowSensor68, COSensor68, TemperatureSensor68,
+DoorSensor69, FireSensor69 ,MovementSensor69, WindowSensor69, COSensor69, TemperatureSensor69,
+DoorSensor70, FireSensor70 ,MovementSensor70, WindowSensor70, COSensor70, TemperatureSensor70,
+DoorSensor71, FireSensor71 ,MovementSensor71, WindowSensor71, COSensor71, TemperatureSensor71,
+DoorSensor72, FireSensor72 ,MovementSensor72, WindowSensor72, COSensor72, TemperatureSensor72,
+DoorSensor73, FireSensor73 ,MovementSensor73, WindowSensor73, COSensor73, TemperatureSensor73,
+DoorSensor74, FireSensor74 ,MovementSensor74, WindowSensor74, COSensor74, TemperatureSensor74,
+DoorSensor75, FireSensor75 ,MovementSensor75, WindowSensor75, COSensor75, TemperatureSensor75,
+DoorSensor76, FireSensor76 ,MovementSensor76, WindowSensor76, COSensor76, TemperatureSensor76,
+DoorSensor77, FireSensor77 ,MovementSensor77, WindowSensor77, COSensor77, TemperatureSensor77,
+DoorSensor78, FireSensor78 ,MovementSensor78, WindowSensor78, COSensor78, TemperatureSensor78,
+DoorSensor79, FireSensor79 ,MovementSensor79, WindowSensor79, COSensor79, TemperatureSensor79,
+DoorSensor80, FireSensor80 ,MovementSensor80, WindowSensor80, COSensor80, TemperatureSensor80,
+DoorSensor81, FireSensor81 ,MovementSensor81, WindowSensor81, COSensor81, TemperatureSensor81,
+DoorSensor82, FireSensor82 ,MovementSensor82, WindowSensor82, COSensor82, TemperatureSensor82,
+DoorSensor83, FireSensor83 ,MovementSensor83, WindowSensor83, COSensor83, TemperatureSensor83,
+DoorSensor84, FireSensor84 ,MovementSensor84, WindowSensor84, COSensor84, TemperatureSensor84,
+DoorSensor85, FireSensor85 ,MovementSensor85, WindowSensor85, COSensor85, TemperatureSensor85,
+DoorSensor86, FireSensor86 ,MovementSensor86, WindowSensor86, COSensor86, TemperatureSensor86,
+DoorSensor87, FireSensor87 ,MovementSensor87, WindowSensor87, COSensor87, TemperatureSensor87,
+DoorSensor88, FireSensor88 ,MovementSensor88, WindowSensor88, COSensor88, TemperatureSensor88,
+DoorSensor89, FireSensor89 ,MovementSensor89, WindowSensor89, COSensor89, TemperatureSensor89,
+DoorSensor90, FireSensor90 ,MovementSensor90, WindowSensor90, COSensor90, TemperatureSensor90,
+DoorSensor91, FireSensor91 ,MovementSensor91, WindowSensor91, COSensor91, TemperatureSensor91,
+DoorSensor92, FireSensor92 ,MovementSensor92, WindowSensor92, COSensor92, TemperatureSensor92,
+DoorSensor93, FireSensor93 ,MovementSensor93, WindowSensor93, COSensor93, TemperatureSensor93,
+DoorSensor94, FireSensor94 ,MovementSensor94, WindowSensor94, COSensor94, TemperatureSensor94,
+DoorSensor95, FireSensor95 ,MovementSensor95, WindowSensor95, COSensor95, TemperatureSensor95,
+DoorSensor96, FireSensor96 ,MovementSensor96, WindowSensor96, COSensor96, TemperatureSensor96,
+DoorSensor97, FireSensor97 ,MovementSensor97, WindowSensor97, COSensor97, TemperatureSensor97,
+DoorSensor98, FireSensor98 ,MovementSensor98, WindowSensor98, COSensor98, TemperatureSensor98,
+DoorSensor99, FireSensor99 ,MovementSensor99, WindowSensor99, COSensor99, TemperatureSensor99;
+    
+product OilHeating (Oil,TemperatureSensor);
+product ElectricHeating (Electric, TemperatureSensor);
+product FireAlarm (FireAlarm, FireSensor);
+product Test (TemperatureSensor);
+//Features declaration
+ifeatures SlidingDoor, SwingingDoor, ElectronicBlinds;
+ifeatures DoorSensor, FireSensor, MovementSensor, WindowSensor, COSensor, TemperatureSensor;
+ifeatures FireAlarm, BurglarAlarm, COAlarm;
+ifeatures RemoteInterface;
+ifeatures Gas, Electric, Oil;
+//Auto-generated features
+ifeatures DoorSensor0, FireSensor0, MovementSensor0, WindowSensor0, COSensor0, TemperatureSensor0;
+ifeatures DoorSensor1, FireSensor1, MovementSensor1, WindowSensor1, COSensor1, TemperatureSensor1;
+ifeatures DoorSensor2, FireSensor2, MovementSensor2, WindowSensor2, COSensor2, TemperatureSensor2;
+ifeatures DoorSensor3, FireSensor3, MovementSensor3, WindowSensor3, COSensor3, TemperatureSensor3;
+ifeatures DoorSensor4, FireSensor4, MovementSensor4, WindowSensor4, COSensor4, TemperatureSensor4;
+ifeatures DoorSensor5, FireSensor5, MovementSensor5, WindowSensor5, COSensor5, TemperatureSensor5;
+ifeatures DoorSensor6, FireSensor6, MovementSensor6, WindowSensor6, COSensor6, TemperatureSensor6;
+ifeatures DoorSensor7, FireSensor7, MovementSensor7, WindowSensor7, COSensor7, TemperatureSensor7;
+ifeatures DoorSensor8, FireSensor8, MovementSensor8, WindowSensor8, COSensor8, TemperatureSensor8;
+ifeatures DoorSensor9, FireSensor9, MovementSensor9, WindowSensor9, COSensor9, TemperatureSensor9;
+ifeatures DoorSensor10, FireSensor10, MovementSensor10, WindowSensor10, COSensor10, TemperatureSensor10;
+ifeatures DoorSensor11, FireSensor11, MovementSensor11, WindowSensor11, COSensor11, TemperatureSensor11;
+ifeatures DoorSensor12, FireSensor12, MovementSensor12, WindowSensor12, COSensor12, TemperatureSensor12;
+ifeatures DoorSensor13, FireSensor13, MovementSensor13, WindowSensor13, COSensor13, TemperatureSensor13;
+ifeatures DoorSensor14, FireSensor14, MovementSensor14, WindowSensor14, COSensor14, TemperatureSensor14;
+ifeatures DoorSensor15, FireSensor15, MovementSensor15, WindowSensor15, COSensor15, TemperatureSensor15;
+ifeatures DoorSensor16, FireSensor16, MovementSensor16, WindowSensor16, COSensor16, TemperatureSensor16;
+ifeatures DoorSensor17, FireSensor17, MovementSensor17, WindowSensor17, COSensor17, TemperatureSensor17;
+ifeatures DoorSensor18, FireSensor18, MovementSensor18, WindowSensor18, COSensor18, TemperatureSensor18;
+ifeatures DoorSensor19, FireSensor19, MovementSensor19, WindowSensor19, COSensor19, TemperatureSensor19;
+ifeatures DoorSensor20, FireSensor20, MovementSensor20, WindowSensor20, COSensor20, TemperatureSensor20;
+ifeatures DoorSensor21, FireSensor21, MovementSensor21, WindowSensor21, COSensor21, TemperatureSensor21;
+ifeatures DoorSensor22, FireSensor22, MovementSensor22, WindowSensor22, COSensor22, TemperatureSensor22;
+ifeatures DoorSensor23, FireSensor23, MovementSensor23, WindowSensor23, COSensor23, TemperatureSensor23;
+ifeatures DoorSensor24, FireSensor24, MovementSensor24, WindowSensor24, COSensor24, TemperatureSensor24;
+ifeatures DoorSensor25, FireSensor25, MovementSensor25, WindowSensor25, COSensor25, TemperatureSensor25;
+ifeatures DoorSensor26, FireSensor26, MovementSensor26, WindowSensor26, COSensor26, TemperatureSensor26;
+ifeatures DoorSensor27, FireSensor27, MovementSensor27, WindowSensor27, COSensor27, TemperatureSensor27;
+ifeatures DoorSensor28, FireSensor28, MovementSensor28, WindowSensor28, COSensor28, TemperatureSensor28;
+ifeatures DoorSensor29, FireSensor29, MovementSensor29, WindowSensor29, COSensor29, TemperatureSensor29;
+ifeatures DoorSensor30, FireSensor30, MovementSensor30, WindowSensor30, COSensor30, TemperatureSensor30;
+ifeatures DoorSensor31, FireSensor31, MovementSensor31, WindowSensor31, COSensor31, TemperatureSensor31;
+ifeatures DoorSensor32, FireSensor32, MovementSensor32, WindowSensor32, COSensor32, TemperatureSensor32;
+ifeatures DoorSensor33, FireSensor33, MovementSensor33, WindowSensor33, COSensor33, TemperatureSensor33;
+ifeatures DoorSensor34, FireSensor34, MovementSensor34, WindowSensor34, COSensor34, TemperatureSensor34;
+ifeatures DoorSensor35, FireSensor35, MovementSensor35, WindowSensor35, COSensor35, TemperatureSensor35;
+ifeatures DoorSensor36, FireSensor36, MovementSensor36, WindowSensor36, COSensor36, TemperatureSensor36;
+ifeatures DoorSensor37, FireSensor37, MovementSensor37, WindowSensor37, COSensor37, TemperatureSensor37;
+ifeatures DoorSensor38, FireSensor38, MovementSensor38, WindowSensor38, COSensor38, TemperatureSensor38;
+ifeatures DoorSensor39, FireSensor39, MovementSensor39, WindowSensor39, COSensor39, TemperatureSensor39;
+ifeatures DoorSensor40, FireSensor40, MovementSensor40, WindowSensor40, COSensor40, TemperatureSensor40;
+ifeatures DoorSensor41, FireSensor41, MovementSensor41, WindowSensor41, COSensor41, TemperatureSensor41;
+ifeatures DoorSensor42, FireSensor42, MovementSensor42, WindowSensor42, COSensor42, TemperatureSensor42;
+ifeatures DoorSensor43, FireSensor43, MovementSensor43, WindowSensor43, COSensor43, TemperatureSensor43;
+ifeatures DoorSensor44, FireSensor44, MovementSensor44, WindowSensor44, COSensor44, TemperatureSensor44;
+ifeatures DoorSensor45, FireSensor45, MovementSensor45, WindowSensor45, COSensor45, TemperatureSensor45;
+ifeatures DoorSensor46, FireSensor46, MovementSensor46, WindowSensor46, COSensor46, TemperatureSensor46;
+ifeatures DoorSensor47, FireSensor47, MovementSensor47, WindowSensor47, COSensor47, TemperatureSensor47;
+ifeatures DoorSensor48, FireSensor48, MovementSensor48, WindowSensor48, COSensor48, TemperatureSensor48;
+ifeatures DoorSensor49, FireSensor49, MovementSensor49, WindowSensor49, COSensor49, TemperatureSensor49;
+ifeatures DoorSensor50, FireSensor50, MovementSensor50, WindowSensor50, COSensor50, TemperatureSensor50;
+ifeatures DoorSensor51, FireSensor51, MovementSensor51, WindowSensor51, COSensor51, TemperatureSensor51;
+ifeatures DoorSensor52, FireSensor52, MovementSensor52, WindowSensor52, COSensor52, TemperatureSensor52;
+ifeatures DoorSensor53, FireSensor53, MovementSensor53, WindowSensor53, COSensor53, TemperatureSensor53;
+ifeatures DoorSensor54, FireSensor54, MovementSensor54, WindowSensor54, COSensor54, TemperatureSensor54;
+ifeatures DoorSensor55, FireSensor55, MovementSensor55, WindowSensor55, COSensor55, TemperatureSensor55;
+ifeatures DoorSensor56, FireSensor56, MovementSensor56, WindowSensor56, COSensor56, TemperatureSensor56;
+ifeatures DoorSensor57, FireSensor57, MovementSensor57, WindowSensor57, COSensor57, TemperatureSensor57;
+ifeatures DoorSensor58, FireSensor58, MovementSensor58, WindowSensor58, COSensor58, TemperatureSensor58;
+ifeatures DoorSensor59, FireSensor59, MovementSensor59, WindowSensor59, COSensor59, TemperatureSensor59;
+ifeatures DoorSensor60, FireSensor60, MovementSensor60, WindowSensor60, COSensor60, TemperatureSensor60;
+ifeatures DoorSensor61, FireSensor61, MovementSensor61, WindowSensor61, COSensor61, TemperatureSensor61;
+ifeatures DoorSensor62, FireSensor62, MovementSensor62, WindowSensor62, COSensor62, TemperatureSensor62;
+ifeatures DoorSensor63, FireSensor63, MovementSensor63, WindowSensor63, COSensor63, TemperatureSensor63;
+ifeatures DoorSensor64, FireSensor64, MovementSensor64, WindowSensor64, COSensor64, TemperatureSensor64;
+ifeatures DoorSensor65, FireSensor65, MovementSensor65, WindowSensor65, COSensor65, TemperatureSensor65;
+ifeatures DoorSensor66, FireSensor66, MovementSensor66, WindowSensor66, COSensor66, TemperatureSensor66;
+ifeatures DoorSensor67, FireSensor67, MovementSensor67, WindowSensor67, COSensor67, TemperatureSensor67;
+ifeatures DoorSensor68, FireSensor68, MovementSensor68, WindowSensor68, COSensor68, TemperatureSensor68;
+ifeatures DoorSensor69, FireSensor69, MovementSensor69, WindowSensor69, COSensor69, TemperatureSensor69;
+ifeatures DoorSensor70, FireSensor70, MovementSensor70, WindowSensor70, COSensor70, TemperatureSensor70;
+ifeatures DoorSensor71, FireSensor71, MovementSensor71, WindowSensor71, COSensor71, TemperatureSensor71;
+ifeatures DoorSensor72, FireSensor72, MovementSensor72, WindowSensor72, COSensor72, TemperatureSensor72;
+ifeatures DoorSensor73, FireSensor73, MovementSensor73, WindowSensor73, COSensor73, TemperatureSensor73;
+ifeatures DoorSensor74, FireSensor74, MovementSensor74, WindowSensor74, COSensor74, TemperatureSensor74;
+ifeatures DoorSensor75, FireSensor75, MovementSensor75, WindowSensor75, COSensor75, TemperatureSensor75;
+ifeatures DoorSensor76, FireSensor76, MovementSensor76, WindowSensor76, COSensor76, TemperatureSensor76;
+ifeatures DoorSensor77, FireSensor77, MovementSensor77, WindowSensor77, COSensor77, TemperatureSensor77;
+ifeatures DoorSensor78, FireSensor78, MovementSensor78, WindowSensor78, COSensor78, TemperatureSensor78;
+ifeatures DoorSensor79, FireSensor79, MovementSensor79, WindowSensor79, COSensor79, TemperatureSensor79;
+ifeatures DoorSensor80, FireSensor80, MovementSensor80, WindowSensor80, COSensor80, TemperatureSensor80;
+ifeatures DoorSensor81, FireSensor81, MovementSensor81, WindowSensor81, COSensor81, TemperatureSensor81;
+ifeatures DoorSensor82, FireSensor82, MovementSensor82, WindowSensor82, COSensor82, TemperatureSensor82;
+ifeatures DoorSensor83, FireSensor83, MovementSensor83, WindowSensor83, COSensor83, TemperatureSensor83;
+ifeatures DoorSensor84, FireSensor84, MovementSensor84, WindowSensor84, COSensor84, TemperatureSensor84;
+ifeatures DoorSensor85, FireSensor85, MovementSensor85, WindowSensor85, COSensor85, TemperatureSensor85;
+ifeatures DoorSensor86, FireSensor86, MovementSensor86, WindowSensor86, COSensor86, TemperatureSensor86;
+ifeatures DoorSensor87, FireSensor87, MovementSensor87, WindowSensor87, COSensor87, TemperatureSensor87;
+ifeatures DoorSensor88, FireSensor88, MovementSensor88, WindowSensor88, COSensor88, TemperatureSensor88;
+ifeatures DoorSensor89, FireSensor89, MovementSensor89, WindowSensor89, COSensor89, TemperatureSensor89;
+ifeatures DoorSensor90, FireSensor90, MovementSensor90, WindowSensor90, COSensor90, TemperatureSensor90;
+ifeatures DoorSensor91, FireSensor91, MovementSensor91, WindowSensor91, COSensor91, TemperatureSensor91;
+ifeatures DoorSensor92, FireSensor92, MovementSensor92, WindowSensor92, COSensor92, TemperatureSensor92;
+ifeatures DoorSensor93, FireSensor93, MovementSensor93, WindowSensor93, COSensor93, TemperatureSensor93;
+ifeatures DoorSensor94, FireSensor94, MovementSensor94, WindowSensor94, COSensor94, TemperatureSensor94;
+ifeatures DoorSensor95, FireSensor95, MovementSensor95, WindowSensor95, COSensor95, TemperatureSensor95;
+ifeatures DoorSensor96, FireSensor96, MovementSensor96, WindowSensor96, COSensor96, TemperatureSensor96;
+ifeatures DoorSensor97, FireSensor97, MovementSensor97, WindowSensor97, COSensor97, TemperatureSensor97;
+ifeatures DoorSensor98, FireSensor98, MovementSensor98, WindowSensor98, COSensor98, TemperatureSensor98;
+ifeatures DoorSensor99, FireSensor99, MovementSensor99, WindowSensor99, COSensor99, TemperatureSensor99;
+//Groups declaration
+igroup ElectronicDoor {SlidingDoor, SwingingDoor};
+igroup Sensors {DoorSensor, FireSensor, MovementSensor, WindowSensor, COSensor, TemperatureSensor};
+igroup Alarm {FireAlarm, BurglarAlarm, COAlarm};
+igroup Interface {RemoteInterface};
+igroup Heating {Gas, Electric, Oil};
+//Auto-generated groups
+igroup Sensors0 {DoorSensor0, FireSensor0, MovementSensor0, WindowSensor0, COSensor0, TemperatureSensor0};
+igroup Sensors1 {DoorSensor1, FireSensor1, MovementSensor1, WindowSensor1, COSensor1, TemperatureSensor1};
+igroup Sensors2 {DoorSensor2, FireSensor2, MovementSensor2, WindowSensor2, COSensor2, TemperatureSensor2};
+igroup Sensors3 {DoorSensor3, FireSensor3, MovementSensor3, WindowSensor3, COSensor3, TemperatureSensor3};
+igroup Sensors4 {DoorSensor4, FireSensor4, MovementSensor4, WindowSensor4, COSensor4, TemperatureSensor4};
+igroup Sensors5 {DoorSensor5, FireSensor5, MovementSensor5, WindowSensor5, COSensor5, TemperatureSensor5};
+igroup Sensors6 {DoorSensor6, FireSensor6, MovementSensor6, WindowSensor6, COSensor6, TemperatureSensor6};
+igroup Sensors7 {DoorSensor7, FireSensor7, MovementSensor7, WindowSensor7, COSensor7, TemperatureSensor7};
+igroup Sensors8 {DoorSensor8, FireSensor8, MovementSensor8, WindowSensor8, COSensor8, TemperatureSensor8};
+igroup Sensors9 {DoorSensor9, FireSensor9, MovementSensor9, WindowSensor9, COSensor9, TemperatureSensor9};
+igroup Sensors10 {DoorSensor10, FireSensor10, MovementSensor10, WindowSensor10, COSensor10, TemperatureSensor10};
+igroup Sensors11 {DoorSensor11, FireSensor11, MovementSensor11, WindowSensor11, COSensor11, TemperatureSensor11};
+igroup Sensors12 {DoorSensor12, FireSensor12, MovementSensor12, WindowSensor12, COSensor12, TemperatureSensor12};
+igroup Sensors13 {DoorSensor13, FireSensor13, MovementSensor13, WindowSensor13, COSensor13, TemperatureSensor13};
+igroup Sensors14 {DoorSensor14, FireSensor14, MovementSensor14, WindowSensor14, COSensor14, TemperatureSensor14};
+igroup Sensors15 {DoorSensor15, FireSensor15, MovementSensor15, WindowSensor15, COSensor15, TemperatureSensor15};
+igroup Sensors16 {DoorSensor16, FireSensor16, MovementSensor16, WindowSensor16, COSensor16, TemperatureSensor16};
+igroup Sensors17 {DoorSensor17, FireSensor17, MovementSensor17, WindowSensor17, COSensor17, TemperatureSensor17};
+igroup Sensors18 {DoorSensor18, FireSensor18, MovementSensor18, WindowSensor18, COSensor18, TemperatureSensor18};
+igroup Sensors19 {DoorSensor19, FireSensor19, MovementSensor19, WindowSensor19, COSensor19, TemperatureSensor19};
+igroup Sensors20 {DoorSensor20, FireSensor20, MovementSensor20, WindowSensor20, COSensor20, TemperatureSensor20};
+igroup Sensors21 {DoorSensor21, FireSensor21, MovementSensor21, WindowSensor21, COSensor21, TemperatureSensor21};
+igroup Sensors22 {DoorSensor22, FireSensor22, MovementSensor22, WindowSensor22, COSensor22, TemperatureSensor22};
+igroup Sensors23 {DoorSensor23, FireSensor23, MovementSensor23, WindowSensor23, COSensor23, TemperatureSensor23};
+igroup Sensors24 {DoorSensor24, FireSensor24, MovementSensor24, WindowSensor24, COSensor24, TemperatureSensor24};
+igroup Sensors25 {DoorSensor25, FireSensor25, MovementSensor25, WindowSensor25, COSensor25, TemperatureSensor25};
+igroup Sensors26 {DoorSensor26, FireSensor26, MovementSensor26, WindowSensor26, COSensor26, TemperatureSensor26};
+igroup Sensors27 {DoorSensor27, FireSensor27, MovementSensor27, WindowSensor27, COSensor27, TemperatureSensor27};
+igroup Sensors28 {DoorSensor28, FireSensor28, MovementSensor28, WindowSensor28, COSensor28, TemperatureSensor28};
+igroup Sensors29 {DoorSensor29, FireSensor29, MovementSensor29, WindowSensor29, COSensor29, TemperatureSensor29};
+igroup Sensors30 {DoorSensor30, FireSensor30, MovementSensor30, WindowSensor30, COSensor30, TemperatureSensor30};
+igroup Sensors31 {DoorSensor31, FireSensor31, MovementSensor31, WindowSensor31, COSensor31, TemperatureSensor31};
+igroup Sensors32 {DoorSensor32, FireSensor32, MovementSensor32, WindowSensor32, COSensor32, TemperatureSensor32};
+igroup Sensors33 {DoorSensor33, FireSensor33, MovementSensor33, WindowSensor33, COSensor33, TemperatureSensor33};
+igroup Sensors34 {DoorSensor34, FireSensor34, MovementSensor34, WindowSensor34, COSensor34, TemperatureSensor34};
+igroup Sensors35 {DoorSensor35, FireSensor35, MovementSensor35, WindowSensor35, COSensor35, TemperatureSensor35};
+igroup Sensors36 {DoorSensor36, FireSensor36, MovementSensor36, WindowSensor36, COSensor36, TemperatureSensor36};
+igroup Sensors37 {DoorSensor37, FireSensor37, MovementSensor37, WindowSensor37, COSensor37, TemperatureSensor37};
+igroup Sensors38 {DoorSensor38, FireSensor38, MovementSensor38, WindowSensor38, COSensor38, TemperatureSensor38};
+igroup Sensors39 {DoorSensor39, FireSensor39, MovementSensor39, WindowSensor39, COSensor39, TemperatureSensor39};
+igroup Sensors40 {DoorSensor40, FireSensor40, MovementSensor40, WindowSensor40, COSensor40, TemperatureSensor40};
+igroup Sensors41 {DoorSensor41, FireSensor41, MovementSensor41, WindowSensor41, COSensor41, TemperatureSensor41};
+igroup Sensors42 {DoorSensor42, FireSensor42, MovementSensor42, WindowSensor42, COSensor42, TemperatureSensor42};
+igroup Sensors43 {DoorSensor43, FireSensor43, MovementSensor43, WindowSensor43, COSensor43, TemperatureSensor43};
+igroup Sensors44 {DoorSensor44, FireSensor44, MovementSensor44, WindowSensor44, COSensor44, TemperatureSensor44};
+igroup Sensors45 {DoorSensor45, FireSensor45, MovementSensor45, WindowSensor45, COSensor45, TemperatureSensor45};
+igroup Sensors46 {DoorSensor46, FireSensor46, MovementSensor46, WindowSensor46, COSensor46, TemperatureSensor46};
+igroup Sensors47 {DoorSensor47, FireSensor47, MovementSensor47, WindowSensor47, COSensor47, TemperatureSensor47};
+igroup Sensors48 {DoorSensor48, FireSensor48, MovementSensor48, WindowSensor48, COSensor48, TemperatureSensor48};
+igroup Sensors49 {DoorSensor49, FireSensor49, MovementSensor49, WindowSensor49, COSensor49, TemperatureSensor49};
+igroup Sensors50 {DoorSensor50, FireSensor50, MovementSensor50, WindowSensor50, COSensor50, TemperatureSensor50};
+igroup Sensors51 {DoorSensor51, FireSensor51, MovementSensor51, WindowSensor51, COSensor51, TemperatureSensor51};
+igroup Sensors52 {DoorSensor52, FireSensor52, MovementSensor52, WindowSensor52, COSensor52, TemperatureSensor52};
+igroup Sensors53 {DoorSensor53, FireSensor53, MovementSensor53, WindowSensor53, COSensor53, TemperatureSensor53};
+igroup Sensors54 {DoorSensor54, FireSensor54, MovementSensor54, WindowSensor54, COSensor54, TemperatureSensor54};
+igroup Sensors55 {DoorSensor55, FireSensor55, MovementSensor55, WindowSensor55, COSensor55, TemperatureSensor55};
+igroup Sensors56 {DoorSensor56, FireSensor56, MovementSensor56, WindowSensor56, COSensor56, TemperatureSensor56};
+igroup Sensors57 {DoorSensor57, FireSensor57, MovementSensor57, WindowSensor57, COSensor57, TemperatureSensor57};
+igroup Sensors58 {DoorSensor58, FireSensor58, MovementSensor58, WindowSensor58, COSensor58, TemperatureSensor58};
+igroup Sensors59 {DoorSensor59, FireSensor59, MovementSensor59, WindowSensor59, COSensor59, TemperatureSensor59};
+igroup Sensors60 {DoorSensor60, FireSensor60, MovementSensor60, WindowSensor60, COSensor60, TemperatureSensor60};
+igroup Sensors61 {DoorSensor61, FireSensor61, MovementSensor61, WindowSensor61, COSensor61, TemperatureSensor61};
+igroup Sensors62 {DoorSensor62, FireSensor62, MovementSensor62, WindowSensor62, COSensor62, TemperatureSensor62};
+igroup Sensors63 {DoorSensor63, FireSensor63, MovementSensor63, WindowSensor63, COSensor63, TemperatureSensor63};
+igroup Sensors64 {DoorSensor64, FireSensor64, MovementSensor64, WindowSensor64, COSensor64, TemperatureSensor64};
+igroup Sensors65 {DoorSensor65, FireSensor65, MovementSensor65, WindowSensor65, COSensor65, TemperatureSensor65};
+igroup Sensors66 {DoorSensor66, FireSensor66, MovementSensor66, WindowSensor66, COSensor66, TemperatureSensor66};
+igroup Sensors67 {DoorSensor67, FireSensor67, MovementSensor67, WindowSensor67, COSensor67, TemperatureSensor67};
+igroup Sensors68 {DoorSensor68, FireSensor68, MovementSensor68, WindowSensor68, COSensor68, TemperatureSensor68};
+igroup Sensors69 {DoorSensor69, FireSensor69, MovementSensor69, WindowSensor69, COSensor69, TemperatureSensor69};
+igroup Sensors70 {DoorSensor70, FireSensor70, MovementSensor70, WindowSensor70, COSensor70, TemperatureSensor70};
+igroup Sensors71 {DoorSensor71, FireSensor71, MovementSensor71, WindowSensor71, COSensor71, TemperatureSensor71};
+igroup Sensors72 {DoorSensor72, FireSensor72, MovementSensor72, WindowSensor72, COSensor72, TemperatureSensor72};
+igroup Sensors73 {DoorSensor73, FireSensor73, MovementSensor73, WindowSensor73, COSensor73, TemperatureSensor73};
+igroup Sensors74 {DoorSensor74, FireSensor74, MovementSensor74, WindowSensor74, COSensor74, TemperatureSensor74};
+igroup Sensors75 {DoorSensor75, FireSensor75, MovementSensor75, WindowSensor75, COSensor75, TemperatureSensor75};
+igroup Sensors76 {DoorSensor76, FireSensor76, MovementSensor76, WindowSensor76, COSensor76, TemperatureSensor76};
+igroup Sensors77 {DoorSensor77, FireSensor77, MovementSensor77, WindowSensor77, COSensor77, TemperatureSensor77};
+igroup Sensors78 {DoorSensor78, FireSensor78, MovementSensor78, WindowSensor78, COSensor78, TemperatureSensor78};
+igroup Sensors79 {DoorSensor79, FireSensor79, MovementSensor79, WindowSensor79, COSensor79, TemperatureSensor79};
+igroup Sensors80 {DoorSensor80, FireSensor80, MovementSensor80, WindowSensor80, COSensor80, TemperatureSensor80};
+igroup Sensors81 {DoorSensor81, FireSensor81, MovementSensor81, WindowSensor81, COSensor81, TemperatureSensor81};
+igroup Sensors82 {DoorSensor82, FireSensor82, MovementSensor82, WindowSensor82, COSensor82, TemperatureSensor82};
+igroup Sensors83 {DoorSensor83, FireSensor83, MovementSensor83, WindowSensor83, COSensor83, TemperatureSensor83};
+igroup Sensors84 {DoorSensor84, FireSensor84, MovementSensor84, WindowSensor84, COSensor84, TemperatureSensor84};
+igroup Sensors85 {DoorSensor85, FireSensor85, MovementSensor85, WindowSensor85, COSensor85, TemperatureSensor85};
+igroup Sensors86 {DoorSensor86, FireSensor86, MovementSensor86, WindowSensor86, COSensor86, TemperatureSensor86};
+igroup Sensors87 {DoorSensor87, FireSensor87, MovementSensor87, WindowSensor87, COSensor87, TemperatureSensor87};
+igroup Sensors88 {DoorSensor88, FireSensor88, MovementSensor88, WindowSensor88, COSensor88, TemperatureSensor88};
+igroup Sensors89 {DoorSensor89, FireSensor89, MovementSensor89, WindowSensor89, COSensor89, TemperatureSensor89};
+igroup Sensors90 {DoorSensor90, FireSensor90, MovementSensor90, WindowSensor90, COSensor90, TemperatureSensor90};
+igroup Sensors91 {DoorSensor91, FireSensor91, MovementSensor91, WindowSensor91, COSensor91, TemperatureSensor91};
+igroup Sensors92 {DoorSensor92, FireSensor92, MovementSensor92, WindowSensor92, COSensor92, TemperatureSensor92};
+igroup Sensors93 {DoorSensor93, FireSensor93, MovementSensor93, WindowSensor93, COSensor93, TemperatureSensor93};
+igroup Sensors94 {DoorSensor94, FireSensor94, MovementSensor94, WindowSensor94, COSensor94, TemperatureSensor94};
+igroup Sensors95 {DoorSensor95, FireSensor95, MovementSensor95, WindowSensor95, COSensor95, TemperatureSensor95};
+igroup Sensors96 {DoorSensor96, FireSensor96, MovementSensor96, WindowSensor96, COSensor96, TemperatureSensor96};
+igroup Sensors97 {DoorSensor97, FireSensor97, MovementSensor97, WindowSensor97, COSensor97, TemperatureSensor97};
+igroup Sensors98 {DoorSensor98, FireSensor98, MovementSensor98, WindowSensor98, COSensor98, TemperatureSensor98};
+igroup Sensors99 {DoorSensor99, FireSensor99, MovementSensor99, WindowSensor99, COSensor99, TemperatureSensor99};
+//Constraints declaration
+iconstraint FeatureConstraints {
+	ElectronicBlinds requires WindowSensor;
+	FireAlarm requires FireSensor;
+	BurglarAlarm requires MovementSensor;
+	COAlarm requires COSensor;
+	RemoteInterface opt;
+	Gas requires COAlarm;
+};
+iconstraint GroupConstraints {
+	ElectronicDoor [1..*], requires DoorSensor;
+	Sensors [1..*];
+	Alarm [1..*];
+	Interface allof;
+	Heating oneof, requires TemperatureSensor;
+	//Auto-generated constraints
+	Sensors0 [1..*];
+	Sensors1 [1..*];
+	Sensors2 [1..*];
+	Sensors3 [1..*];
+	Sensors4 [1..*];
+	Sensors5 [1..*];
+	Sensors6 [1..*];
+	Sensors7 [1..*];
+	Sensors8 [1..*];
+	Sensors9 [1..*];
+	Sensors10 [1..*];
+	Sensors11 [1..*];
+	Sensors12 [1..*];
+	Sensors13 [1..*];
+	Sensors14 [1..*];
+	Sensors15 [1..*];
+	Sensors16 [1..*];
+	Sensors17 [1..*];
+	Sensors18 [1..*];
+	Sensors19 [1..*];
+	Sensors20 [1..*];
+	Sensors21 [1..*];
+	Sensors22 [1..*];
+	Sensors23 [1..*];
+	Sensors24 [1..*];
+	Sensors25 [1..*];
+	Sensors26 [1..*];
+	Sensors27 [1..*];
+	Sensors28 [1..*];
+	Sensors29 [1..*];
+	Sensors30 [1..*];
+	Sensors31 [1..*];
+	Sensors32 [1..*];
+	Sensors33 [1..*];
+	Sensors34 [1..*];
+	Sensors35 [1..*];
+	Sensors36 [1..*];
+	Sensors37 [1..*];
+	Sensors38 [1..*];
+	Sensors39 [1..*];
+	Sensors40 [1..*];
+	Sensors41 [1..*];
+	Sensors42 [1..*];
+	Sensors43 [1..*];
+	Sensors44 [1..*];
+	Sensors45 [1..*];
+	Sensors46 [1..*];
+	Sensors47 [1..*];
+	Sensors48 [1..*];
+	Sensors49 [1..*];
+	Sensors50 [1..*];
+	Sensors51 [1..*];
+	Sensors52 [1..*];
+	Sensors53 [1..*];
+	Sensors54 [1..*];
+	Sensors55 [1..*];
+	Sensors56 [1..*];
+	Sensors57 [1..*];
+	Sensors58 [1..*];
+	Sensors59 [1..*];
+	Sensors60 [1..*];
+	Sensors61 [1..*];
+	Sensors62 [1..*];
+	Sensors63 [1..*];
+	Sensors64 [1..*];
+	Sensors65 [1..*];
+	Sensors66 [1..*];
+	Sensors67 [1..*];
+	Sensors68 [1..*];
+	Sensors69 [1..*];
+	Sensors70 [1..*];
+	Sensors71 [1..*];
+	Sensors72 [1..*];
+	Sensors73 [1..*];
+	Sensors74 [1..*];
+	Sensors75 [1..*];
+	Sensors76 [1..*];
+	Sensors77 [1..*];
+	Sensors78 [1..*];
+	Sensors79 [1..*];
+	Sensors80 [1..*];
+	Sensors81 [1..*];
+	Sensors82 [1..*];
+	Sensors83 [1..*];
+	Sensors84 [1..*];
+	Sensors85 [1..*];
+	Sensors86 [1..*];
+	Sensors87 [1..*];
+	Sensors88 [1..*];
+	Sensors89 [1..*];
+	Sensors90 [1..*];
+	Sensors91 [1..*];
+	Sensors92 [1..*];
+	Sensors93 [1..*];
+	Sensors94 [1..*];
+	Sensors95 [1..*];
+	Sensors96 [1..*];
+	Sensors97 [1..*];
+	Sensors98 [1..*];
+	Sensors99 [1..*];
+};

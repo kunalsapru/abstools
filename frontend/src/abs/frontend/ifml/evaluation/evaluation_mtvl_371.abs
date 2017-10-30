@@ -1,0 +1,605 @@
+// 1 root feature + 371 Features (55 Abstract + 316 Concrete) + 63 Constraints
+productline House;
+
+features ElectronicDoor, SlidingDoor, SwingingDoor, ElectronicBlinds,
+Sensors, DoorSensor, FireSensor, MovementSensor, WindowSensor, COSensor,
+TemperatureSensor, Alarm, FireAlarm, BurglarAlarm, COAlarm, Interface,
+RemoteInterface, Heating, Gas, Electric, Oil, 
+Sensors0, DoorSensor0, FireSensor0 ,MovementSensor0, WindowSensor0, COSensor0, TemperatureSensor0,
+Sensors1, DoorSensor1, FireSensor1 ,MovementSensor1, WindowSensor1, COSensor1, TemperatureSensor1,
+Sensors2, DoorSensor2, FireSensor2 ,MovementSensor2, WindowSensor2, COSensor2, TemperatureSensor2,
+Sensors3, DoorSensor3, FireSensor3 ,MovementSensor3, WindowSensor3, COSensor3, TemperatureSensor3,
+Sensors4, DoorSensor4, FireSensor4 ,MovementSensor4, WindowSensor4, COSensor4, TemperatureSensor4,
+Sensors5, DoorSensor5, FireSensor5 ,MovementSensor5, WindowSensor5, COSensor5, TemperatureSensor5,
+Sensors6, DoorSensor6, FireSensor6 ,MovementSensor6, WindowSensor6, COSensor6, TemperatureSensor6,
+Sensors7, DoorSensor7, FireSensor7 ,MovementSensor7, WindowSensor7, COSensor7, TemperatureSensor7,
+Sensors8, DoorSensor8, FireSensor8 ,MovementSensor8, WindowSensor8, COSensor8, TemperatureSensor8,
+Sensors9, DoorSensor9, FireSensor9 ,MovementSensor9, WindowSensor9, COSensor9, TemperatureSensor9,
+Sensors10, DoorSensor10, FireSensor10 ,MovementSensor10, WindowSensor10, COSensor10, TemperatureSensor10,
+Sensors11, DoorSensor11, FireSensor11 ,MovementSensor11, WindowSensor11, COSensor11, TemperatureSensor11,
+Sensors12, DoorSensor12, FireSensor12 ,MovementSensor12, WindowSensor12, COSensor12, TemperatureSensor12,
+Sensors13, DoorSensor13, FireSensor13 ,MovementSensor13, WindowSensor13, COSensor13, TemperatureSensor13,
+Sensors14, DoorSensor14, FireSensor14 ,MovementSensor14, WindowSensor14, COSensor14, TemperatureSensor14,
+Sensors15, DoorSensor15, FireSensor15 ,MovementSensor15, WindowSensor15, COSensor15, TemperatureSensor15,
+Sensors16, DoorSensor16, FireSensor16 ,MovementSensor16, WindowSensor16, COSensor16, TemperatureSensor16,
+Sensors17, DoorSensor17, FireSensor17 ,MovementSensor17, WindowSensor17, COSensor17, TemperatureSensor17,
+Sensors18, DoorSensor18, FireSensor18 ,MovementSensor18, WindowSensor18, COSensor18, TemperatureSensor18,
+Sensors19, DoorSensor19, FireSensor19 ,MovementSensor19, WindowSensor19, COSensor19, TemperatureSensor19,
+Sensors20, DoorSensor20, FireSensor20 ,MovementSensor20, WindowSensor20, COSensor20, TemperatureSensor20,
+Sensors21, DoorSensor21, FireSensor21 ,MovementSensor21, WindowSensor21, COSensor21, TemperatureSensor21,
+Sensors22, DoorSensor22, FireSensor22 ,MovementSensor22, WindowSensor22, COSensor22, TemperatureSensor22,
+Sensors23, DoorSensor23, FireSensor23 ,MovementSensor23, WindowSensor23, COSensor23, TemperatureSensor23,
+Sensors24, DoorSensor24, FireSensor24 ,MovementSensor24, WindowSensor24, COSensor24, TemperatureSensor24,
+Sensors25, DoorSensor25, FireSensor25 ,MovementSensor25, WindowSensor25, COSensor25, TemperatureSensor25,
+Sensors26, DoorSensor26, FireSensor26 ,MovementSensor26, WindowSensor26, COSensor26, TemperatureSensor26,
+Sensors27, DoorSensor27, FireSensor27 ,MovementSensor27, WindowSensor27, COSensor27, TemperatureSensor27,
+Sensors28, DoorSensor28, FireSensor28 ,MovementSensor28, WindowSensor28, COSensor28, TemperatureSensor28,
+Sensors29, DoorSensor29, FireSensor29 ,MovementSensor29, WindowSensor29, COSensor29, TemperatureSensor29,
+Sensors30, DoorSensor30, FireSensor30 ,MovementSensor30, WindowSensor30, COSensor30, TemperatureSensor30,
+Sensors31, DoorSensor31, FireSensor31 ,MovementSensor31, WindowSensor31, COSensor31, TemperatureSensor31,
+Sensors32, DoorSensor32, FireSensor32 ,MovementSensor32, WindowSensor32, COSensor32, TemperatureSensor32,
+Sensors33, DoorSensor33, FireSensor33 ,MovementSensor33, WindowSensor33, COSensor33, TemperatureSensor33,
+Sensors34, DoorSensor34, FireSensor34 ,MovementSensor34, WindowSensor34, COSensor34, TemperatureSensor34,
+Sensors35, DoorSensor35, FireSensor35 ,MovementSensor35, WindowSensor35, COSensor35, TemperatureSensor35,
+Sensors36, DoorSensor36, FireSensor36 ,MovementSensor36, WindowSensor36, COSensor36, TemperatureSensor36,
+Sensors37, DoorSensor37, FireSensor37 ,MovementSensor37, WindowSensor37, COSensor37, TemperatureSensor37,
+Sensors38, DoorSensor38, FireSensor38 ,MovementSensor38, WindowSensor38, COSensor38, TemperatureSensor38,
+Sensors39, DoorSensor39, FireSensor39 ,MovementSensor39, WindowSensor39, COSensor39, TemperatureSensor39,
+Sensors40, DoorSensor40, FireSensor40 ,MovementSensor40, WindowSensor40, COSensor40, TemperatureSensor40,
+Sensors41, DoorSensor41, FireSensor41 ,MovementSensor41, WindowSensor41, COSensor41, TemperatureSensor41,
+Sensors42, DoorSensor42, FireSensor42 ,MovementSensor42, WindowSensor42, COSensor42, TemperatureSensor42,
+Sensors43, DoorSensor43, FireSensor43 ,MovementSensor43, WindowSensor43, COSensor43, TemperatureSensor43,
+Sensors44, DoorSensor44, FireSensor44 ,MovementSensor44, WindowSensor44, COSensor44, TemperatureSensor44,
+Sensors45, DoorSensor45, FireSensor45 ,MovementSensor45, WindowSensor45, COSensor45, TemperatureSensor45,
+Sensors46, DoorSensor46, FireSensor46 ,MovementSensor46, WindowSensor46, COSensor46, TemperatureSensor46,
+Sensors47, DoorSensor47, FireSensor47 ,MovementSensor47, WindowSensor47, COSensor47, TemperatureSensor47,
+Sensors48, DoorSensor48, FireSensor48 ,MovementSensor48, WindowSensor48, COSensor48, TemperatureSensor48,
+Sensors49, DoorSensor49, FireSensor49 ,MovementSensor49, WindowSensor49, COSensor49, TemperatureSensor49;
+    
+product OilHeating (Interface, Heating, Oil, Sensors, TemperatureSensor);
+product ElectricHeating (Interface, Heating, Electric, Sensors, TemperatureSensor);
+product FireAlarm (Interface, Alarm, FireAlarm, Sensors, FireSensor);
+product Test (Interface, Sensors, TemperatureSensor);
+
+root SmartHome {
+	group allof {
+		opt ElectronicDoor {
+			group [1..*] {
+				SlidingDoor,
+				SwingingDoor
+			}
+			require: DoorSensor ; 
+		},
+		opt ElectronicBlinds { require: WindowSensor ; },
+		opt Sensors {
+			group [1..*] {
+				DoorSensor,
+				FireSensor,
+				MovementSensor,
+				WindowSensor,
+				COSensor,
+				TemperatureSensor
+			}
+		},
+		opt Alarm {
+			group [1..*] {
+				FireAlarm { require: FireSensor ; },
+				BurglarAlarm { require: MovementSensor ; },
+				COAlarm { require: COSensor ; }
+			}
+		},
+		Interface {
+			group allof {
+				opt RemoteInteface
+			}
+		},
+		opt Heating {
+			group oneof {
+				Gas { require: COAlarm ; },
+				Electric,
+				Oil
+			}
+			require: TemperatureSensor ;
+		},
+		opt Sensors0 {
+		    group [1..*] {
+		    	DoorSensor0,
+		    	FireSensor0,
+		    	MovementSensor0,
+		    	WindowSensor0,
+		    	COSensor0,
+		    	TemperatureSensor0
+		    }
+		},
+		opt Sensors1 {
+		    group [1..*] {
+		    	DoorSensor1,
+		    	FireSensor1,
+		    	MovementSensor1,
+		    	WindowSensor1,
+		    	COSensor1,
+		    	TemperatureSensor1
+		    }
+		},
+		opt Sensors2 {
+		    group [1..*] {
+		    	DoorSensor2,
+		    	FireSensor2,
+		    	MovementSensor2,
+		    	WindowSensor2,
+		    	COSensor2,
+		    	TemperatureSensor2
+		    }
+		},
+		opt Sensors3 {
+		    group [1..*] {
+		    	DoorSensor3,
+		    	FireSensor3,
+		    	MovementSensor3,
+		    	WindowSensor3,
+		    	COSensor3,
+		    	TemperatureSensor3
+		    }
+		},
+		opt Sensors4 {
+		    group [1..*] {
+		    	DoorSensor4,
+		    	FireSensor4,
+		    	MovementSensor4,
+		    	WindowSensor4,
+		    	COSensor4,
+		    	TemperatureSensor4
+		    }
+		},
+		opt Sensors5 {
+		    group [1..*] {
+		    	DoorSensor5,
+		    	FireSensor5,
+		    	MovementSensor5,
+		    	WindowSensor5,
+		    	COSensor5,
+		    	TemperatureSensor5
+		    }
+		},
+		opt Sensors6 {
+		    group [1..*] {
+		    	DoorSensor6,
+		    	FireSensor6,
+		    	MovementSensor6,
+		    	WindowSensor6,
+		    	COSensor6,
+		    	TemperatureSensor6
+		    }
+		},
+		opt Sensors7 {
+		    group [1..*] {
+		    	DoorSensor7,
+		    	FireSensor7,
+		    	MovementSensor7,
+		    	WindowSensor7,
+		    	COSensor7,
+		    	TemperatureSensor7
+		    }
+		},
+		opt Sensors8 {
+		    group [1..*] {
+		    	DoorSensor8,
+		    	FireSensor8,
+		    	MovementSensor8,
+		    	WindowSensor8,
+		    	COSensor8,
+		    	TemperatureSensor8
+		    }
+		},
+		opt Sensors9 {
+		    group [1..*] {
+		    	DoorSensor9,
+		    	FireSensor9,
+		    	MovementSensor9,
+		    	WindowSensor9,
+		    	COSensor9,
+		    	TemperatureSensor9
+		    }
+		},
+		opt Sensors10 {
+		    group [1..*] {
+		    	DoorSensor10,
+		    	FireSensor10,
+		    	MovementSensor10,
+		    	WindowSensor10,
+		    	COSensor10,
+		    	TemperatureSensor10
+		    }
+		},
+		opt Sensors11 {
+		    group [1..*] {
+		    	DoorSensor11,
+		    	FireSensor11,
+		    	MovementSensor11,
+		    	WindowSensor11,
+		    	COSensor11,
+		    	TemperatureSensor11
+		    }
+		},
+		opt Sensors12 {
+		    group [1..*] {
+		    	DoorSensor12,
+		    	FireSensor12,
+		    	MovementSensor12,
+		    	WindowSensor12,
+		    	COSensor12,
+		    	TemperatureSensor12
+		    }
+		},
+		opt Sensors13 {
+		    group [1..*] {
+		    	DoorSensor13,
+		    	FireSensor13,
+		    	MovementSensor13,
+		    	WindowSensor13,
+		    	COSensor13,
+		    	TemperatureSensor13
+		    }
+		},
+		opt Sensors14 {
+		    group [1..*] {
+		    	DoorSensor14,
+		    	FireSensor14,
+		    	MovementSensor14,
+		    	WindowSensor14,
+		    	COSensor14,
+		    	TemperatureSensor14
+		    }
+		},
+		opt Sensors15 {
+		    group [1..*] {
+		    	DoorSensor15,
+		    	FireSensor15,
+		    	MovementSensor15,
+		    	WindowSensor15,
+		    	COSensor15,
+		    	TemperatureSensor15
+		    }
+		},
+		opt Sensors16 {
+		    group [1..*] {
+		    	DoorSensor16,
+		    	FireSensor16,
+		    	MovementSensor16,
+		    	WindowSensor16,
+		    	COSensor16,
+		    	TemperatureSensor16
+		    }
+		},
+		opt Sensors17 {
+		    group [1..*] {
+		    	DoorSensor17,
+		    	FireSensor17,
+		    	MovementSensor17,
+		    	WindowSensor17,
+		    	COSensor17,
+		    	TemperatureSensor17
+		    }
+		},
+		opt Sensors18 {
+		    group [1..*] {
+		    	DoorSensor18,
+		    	FireSensor18,
+		    	MovementSensor18,
+		    	WindowSensor18,
+		    	COSensor18,
+		    	TemperatureSensor18
+		    }
+		},
+		opt Sensors19 {
+		    group [1..*] {
+		    	DoorSensor19,
+		    	FireSensor19,
+		    	MovementSensor19,
+		    	WindowSensor19,
+		    	COSensor19,
+		    	TemperatureSensor19
+		    }
+		},
+		opt Sensors20 {
+		    group [1..*] {
+		    	DoorSensor20,
+		    	FireSensor20,
+		    	MovementSensor20,
+		    	WindowSensor20,
+		    	COSensor20,
+		    	TemperatureSensor20
+		    }
+		},
+		opt Sensors21 {
+		    group [1..*] {
+		    	DoorSensor21,
+		    	FireSensor21,
+		    	MovementSensor21,
+		    	WindowSensor21,
+		    	COSensor21,
+		    	TemperatureSensor21
+		    }
+		},
+		opt Sensors22 {
+		    group [1..*] {
+		    	DoorSensor22,
+		    	FireSensor22,
+		    	MovementSensor22,
+		    	WindowSensor22,
+		    	COSensor22,
+		    	TemperatureSensor22
+		    }
+		},
+		opt Sensors23 {
+		    group [1..*] {
+		    	DoorSensor23,
+		    	FireSensor23,
+		    	MovementSensor23,
+		    	WindowSensor23,
+		    	COSensor23,
+		    	TemperatureSensor23
+		    }
+		},
+		opt Sensors24 {
+		    group [1..*] {
+		    	DoorSensor24,
+		    	FireSensor24,
+		    	MovementSensor24,
+		    	WindowSensor24,
+		    	COSensor24,
+		    	TemperatureSensor24
+		    }
+		},
+		opt Sensors25 {
+		    group [1..*] {
+		    	DoorSensor25,
+		    	FireSensor25,
+		    	MovementSensor25,
+		    	WindowSensor25,
+		    	COSensor25,
+		    	TemperatureSensor25
+		    }
+		},
+		opt Sensors26 {
+		    group [1..*] {
+		    	DoorSensor26,
+		    	FireSensor26,
+		    	MovementSensor26,
+		    	WindowSensor26,
+		    	COSensor26,
+		    	TemperatureSensor26
+		    }
+		},
+		opt Sensors27 {
+		    group [1..*] {
+		    	DoorSensor27,
+		    	FireSensor27,
+		    	MovementSensor27,
+		    	WindowSensor27,
+		    	COSensor27,
+		    	TemperatureSensor27
+		    }
+		},
+		opt Sensors28 {
+		    group [1..*] {
+		    	DoorSensor28,
+		    	FireSensor28,
+		    	MovementSensor28,
+		    	WindowSensor28,
+		    	COSensor28,
+		    	TemperatureSensor28
+		    }
+		},
+		opt Sensors29 {
+		    group [1..*] {
+		    	DoorSensor29,
+		    	FireSensor29,
+		    	MovementSensor29,
+		    	WindowSensor29,
+		    	COSensor29,
+		    	TemperatureSensor29
+		    }
+		},
+		opt Sensors30 {
+		    group [1..*] {
+		    	DoorSensor30,
+		    	FireSensor30,
+		    	MovementSensor30,
+		    	WindowSensor30,
+		    	COSensor30,
+		    	TemperatureSensor30
+		    }
+		},
+		opt Sensors31 {
+		    group [1..*] {
+		    	DoorSensor31,
+		    	FireSensor31,
+		    	MovementSensor31,
+		    	WindowSensor31,
+		    	COSensor31,
+		    	TemperatureSensor31
+		    }
+		},
+		opt Sensors32 {
+		    group [1..*] {
+		    	DoorSensor32,
+		    	FireSensor32,
+		    	MovementSensor32,
+		    	WindowSensor32,
+		    	COSensor32,
+		    	TemperatureSensor32
+		    }
+		},
+		opt Sensors33 {
+		    group [1..*] {
+		    	DoorSensor33,
+		    	FireSensor33,
+		    	MovementSensor33,
+		    	WindowSensor33,
+		    	COSensor33,
+		    	TemperatureSensor33
+		    }
+		},
+		opt Sensors34 {
+		    group [1..*] {
+		    	DoorSensor34,
+		    	FireSensor34,
+		    	MovementSensor34,
+		    	WindowSensor34,
+		    	COSensor34,
+		    	TemperatureSensor34
+		    }
+		},
+		opt Sensors35 {
+		    group [1..*] {
+		    	DoorSensor35,
+		    	FireSensor35,
+		    	MovementSensor35,
+		    	WindowSensor35,
+		    	COSensor35,
+		    	TemperatureSensor35
+		    }
+		},
+		opt Sensors36 {
+		    group [1..*] {
+		    	DoorSensor36,
+		    	FireSensor36,
+		    	MovementSensor36,
+		    	WindowSensor36,
+		    	COSensor36,
+		    	TemperatureSensor36
+		    }
+		},
+		opt Sensors37 {
+		    group [1..*] {
+		    	DoorSensor37,
+		    	FireSensor37,
+		    	MovementSensor37,
+		    	WindowSensor37,
+		    	COSensor37,
+		    	TemperatureSensor37
+		    }
+		},
+		opt Sensors38 {
+		    group [1..*] {
+		    	DoorSensor38,
+		    	FireSensor38,
+		    	MovementSensor38,
+		    	WindowSensor38,
+		    	COSensor38,
+		    	TemperatureSensor38
+		    }
+		},
+		opt Sensors39 {
+		    group [1..*] {
+		    	DoorSensor39,
+		    	FireSensor39,
+		    	MovementSensor39,
+		    	WindowSensor39,
+		    	COSensor39,
+		    	TemperatureSensor39
+		    }
+		},
+		opt Sensors40 {
+		    group [1..*] {
+		    	DoorSensor40,
+		    	FireSensor40,
+		    	MovementSensor40,
+		    	WindowSensor40,
+		    	COSensor40,
+		    	TemperatureSensor40
+		    }
+		},
+		opt Sensors41 {
+		    group [1..*] {
+		    	DoorSensor41,
+		    	FireSensor41,
+		    	MovementSensor41,
+		    	WindowSensor41,
+		    	COSensor41,
+		    	TemperatureSensor41
+		    }
+		},
+		opt Sensors42 {
+		    group [1..*] {
+		    	DoorSensor42,
+		    	FireSensor42,
+		    	MovementSensor42,
+		    	WindowSensor42,
+		    	COSensor42,
+		    	TemperatureSensor42
+		    }
+		},
+		opt Sensors43 {
+		    group [1..*] {
+		    	DoorSensor43,
+		    	FireSensor43,
+		    	MovementSensor43,
+		    	WindowSensor43,
+		    	COSensor43,
+		    	TemperatureSensor43
+		    }
+		},
+		opt Sensors44 {
+		    group [1..*] {
+		    	DoorSensor44,
+		    	FireSensor44,
+		    	MovementSensor44,
+		    	WindowSensor44,
+		    	COSensor44,
+		    	TemperatureSensor44
+		    }
+		},
+		opt Sensors45 {
+		    group [1..*] {
+		    	DoorSensor45,
+		    	FireSensor45,
+		    	MovementSensor45,
+		    	WindowSensor45,
+		    	COSensor45,
+		    	TemperatureSensor45
+		    }
+		},
+		opt Sensors46 {
+		    group [1..*] {
+		    	DoorSensor46,
+		    	FireSensor46,
+		    	MovementSensor46,
+		    	WindowSensor46,
+		    	COSensor46,
+		    	TemperatureSensor46
+		    }
+		},
+		opt Sensors47 {
+		    group [1..*] {
+		    	DoorSensor47,
+		    	FireSensor47,
+		    	MovementSensor47,
+		    	WindowSensor47,
+		    	COSensor47,
+		    	TemperatureSensor47
+		    }
+		},
+		opt Sensors48 {
+		    group [1..*] {
+		    	DoorSensor48,
+		    	FireSensor48,
+		    	MovementSensor48,
+		    	WindowSensor48,
+		    	COSensor48,
+		    	TemperatureSensor48
+		    }
+		},
+		opt Sensors49 {
+		    group [1..*] {
+		    	DoorSensor49,
+		    	FireSensor49,
+		    	MovementSensor49,
+		    	WindowSensor49,
+		    	COSensor49,
+		    	TemperatureSensor49
+		    }
+		}
+	}
+}

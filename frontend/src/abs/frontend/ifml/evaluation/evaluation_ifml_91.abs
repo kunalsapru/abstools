@@ -1,9 +1,29 @@
+// 91 (76 Features + 15 Groups) + 23 Constraints
 productline House;
+
+\addplot[style={rred,fill=rred,mark=none}]
+        coordinates {(91 Features,1.08) (371 Features,1.15) (721
+        Features,1.25) (1071 Features, 1.3)};
+
+   \addplot[style={ggreen,fill=ggreen,mark=none}]
+        coordinates {(91 Features,2.2) (371 Features,5.5) (721
+        Features,10.2) (1071 Features, 15.8)};
+
 
 features SlidingDoor, SwingingDoor, ElectronicBlinds,
 DoorSensor, FireSensor, MovementSensor, WindowSensor, COSensor,
 TemperatureSensor, FireAlarm, BurglarAlarm, COAlarm,
-RemoteInterface, Gas, Electric, Oil;
+RemoteInterface, Gas, Electric, Oil,
+DoorSensor0, FireSensor0 ,MovementSensor0, WindowSensor0, COSensor0, TemperatureSensor0,
+DoorSensor1, FireSensor1 ,MovementSensor1, WindowSensor1, COSensor1, TemperatureSensor1,
+DoorSensor2, FireSensor2 ,MovementSensor2, WindowSensor2, COSensor2, TemperatureSensor2,
+DoorSensor3, FireSensor3 ,MovementSensor3, WindowSensor3, COSensor3, TemperatureSensor3,
+DoorSensor4, FireSensor4 ,MovementSensor4, WindowSensor4, COSensor4, TemperatureSensor4,
+DoorSensor5, FireSensor5 ,MovementSensor5, WindowSensor5, COSensor5, TemperatureSensor5,
+DoorSensor6, FireSensor6 ,MovementSensor6, WindowSensor6, COSensor6, TemperatureSensor6,
+DoorSensor7, FireSensor7 ,MovementSensor7, WindowSensor7, COSensor7, TemperatureSensor7,
+DoorSensor8, FireSensor8 ,MovementSensor8, WindowSensor8, COSensor8, TemperatureSensor8,
+DoorSensor9, FireSensor9 ,MovementSensor9, WindowSensor9, COSensor9, TemperatureSensor9;
     
 product OilHeating (Oil,TemperatureSensor);
 product ElectricHeating (Electric, TemperatureSensor);
@@ -12,6 +32,11 @@ product Test (TemperatureSensor);
 //Features declaration
 ifeatures SlidingDoor, SwingingDoor, ElectronicBlinds;
 ifeatures DoorSensor, FireSensor, MovementSensor, WindowSensor, COSensor, TemperatureSensor;
+ifeatures FireAlarm, BurglarAlarm, COAlarm;
+ifeatures RemoteInterface;
+ifeatures Gas, Electric, Oil;
+//Auto-generated features
+ifeatures DoorSensor0, FireSensor0, MovementSensor0, WindowSensor0, COSensor0, TemperatureSensor0;
 ifeatures DoorSensor1, FireSensor1, MovementSensor1, WindowSensor1, COSensor1, TemperatureSensor1;
 ifeatures DoorSensor2, FireSensor2, MovementSensor2, WindowSensor2, COSensor2, TemperatureSensor2;
 ifeatures DoorSensor3, FireSensor3, MovementSensor3, WindowSensor3, COSensor3, TemperatureSensor3;
@@ -21,12 +46,14 @@ ifeatures DoorSensor6, FireSensor6, MovementSensor6, WindowSensor6, COSensor6, T
 ifeatures DoorSensor7, FireSensor7, MovementSensor7, WindowSensor7, COSensor7, TemperatureSensor7;
 ifeatures DoorSensor8, FireSensor8, MovementSensor8, WindowSensor8, COSensor8, TemperatureSensor8;
 ifeatures DoorSensor9, FireSensor9, MovementSensor9, WindowSensor9, COSensor9, TemperatureSensor9;
-ifeatures FireAlarm, BurglarAlarm, COAlarm;
-ifeatures RemoteInterface;
-ifeatures Gas, Electric, Oil;
 //Groups declaration
 igroup ElectronicDoor {SlidingDoor, SwingingDoor};
 igroup Sensors {DoorSensor, FireSensor, MovementSensor, WindowSensor, COSensor, TemperatureSensor};
+igroup Alarm {FireAlarm, BurglarAlarm, COAlarm};
+igroup Interface {RemoteInterface};
+igroup Heating {Gas, Electric, Oil};
+//Auto-generated groups
+igroup Sensors0 {DoorSensor0, FireSensor0, MovementSensor0, WindowSensor0, COSensor0, TemperatureSensor0};
 igroup Sensors1 {DoorSensor1, FireSensor1, MovementSensor1, WindowSensor1, COSensor1, TemperatureSensor1};
 igroup Sensors2 {DoorSensor2, FireSensor2, MovementSensor2, WindowSensor2, COSensor2, TemperatureSensor2};
 igroup Sensors3 {DoorSensor3, FireSensor3, MovementSensor3, WindowSensor3, COSensor3, TemperatureSensor3};
@@ -36,13 +63,23 @@ igroup Sensors6 {DoorSensor6, FireSensor6, MovementSensor6, WindowSensor6, COSen
 igroup Sensors7 {DoorSensor7, FireSensor7, MovementSensor7, WindowSensor7, COSensor7, TemperatureSensor7};
 igroup Sensors8 {DoorSensor8, FireSensor8, MovementSensor8, WindowSensor8, COSensor8, TemperatureSensor8};
 igroup Sensors9 {DoorSensor9, FireSensor9, MovementSensor9, WindowSensor9, COSensor9, TemperatureSensor9};
-igroup Alarm {FireAlarm, BurglarAlarm, COAlarm};
-igroup Interface {RemoteInterface};
-igroup Heating {Gas, Electric, Oil};
 //Constraints declaration
+iconstraint FeatureConstraints {
+	ElectronicBlinds requires WindowSensor;
+	FireAlarm requires FireSensor;
+	BurglarAlarm requires MovementSensor;
+	COAlarm requires COSensor;
+	RemoteInterface opt;
+	Gas requires COAlarm;
+};
 iconstraint GroupConstraints {
 	ElectronicDoor [1..*], requires DoorSensor;
 	Sensors [1..*];
+	Alarm [1..*];
+	Interface allof;
+	Heating oneof, requires TemperatureSensor;
+	//Auto-generated constraints
+	Sensors0 [1..*];
 	Sensors1 [1..*];
 	Sensors2 [1..*];
 	Sensors3 [1..*];
@@ -52,16 +89,4 @@ iconstraint GroupConstraints {
 	Sensors7 [1..*];
 	Sensors8 [1..*];
 	Sensors9 [1..*];
-	Alarm [1..*];
-	Interface allof;
-	Heating oneof, requires TemperatureSensor;
 };
-iconstraint FeatureConstraints {
-	ElectronicBlinds requires WindowSensor;
-	FireAlarm requires FireSensor;
-	BurglarAlarm requires MovementSensor;
-	COAlarm requires COSensor;
-	RemoteInterface opt;
-	Gas requires COAlarm;
-};
-
