@@ -1,4 +1,4 @@
-// 6321 (3316 Features + 555 Groups) + 563 Constraints
+// 3871 (3316 Features + 555 Groups) + 563 Constraints
 productline House;
 
 features SlidingDoor, SwingingDoor, ElectronicBlinds,
