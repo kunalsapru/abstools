@@ -302,7 +302,7 @@ public class Main {
         if (!semErrs.containsErrors()) {
             typeCheckModel(m);
             analyzeMTVL(m);
-            //analyzeIFML(m);
+            analyzeIFML(m);
         }
     }
 
@@ -528,18 +528,13 @@ public class Main {
      * @param abs.frontend.ast.Model m
      */
     private void analyzeIFML(Model m) {
-        ProductDecl productDecl = null;
-        try {
-            productDecl = product == null ? null : m.findProduct(product);
-        } catch (WrongProgramArgumentException e) {
-            // ignore in case we're just solving.
-        }
         if (m.hasIFML()) {
-                if (verbose)
-                    System.out.println("Checking solution for the ifml feature model...");
-                ChocoSolverIfml s = m.instantiateCS4Model();
-//                s.getSolution();
-
+            ChocoSolverIfml s = m.instantiateCS4Model();
+            if (verbose)
+                System.out.println("Checking solution for the ifml feature model...");
+            if (solveall) {
+                s.getSolutionsAsString(m);
+            }
         }
     }
 

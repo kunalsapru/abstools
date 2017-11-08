@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Model;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.exception.ContradictionException;
@@ -152,7 +153,7 @@ public class ChocoSolverIfml {
 
         if (result.isEmpty()) {
             //Add constraints for features and groups selected by user, only when there are no domain errors
-            addConstraintsForFeaturesAndGroups(solution, absmodel);
+            addConstraintsForFeaturesAndGroups(absmodel);
 
             //Check all constraints and add errors to list, only when there are no domain errors
             result.addAll(checkIfmlConstraints(solution, absmodel));
@@ -200,56 +201,73 @@ public class ChocoSolverIfml {
      * @param solution map created by user in ABS program
      * @param absmodel
      */
-    private void addConstraintsForFeaturesAndGroups(Map<String, Integer> solution, abs.frontend.ast.Model absmodel) {
-        for(Map.Entry<String, Integer> entry : solution.entrySet()) {
-            String featureName = entry.getKey();
-                if(absmodel.ifmlfeatures().contains(featureName)) {
-                    //Get all constraints for this feature
-                    ArrayList<IfmlConstraint> ifmlFeatureConstraintList = absmodel.getAllFeatureConstraints(featureName);
-                    //Add feature constraints to featureConstraints list
-                    if(!(ifmlFeatureConstraintList.isEmpty())) {
-                        addIfmlConstraints(ifmlFeatureConstraintList);
-                    }
-                }
-                IfmlGroupDecl ifmlGroupDecl = absmodel.getIfmlGroupDecl(featureName);
-                if(ifmlGroupDecl != null){
-                    //Add Cardinality constraints for this group
-                    String groupName = ifmlGroupDecl.getName();
-                    IfmlCardinality ifmlCardinality = absmodel.getGroupCardinality(groupName);
-                    if(ifmlCardinality != null){
-                        //Add cardinality constraint here
-                        addCardinalityConstraints(ifmlGroupDecl, ifmlCardinality);
-                    }
-                    //Get group constraints for this group
-                    ArrayList<IfmlConstraint> ifmlGroupConstraintList = absmodel.getAllGroupConstraints(groupName);
-                    //Now add IfmlConstraints to constraints list
-                    if(!(ifmlGroupConstraintList.isEmpty())) {
-                        addIfmlConstraints(ifmlGroupConstraintList);
-                    }
-                }
+    private void addConstraintsForFeaturesAndGroups(abs.frontend.ast.Model absmodel) {
+        for(String featureName : absmodel.ifmlfeatures()) {
+            IntVar groupVar = null;
+            IfmlGroupDecl groupDecl = absmodel.getIfmlGroupDecl(featureName);
+            if(groupDecl != null) {
+                groupVar = getVar(groupDecl.getName());
+            }
+            
+            //Get all constraints for this feature
+            ArrayList<IfmlConstraint> ifmlFeatureConstraintList = absmodel.getAllFeatureConstraints(featureName);
+            //Add feature constraints to featureConstraints list
+            if(!(ifmlFeatureConstraintList.isEmpty())) {
+                addIfmlConstraints(ifmlFeatureConstraintList, groupVar);
+            }
         }
+        List<IfmlGroupDecl> listGroupDecl = new ArrayList<>();
+        List<String> listGroupName = new ArrayList<>();
+        List<String> listGroupNameUnique = new ArrayList<>();
+        for(String featureName : absmodel.ifmlfeatures()) {
+            if(absmodel.getIfmlGroupDecl(featureName) != null) {
+                String groupName = absmodel.getIfmlGroupDecl(featureName).getName();
+                listGroupName.add(groupName);
+            }
+        }
+        listGroupNameUnique = removeDuplicateFromList(listGroupName);
+        for(String groupNameUnique : listGroupNameUnique) {
+            listGroupDecl.add(absmodel.getIfmlGroupDeclByGroupName(groupNameUnique));
+        }
+        
+        for(IfmlGroupDecl ifmlGroupDecl : listGroupDecl) {
+            //Add Cardinality constraints for this group
+            String groupName = ifmlGroupDecl.getName();
+            IfmlCardinality ifmlCardinality = absmodel.getGroupCardinality(groupName);
+            if(ifmlCardinality != null){
+                //Add cardinality constraint here
+                addCardinalityConstraints(ifmlGroupDecl, ifmlCardinality);
+            }
+            //Get group constraints for this group
+            ArrayList<IfmlConstraint> ifmlGroupConstraintList = absmodel.getAllGroupConstraints(groupName);
+            //Now add IfmlConstraints to constraints list
+            if(!(ifmlGroupConstraintList.isEmpty())) {
+                addIfmlConstraints(ifmlGroupConstraintList, getVar(groupName));
+            }
+        }
+
     }
 
     /**
      * This function adds all IfmlConstraints for features and groups in the constraints list
      * @param ifmlConstraintList list containing IfmlConstraint objects
      */
-    private void addIfmlConstraints(ArrayList<IfmlConstraint> ifmlConstraintList) {
+    private void addIfmlConstraints(ArrayList<IfmlConstraint> ifmlConstraintList, IntVar groupVar) {
         //IfmlOpt constraint is handled while checking solution
         for(IfmlConstraint ifmlConstraint : ifmlConstraintList) {
             //Adding Requires constraint
             if(ifmlConstraint instanceof IfmlRequires) {
                 IfmlRequires ifmlRequires = (IfmlRequires)ifmlConstraint;
-                ifmlRequires.addIfmlConstraints(this, cs4model);
+                ifmlRequires.addIfmlConstraints(this, cs4model, groupVar);
             } else if(ifmlConstraint instanceof IfmlExcludes){//Adding Excludes constraint
                 IfmlExcludes ifmlExcludes = (IfmlExcludes)ifmlConstraint;
-                ifmlExcludes.addIfmlConstraints(this, cs4model);
+                ifmlExcludes.addIfmlConstraints(this, cs4model, groupVar);
             } else if(ifmlConstraint instanceof IfmlIfIn){//Adding IfIn constraints
                 IfmlIfIn ifmlIfIn = (IfmlIfIn)ifmlConstraint;
-                ifmlIfIn.addIfmlConstraints(this, cs4model);
+                ifmlIfIn.addIfmlConstraints(this, cs4model, groupVar);
             } else if (ifmlConstraint instanceof IfmlIfOut){//Adding IfOUt constraints
                 IfmlIfOut ifmlIfOut = (IfmlIfOut)ifmlConstraint;
-                ifmlIfOut.addIfmlConstraints(this, cs4model);
+                ifmlIfOut.addIfmlConstraints(this, cs4model, groupVar);
             }
         }
     }
@@ -300,7 +318,17 @@ public class ChocoSolverIfml {
                         //If current variable is not an optional feature
                         if(!optFeatureFlag && defaultvals.get(var.getName()) != null) {
                                 val = defaultvals.get(var.getName());
-                                var.instantiateTo(val, Cause.Null);
+                                if(absModel.ifmlgroups().contains(var.getName())) {
+                                    IfmlGroupDecl ifmlGroupDecl = absModel.getIfmlGroupDeclByGroupName(featureName);
+                                    for(String fName : ifmlGroupDecl.getFeatureNames()) {
+                                        if(solution.containsKey(fName)) {
+                                            var.instantiateTo(1, Cause.Null); // Setting group value to 1, if any of its feature is selected
+                                            break;
+                                        }
+                                    }
+                                } else  {
+                                    var.instantiateTo(val, Cause.Null);
+                                }
                         }
                     }
                     solver.propagate();
@@ -372,6 +400,49 @@ public class ChocoSolverIfml {
         result.clear();
         result.addAll(tempHashSet);
         return result;
+    }
+
+    public List<Solution> getSolutionsAsString(abs.frontend.ast.Model absmodel) {
+        Solver solver = cs4model.getSolver();
+        IntVar[] intVars = cs4model.retrieveIntVars(true);
+        
+        List<Solution> solutions = new ArrayList<>();
+        addConstraintsForFeaturesAndGroups(absmodel);
+        try {
+            solver.propagate();
+        } catch (ContradictionException e1) {
+            System.out.println("Exception while propagating solver --> "+e1.toString());
+        } catch(Exception e2){
+            System.out.println("Exception while propagating solver --> "+e2.toString());
+        }
+        cs4model.getEnvironment().worldPush();
+        for(Constraint c : constraints) {
+            cs4model.post(c);
+            try {
+                solver.propagate();
+            } catch (ContradictionException e) {
+                solver.getEngine().flush();
+                System.out.println("ContradictionException for "+c.getName());
+            } catch (Exception e1) {
+                solver.getEngine().flush();
+                System.out.println("Exception for "+c.getName());
+            }
+        }
+        int sol = 0;
+        //solutions = solver.findAllSolutions();
+        while(solver.solve() && sol < 56500) {
+            solutions.add(new Solution(cs4model).record());
+            sol++;
+        }
+        for(int i=0; i<solutions.size();i++) {
+            System.out.println("-----------"+(i+1)+"----------");
+            for(IntVar var : intVars) {
+                System.out.println(var.getName()+" --> "+solutions.get(i).getIntVal(var));
+            }
+        }
+        cs4model.getEnvironment().worldPop();
+        
+        return solutions;
     }
     
 }

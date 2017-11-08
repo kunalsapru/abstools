@@ -3,6 +3,7 @@ import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.expression.discrete.arithmetic.ArExpression;
 import abs.frontend.ast.IfmlBoundaryInt;
+import org.chocosolver.util.ESat;
 
 aspect ChocoSolverIfmlConstraints {
 
@@ -35,12 +36,13 @@ aspect ChocoSolverIfmlConstraints {
     }
 		
     // REQUIRES
-    public void IfmlRequires.addIfmlConstraints(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
+    public void IfmlRequires.addIfmlConstraints(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model, IntVar groupVar) {
 	    IntVar[] featureVars = cs4model.retrieveIntVars(true);
     	org.chocosolver.solver.constraints.Constraint c1 = null;
+    	IntVar featVar = null;
     	if(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(parentName())) {
     		// parent is feature
-    		IntVar featVar = cs.getVar(parentName());
+    		featVar = cs.getVar(parentName());
     		c1 = cs4model.arithm(featVar,"=",1);
     	} else {
     		// parent is group
@@ -49,6 +51,9 @@ aspect ChocoSolverIfmlConstraints {
     		c1 = cs4model.or(featVarsInGroup);
     	}
     	BoolVar c1_bool = c1.reify();
+    	if(featVar != null && groupVar != null) {
+    		cs.addConstraint(cs4model.arithm(groupVar,">=",featVar));
+    	}
     	for(int i=0;i<getNumIfmlFeatVar();i++){
 	        String featName = getIfmlFeatVar(i).getIfmlFName();
 	        for(IntVar featureVar : featureVars){
@@ -64,18 +69,22 @@ aspect ChocoSolverIfmlConstraints {
     }
 
     // EXCLUDES
-    public void IfmlExcludes.addIfmlConstraints(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
+    public void IfmlExcludes.addIfmlConstraints(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model, IntVar groupVar) {
 	    IntVar[] featureVars = cs4model.retrieveIntVars(true);
+	    IntVar featVar = null;
     	org.chocosolver.solver.constraints.Constraint c1 = null;
     	if(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(parentName())) {
     		// parent is feature
-    		IntVar featVar = cs.getVar(parentName());
+    		featVar = cs.getVar(parentName());
     		c1 = cs4model.arithm(featVar,"=",1);
     	} else {
     		// parent is group
     		IfmlGroupDecl ifmlGroupDecl = ((Model)calcContextNode(Model.class)).getIfmlGroupDeclByGroupName(parentName());
     		BoolVar[] featVarsInGroup = cs.getAllFeaturesInGroup(ifmlGroupDecl);
     		c1 = cs4model.or(featVarsInGroup);
+    	}
+    	if(featVar != null && groupVar != null) {
+    		cs.addConstraint(cs4model.arithm(groupVar,">=",featVar));
     	}
     	BoolVar c1_bool = c1.reify();
     	for(int i=0;i<getNumIfmlFeatVar();i++){
@@ -93,11 +102,12 @@ aspect ChocoSolverIfmlConstraints {
     }
 
     // IFIN
-    public void IfmlIfIn.addIfmlConstraints(ChocoSolverIfml cs,org.chocosolver.solver.Model cs4model) {
+    public void IfmlIfIn.addIfmlConstraints(ChocoSolverIfml cs,org.chocosolver.solver.Model cs4model, IntVar groupVar) {
     	org.chocosolver.solver.constraints.Constraint c1 = null;
+    	IntVar featVar = null;
     	if(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(parentName())) {
     		// parent is feature
-    		IntVar featVar = cs.getVar(parentName());
+    		featVar = cs.getVar(parentName());
     		c1 = cs4model.arithm(featVar,"=",1);
     	} else {
     		// parent is group
@@ -105,7 +115,9 @@ aspect ChocoSolverIfmlConstraints {
     		BoolVar[] featVarsInGroup = cs.getAllFeaturesInGroup(ifmlGroupDecl);
     		c1 = cs4model.or(featVarsInGroup);
     	}    	
-    	
+    	if(featVar != null && groupVar != null) {
+    		cs.addConstraint(cs4model.arithm(groupVar,">=",featVar));
+    	}
         org.chocosolver.solver.constraints.Constraint c2 = getIfmlExpr().collectIfmlConstraints(cs, cs4model);
     	BoolVar c1_bool = c1.reify();
     	BoolVar c2_bool = c2.reify();
@@ -114,12 +126,13 @@ aspect ChocoSolverIfmlConstraints {
         cs.addConstraint(cstr);
     }
     
-    // IfOUT
-    public void IfmlIfOut.addIfmlConstraints(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
+    // IFOUT
+    public void IfmlIfOut.addIfmlConstraints(ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model, IntVar groupVar) {
     	org.chocosolver.solver.constraints.Constraint c1 = null;
+    	IntVar featVar = null;
     	if(((Model)calcContextNode(Model.class)).ifmlfeatures().contains(parentName())) {
     		// parent is feature
-    		IntVar featVar = cs.getVar(parentName());
+    		featVar = cs.getVar(parentName());
     		c1 = cs4model.arithm(featVar,"=",0);
     	} else {
     		// parent is group
@@ -127,7 +140,9 @@ aspect ChocoSolverIfmlConstraints {
     		BoolVar[] featVarsInGroup = cs.getAllFeaturesInGroup(ifmlGroupDecl);
     		c1 = cs4model.not(cs4model.or(featVarsInGroup));
     	}    	
-    	
+    	if(featVar != null && groupVar != null) {
+    		cs.addConstraint(cs4model.arithm(groupVar,">=",featVar));
+    	}
         org.chocosolver.solver.constraints.Constraint c2 = getIfmlExpr().collectIfmlConstraints(cs, cs4model);
     	BoolVar c1_bool = c1.reify();
     	BoolVar c2_bool = c2.reify();
@@ -139,39 +154,73 @@ aspect ChocoSolverIfmlConstraints {
     // IfmlAllOf (allof)
     public void IfmlAllOf.addCardinalityConstraint(BoolVar[] allFeaturesInGroup, String groupName, 
     		ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
+		IntVar groupVar = cs.getVar(groupName);
+    	org.chocosolver.solver.constraints.Constraint c1 = cs4model.arithm(groupVar,"=",1);
       // Every group must have atleast one feature
     	org.chocosolver.solver.constraints.Constraint allof = cs4model.sum(allFeaturesInGroup, "=" , allFeaturesInGroup.length);
-    	allof.setName("Cardinality '"+cs.IFMLCONSTRAINT_ALLOF+"' for "+groupName+" "+allof.toString());
-        cs.addConstraint(allof);
+    	BoolVar c1_bool = c1.reify();
+    	BoolVar allof_bool = allof.reify();
+    	org.chocosolver.solver.constraints.Constraint cstr = cs4model.arithm(c1_bool,"<=", allof_bool);
+    	for(BoolVar boolFeatVar : allFeaturesInGroup) {
+    		cs4model.ifThen(boolFeatVar,c1);
+    	}
+
+    	cstr.setName("Cardinality '"+cs.IFMLCONSTRAINT_ALLOF+"' for "+groupName+" "+allof.toString());
+        cs.addConstraint(cstr);
     }
     
     // IfmlMinim ([from..*])
     public void IfmlMinim.addCardinalityConstraint(BoolVar[] allFeaturesInGroup, String groupName, 
     		ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
+		IntVar groupVar = cs.getVar(groupName);
+    	org.chocosolver.solver.constraints.Constraint c1 = cs4model.arithm(groupVar,"=",1);
     	org.chocosolver.solver.constraints.Constraint minimCstr = cs4model.sum(allFeaturesInGroup, ">=" , getIfmlCFrom());
-        minimCstr.setName("Cardinality '"+"["+getIfmlCFrom()+"..*]"+"' for "+groupName+" "+minimCstr.toString());
-        cs.addConstraint(minimCstr);
+    	BoolVar c1_bool = c1.reify();
+    	BoolVar minimCstr_bool = minimCstr.reify();
+    	org.chocosolver.solver.constraints.Constraint cstr = cs4model.arithm(c1_bool,"<=", minimCstr_bool);
+        cstr.setName("Cardinality '"+"["+getIfmlCFrom()+"..*]"+"' for "+groupName+" "+minimCstr.toString());
+
+    	for(BoolVar boolFeatVar : allFeaturesInGroup) {
+			cs4model.ifThen(boolFeatVar,c1);
+    	}
+
+        cs.addConstraint(cstr);
     }
     
     // IfmlCRange (incl. oneof and [from..to])
     public void IfmlCRange.addCardinalityConstraint(BoolVar[] allFeaturesInGroup, String groupName, 
     		ChocoSolverIfml cs, org.chocosolver.solver.Model cs4model) {
+		IntVar groupVar = cs.getVar(groupName);
+    	org.chocosolver.solver.constraints.Constraint c1 = cs4model.arithm(groupVar,"=",1);
+    	BoolVar c1_bool = c1.reify();
+
         if(getIfmlCFrom() == 1 && getIfmlCTo() == 1){
             //Apply oneof cardinality
         	org.chocosolver.solver.constraints.Constraint oneof = cs4model.sum(allFeaturesInGroup, "=" , 1);
-            oneof.setName("Cardinality '"+cs.IFMLCONSTRAINT_ONEOF+"' for "+groupName+" "+oneof.toString());
-            cs.addConstraint(oneof);
+        	BoolVar oneof_bool = oneof.reify();
+        	org.chocosolver.solver.constraints.Constraint cstr = cs4model.arithm(c1_bool,"<=", oneof_bool);
+            cstr.setName("Cardinality '"+cs.IFMLCONSTRAINT_ONEOF+"' for "+groupName+" "+oneof.toString());
+            cs.addConstraint(cstr);
         } else {
             //Apply [From..To] cardinality
             org.chocosolver.solver.constraints.Constraint fromCstr = cs4model.sum(allFeaturesInGroup, ">=" , getIfmlCFrom());
             org.chocosolver.solver.constraints.Constraint toCstr = cs4model.sum(allFeaturesInGroup, "<=" , getIfmlCTo());
+			BoolVar fromCstr_bool = fromCstr.reify();
+			BoolVar toCstr_bool = toCstr.reify();
+			org.chocosolver.solver.constraints.Constraint cstrFrom = cs4model.arithm(c1_bool,"<=", fromCstr_bool);
+			org.chocosolver.solver.constraints.Constraint cstrTo = cs4model.arithm(c1_bool,"<=", toCstr_bool);
+
             String fromCstrName = "Cardinality '"+"["+getIfmlCFrom()+".."+getIfmlCTo()+"]"+"' for "+groupName+" "+fromCstr.toString();
             String toCstrName = "Cardinality '"+"["+getIfmlCFrom()+".."+getIfmlCTo()+"]"+"' for "+groupName+" "+toCstr.toString();
-            fromCstr.setName(fromCstrName);
-            toCstr.setName(toCstrName);
-            cs.addConstraint(fromCstr);
-            cs.addConstraint(toCstr);
+            cstrFrom.setName(fromCstrName);
+            cstrTo.setName(toCstrName);
+            cs.addConstraint(cstrFrom);
+            cs.addConstraint(cstrTo);
         }
+        for(BoolVar boolFeatVar : allFeaturesInGroup) {
+        	cs4model.ifThen(boolFeatVar,c1);
+    	}
+        
     }
 
     // EXPRESSIONS
