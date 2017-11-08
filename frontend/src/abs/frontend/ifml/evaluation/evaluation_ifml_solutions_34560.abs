@@ -1,0 +1,46 @@
+// 34,560 possible solutions
+productline House;
+
+features SlidingDoor, SwingingDoor, ElectronicBlinds,
+DoorSensor, FireSensor, MovementSensor, WindowSensor, COSensor,
+TemperatureSensor, FireAlarm, BurglarAlarm, COAlarm,
+RemoteInterface, Gas, Electric, Oil, Coal,
+DoorSensor0, FireSensor0 ,MovementSensor0;
+product OilHeating (Oil,TemperatureSensor);
+product ElectricHeating (Electric, TemperatureSensor);
+product FireAlarm (FireAlarm, FireSensor);
+product Test (TemperatureSensor);
+//Features declaration
+ifeatures SlidingDoor, SwingingDoor, ElectronicBlinds;
+ifeatures DoorSensor, FireSensor, MovementSensor, WindowSensor, COSensor, TemperatureSensor;
+ifeatures FireAlarm, BurglarAlarm, COAlarm;
+ifeatures RemoteInterface;
+ifeatures Gas, Electric, Oil, Coal;
+//Auto-generated features
+ifeatures DoorSensor0, FireSensor0, MovementSensor0;
+//Groups declaration
+igroup ElectronicDoor {SlidingDoor, SwingingDoor};
+igroup Sensors {DoorSensor, FireSensor, MovementSensor, WindowSensor, COSensor};
+igroup Alarm {FireAlarm, BurglarAlarm, COAlarm};
+igroup Interface {RemoteInterface};
+igroup Heating {Gas, Electric, Oil, Coal};
+//Auto-generated groups
+igroup Sensors0 {DoorSensor0, FireSensor0, MovementSensor0};
+//Constraints declaration
+iconstraint FeatureConstraints {
+	ElectronicBlinds requires WindowSensor;
+	FireAlarm requires FireSensor;
+	BurglarAlarm requires MovementSensor;
+	COAlarm requires COSensor;
+	RemoteInterface opt;
+	Gas requires COAlarm;
+};
+iconstraint GroupConstraints {
+	ElectronicDoor [1..*], requires DoorSensor;
+	Sensors [1..*];
+	Alarm [1..*];
+	Interface allof;
+	Heating oneof, requires TemperatureSensor;
+	//Auto-generated constraints
+	Sensors0 [1..*];
+};
